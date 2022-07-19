@@ -6,6 +6,7 @@ import { QueryBus } from '@nestjs/cqrs';
 import { FindCategoriesByCompany } from './queries/find-categories/find-categories-by-company.query';
 import { AuthenticationModule } from '../../authentication/authentication.module';
 import { Company } from '../../authentication/model/company';
+import { FindProductsByCategoryQuery } from './queries/find-products/find-products-by-category.query';
 
 describe('CategoriesController', () => {
   
@@ -37,6 +38,18 @@ describe('CategoriesController', () => {
   
       expect(queryBus.executedWith).toEqual(
         new FindCategoriesByCompany('anyCompanyId')
+      );
+    });
+
+  })
+
+  describe('given find products category', () => {
+
+    it('then execute find products by category query', async () => {
+      await controller.findProducts(company, 'anyCategoryId');
+  
+      expect(queryBus.executedWith).toEqual(
+        new FindProductsByCategoryQuery('anyCompanyId', 'anyCategoryId')
       );
     });
 
