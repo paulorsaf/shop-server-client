@@ -4,4 +4,7 @@ export class ProductRepositoryMock {
     findByCompanyAndCategory() {
       return this.response;
     }
+    findById() {
+      return this.response;
+    }
 }
