@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import * as admin from 'firebase-admin';
-import { Product } from "../entity/product";
+import { Product, ProductImage } from "../entity/product";
 
 @Injectable()
 export class ProductRepository {
@@ -16,7 +16,8 @@ export class ProductRepository {
                 snapshot.docs.map(d => {
                     const product = d.data();
                     return new Product(
-                        d.id, product.name, product.price, product.priceWithDiscount
+                        d.id, product.name, product.price, product.priceWithDiscount,
+                        product.images
                     );
                 })
             );

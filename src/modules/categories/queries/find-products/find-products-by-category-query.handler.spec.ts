@@ -1,7 +1,7 @@
 import { CqrsModule } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ProductRepositoryMock } from '../../../../mocks/product-repository.mock';
-import { Product } from '../../entity/product';
+import { Product, ProductImage } from '../../entity/product';
 import { ProductRepository } from '../../repositories/product.repository';
 import { FindProductsByCategoryQueryHandler } from './find-products-by-category-query.handler';
 import { FindProductsByCategoryQuery } from './find-products-by-category.query';
@@ -35,8 +35,8 @@ describe('FindProductsByCategoryQueryHandler', () => {
 
   it('given execute handler, then find products by category', async () => {
     const products = [
-      new Product('anyId1', 'anyName1', 10, 8),
-      new Product('anyId2', 'anyName2', 5, 4)
+      new Product('anyId1', 'anyName1', 10, 8, new ProductImage('anyFileName', 'anyUrl')),
+      new Product('anyId2', 'anyName2', 5, 4, new ProductImage('anyFileName', 'anyUrl'))
     ];
     productRepository.response = products;
 
