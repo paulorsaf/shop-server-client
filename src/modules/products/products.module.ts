@@ -4,6 +4,7 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { AuthenticationModule } from '../../authentication/authentication.module';
 import { FindProductByIdQueryHandler } from './queries/find-product-by-id/find-product-by-id-query.handler';
 import { ProductRepository } from './repositories/product.repository';
+import { StockRepository } from './repositories/stock.repository';
 
 @Module({
   controllers: [ProductsController],
@@ -13,6 +14,7 @@ import { ProductRepository } from './repositories/product.repository';
   ],
   providers: [
     ProductRepository,
+    StockRepository,
 
     FindProductByIdQueryHandler
   ]

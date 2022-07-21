@@ -1,3 +1,5 @@
+import { ProductStockOption } from "./stock";
+
 export class Product {
     constructor(
         public readonly companyId: string,
@@ -5,7 +7,8 @@ export class Product {
         public readonly name: string,
         public readonly price: number,
         public readonly priceWithDiscount: number,
-        public readonly images: ProductImage
+        public readonly images: ProductImage,
+        public readonly stockOptions: ProductStockOption[]
     ){}
 }
 
