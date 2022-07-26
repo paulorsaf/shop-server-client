@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as admin from 'firebase-admin';
-import { User } from 'src/authentication/model/user';
+import { User } from '../../model/user';
 
 @Injectable()
 export class UserRepository {
