@@ -1,6 +1,6 @@
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthorizationService } from '../services/auth/authorization.service';
+import { AuthService } from '../services/auth/auth.service';
 import { JwtStrategy } from './jwt.strategy';
 
 describe('JWT Strategy', () => {
@@ -15,11 +15,11 @@ describe('JWT Strategy', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        AuthorizationService,
+        AuthService,
         JwtStrategy
       ]
     })
-    .overrideProvider(AuthorizationService).useValue(authorizationService)
+    .overrideProvider(AuthService).useValue(authorizationService)
     .compile();
 
     service = module.get<JwtStrategy>(JwtStrategy);

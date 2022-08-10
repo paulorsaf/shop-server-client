@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthorizationService } from './authorization.service';
+import { AuthService } from './auth.service';
 import { UnauthorizedException } from '@nestjs/common';
 import { UserRepository } from '../../repositories/user/user.repository';
 import { User } from '../../model/user';
@@ -7,8 +7,8 @@ import { TokenRepository } from '../../repositories/token/token.repository';
 import { UserRepositoryMock } from '../../../mocks/user-repository.mock';
 import { TokenRepositoryMock } from '../../../mocks/token-repository.mock';
 
-describe('AuthorizationService', () => {
-  let service: AuthorizationService;
+describe('AuthService', () => {
+  let service: AuthService;
 
   let tokenRepository: TokenRepositoryMock;
   let userRepository: UserRepositoryMock;
@@ -19,7 +19,7 @@ describe('AuthorizationService', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        AuthorizationService,
+        AuthService,
         TokenRepository,
         UserRepository
       ]
@@ -28,7 +28,7 @@ describe('AuthorizationService', () => {
     .overrideProvider(UserRepository).useValue(userRepository)
     .compile();
 
-    service = module.get<AuthorizationService>(AuthorizationService);
+    service = module.get<AuthService>(AuthService);
   });
 
   it('given valid token, when find user by token is successful, then return user', async () => {

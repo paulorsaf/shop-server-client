@@ -7,7 +7,9 @@ async function bootstrap() {
     credential: admin.credential.cert('./src/service-account.json')
   })
 
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: ['error', 'warn', 'debug']
+  });
 
   app.enableCors({
     origin: '*'

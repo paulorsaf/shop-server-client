@@ -4,7 +4,7 @@ import { UserRepository } from '../../repositories/user/user.repository';
 import { TokenRepository } from '../../repositories/token/token.repository';
 
 @Injectable()
-export class AuthorizationService {
+export class AuthService {
 
     constructor(
         private tokenRepository: TokenRepository,

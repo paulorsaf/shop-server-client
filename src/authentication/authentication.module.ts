@@ -2,17 +2,17 @@ import { Module } from '@nestjs/common';
 import { CompanyRepository } from './repositories/company/company.repository';
 import { TokenRepository } from './repositories/token/token.repository';
 import { UserRepository } from './repositories/user/user.repository';
-import { AuthorizationService } from './services/auth/authorization.service';
+import { AuthService } from './services/auth/auth.service';
 
 @Module({
   exports: [
-    AuthorizationService,
+    AuthService,
     CompanyRepository,
     TokenRepository,
     UserRepository
   ],
   providers: [
-    AuthorizationService,
+    AuthService,
     CompanyRepository,
     TokenRepository,
     UserRepository
