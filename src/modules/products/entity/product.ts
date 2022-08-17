@@ -1,4 +1,4 @@
-import { ProductStockOption } from "./stock";
+import { ProductStock } from "./stock";
 
 export class Product {
     constructor(
@@ -8,7 +8,7 @@ export class Product {
         public readonly price: number,
         public readonly priceWithDiscount: number,
         public readonly images: ProductImage,
-        public readonly stockOptions: ProductStockOption[]
+        public readonly stock: ProductStock[]
     ){}
 }
 

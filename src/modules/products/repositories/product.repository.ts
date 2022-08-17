@@ -16,7 +16,7 @@ export class ProductRepository {
                 }
                 const product = snapshot.data();
                 return new Product(
-                    product.companyId, product.id, product.name, product.price,
+                    product.companyId, snapshot.id, product.name, product.price,
                     product.priceWithDiscount, product.images, null
                 );
             });

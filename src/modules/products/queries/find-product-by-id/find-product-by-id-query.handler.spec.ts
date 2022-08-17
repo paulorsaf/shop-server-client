@@ -3,11 +3,11 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { StockRepositoryMock } from '../../../../mocks/stock-repository.mock';
 import { ProductRepositoryMock } from '../../../../mocks/product-repository.mock';
-import { ProductStockOption } from '../../entity/stock';
 import { ProductRepository } from '../../repositories/product.repository';
 import { FindProductByIdQueryHandler } from './find-product-by-id-query.handler';
 import { FindProductByIdQuery } from './find-product-by-id.query';
 import { StockRepository } from '../../repositories/stock.repository';
+import { ProductStock } from '../../entity/stock';
 
 describe('FindProductByIdQueryHandler', () => {
 
@@ -63,12 +63,12 @@ describe('FindProductByIdQueryHandler', () => {
   it('given product found, when product has stock, then add stock details to product', async () => {
     const product = {id: 'anyId', companyId: "anyCompanyId"} as any;
     productRepository.response = product;
-    const stockOptions = [new ProductStockOption('anyColor', 'anyId', 10, 'anySize')];
-    stockRepository.response = stockOptions;
+    const stock = [new ProductStock('anyColor', 'anyId', 10, 'anySize')];
+    stockRepository.response = stock;
 
     const response = await handler.execute(command);
 
-    expect(response).toEqual({...product, stockOptions});
+    expect(response).toEqual({...product, stock});
   });
 
 });

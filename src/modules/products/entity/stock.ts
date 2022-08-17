@@ -1,8 +1,4 @@
 export class ProductStock {
-    stockOptions: ProductStockOption[];
-}
-
-export class ProductStockOption {
     constructor(
         public readonly color: string,
         public readonly id: string,
