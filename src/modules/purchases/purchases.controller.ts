@@ -1,5 +1,5 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
-import { CommandBus } from '@nestjs/cqrs';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { AuthCompany } from '../../authentication/decorators/company.decorator';
 import { Company } from '../../authentication/model/company';
 import { CompanyStrategy } from '../../authentication/guards/company.strategy';
@@ -11,13 +11,28 @@ import { CreatePurchaseCommand } from './commands/create-purchase/create-purchas
 import { Purchase } from './model/purchase.model';
 import { Product } from './model/product.model';
 import { Stock } from './model/stock.model';
+import { FindPurchasesByUserAndCompanyQuery } from './queries/find-all/find-purchases-by-user-and-company.query';
 
 @Controller('purchases')
 export class PurchasesController {
 
   constructor(
-    private commandBus: CommandBus
+    private commandBus: CommandBus,
+    private queryBus: QueryBus
   ) {}
+
+  @UseGuards(CompanyStrategy, JwtStrategy)
+  @Get()
+  findByUserAndCompany(@AuthCompany() company: Company, @AuthUser() user: User) {
+    const purchase = new Purchase({
+      companyId: company.id,
+      userId: user.id
+    });
+
+    return this.queryBus.execute(
+      new FindPurchasesByUserAndCompanyQuery(purchase)
+    )
+  }
 
   @UseGuards(CompanyStrategy, JwtStrategy)
   @Post()

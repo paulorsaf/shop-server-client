@@ -77,7 +77,7 @@ type PurchaseParams = {
     id?: string,
     userId: string,
     address?: PurchaseAddress,
-    products: Product[],
-    payment: Payment,
+    products?: Product[],
+    payment?: Payment,
     purchaseRepository?: PurchaseRepository
 }
