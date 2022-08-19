@@ -14,7 +14,10 @@ export class CompanyRepository {
                 if (!snapshot.exists) {
                     return null;
                 }
-                return <Company> snapshot.data();
+                return <Company> {
+                    ...snapshot.data(),
+                    id: snapshot.id
+                };
             });
     }
 
