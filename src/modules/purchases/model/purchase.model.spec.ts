@@ -78,12 +78,26 @@ describe("Purchases > Purchase model", () => {
 
     })
 
+    describe('given find all by user and company', () => {
+
+        it('then return purchases', async () => {
+            const purchases = [{id: "anyPurchaseId1"}, {id: "anyPurchaseId2"}];
+            purchaseRepository._response = purchases;
+
+            await expect(purchase.findAllByUserAndCompany()).resolves.toEqual(purchases);
+        })
+
+    })
+
 })
 
 class PurchaseRepositoryMock {
     _isSaved = false;
     _response;
 
+    findAll() {
+        return this._response;
+    }
     save() {
         this._isSaved = true;
         return this._response || Promise.resolve();

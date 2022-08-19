@@ -7,20 +7,24 @@ export class Purchase {
 
     #purchaseRepository: PurchaseRepository;
 
+    private createdAt: string;
     private id: string;
     private companyId: string;
     private userId: string;
     private address: PurchaseAddress;
     private products: Product[];
     private payment: Payment;
+    private status: string;
     
     constructor(params: PurchaseParams){
-        this.id = params.id,
+        this.id = params.id;
+        this.createdAt = params.createdAt;
         this.companyId = params.companyId;
         this.userId = params.userId;
         this.address = params.address;
         this.products = params.products;
         this.payment = params.payment;
+        this.status = params.status;
         this.#purchaseRepository = params.purchaseRepository || new PurchaseRepository();
     }
 
@@ -32,6 +36,13 @@ export class Purchase {
 
     async loadAllProducts() {
         await Promise.all(this.products.map(p => p.find()))
+    }
+
+    async findAllByUserAndCompany() {
+        return await this.#purchaseRepository.findAll({
+            companyId: this.companyId,
+            userId: this.userId
+        });
     }
 
     findProductOutOfStock() {
@@ -56,6 +67,18 @@ export class Purchase {
 
 }
 
+type PurchaseParams = {
+    createdAt?: string;
+    companyId: string;
+    id?: string;
+    userId: string;
+    address?: PurchaseAddress;
+    products?: Product[];
+    payment?: Payment;
+    purchaseRepository?: PurchaseRepository;
+    status?: string;
+}
+
 type PurchaseAddress = {
     street: string;
     number: string;
@@ -70,14 +93,4 @@ type PurchaseAddress = {
 
 type Payment = {
     type: string;
-}
-
-type PurchaseParams = {
-    companyId: string,
-    id?: string,
-    userId: string,
-    address?: PurchaseAddress,
-    products?: Product[],
-    payment?: Payment,
-    purchaseRepository?: PurchaseRepository
 }
