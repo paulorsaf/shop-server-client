@@ -7,11 +7,13 @@ import { RegisterModule } from './modules/register/register.module';
 import { PurchasesModule } from './modules/purchases/purchases.module';
 import { EventRepository } from './repositories/event.repository';
 import { StockModule } from './modules/stocks/stock.module';
+import { CompanyModule } from './modules/company/company.module';
 
 @Module({
   imports: [
     BannersModule,
     CategoriesModule,
+    CompanyModule,
     ProductsModule,
     RegisterModule,
     PurchasesModule,
