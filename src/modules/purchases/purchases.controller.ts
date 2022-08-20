@@ -12,6 +12,8 @@ import { Purchase } from './model/purchase.model';
 import { Product } from './model/product.model';
 import { Stock } from './model/stock.model';
 import { FindPurchasesByUserAndCompanyQuery } from './queries/find-all/find-purchases-by-user-and-company.query';
+import { Base64UploadToFileName } from '../../file-upload/decorators/base64-upload-to-file-name.decorator';
+import { Base64FileUploadToFileStrategy } from '../../file-upload/strategies/base64-upload-to-file-name.strategy';
 
 @Controller('purchases')
 export class PurchasesController {
@@ -34,17 +36,21 @@ export class PurchasesController {
     )
   }
 
-  @UseGuards(CompanyStrategy, JwtStrategy)
+  @UseGuards(CompanyStrategy, JwtStrategy, Base64FileUploadToFileStrategy)
   @Post()
   create(
     @AuthCompany() company: Company,
     @AuthUser() user: User,
-    @Body() purchaseDto: PurchaseDTO
+    @Body() purchaseDto: PurchaseDTO,
+    @Base64UploadToFileName() fileName: string
   ) {
     const purchase = this.createPurchase(company, user, purchaseDto);
 
     return this.commandBus.execute(
-      new CreatePurchaseCommand(company, purchase, user)
+      new CreatePurchaseCommand(company, purchase, {
+        type: purchaseDto.payment.type,
+        receipt: fileName
+      }, user)
     )
   }
 
@@ -52,7 +58,9 @@ export class PurchasesController {
     return new Purchase({
       address: purchaseDto.deliveryAddress,
       companyId: company.id,
-      payment: purchaseDto.payment,
+      payment: {
+        type: purchaseDto.payment.type
+      },
       products: purchaseDto.products.map(p => {
         return new Product(
           company.id, p.productId, p.amount, new Stock({

@@ -15,13 +15,14 @@ describe('CreatePurchaseCommandHandler', () => {
   let company = {id: "anyCompanyId"} as any;
   let user = {id: "anyUserId"} as any;
   let command: CreatePurchaseCommand;
+  const payment = {type: "anyType"};
 
   let purchase: PurchaseMock;
 
   beforeEach(async () => {
     purchase = new PurchaseMock();
     command = new CreatePurchaseCommand(
-      company, purchase as any, user
+      company, purchase as any, payment, user
     );
 
     eventBus = new EventBusMock();
@@ -62,7 +63,13 @@ describe('CreatePurchaseCommandHandler', () => {
     await handler.execute(command);
 
     expect(eventBus.published).toEqual(
-      new PurchaseCreatedEvent("anyCompanyId", purchase as any, "anyUserId")
+      new PurchaseCreatedEvent(
+        "anyCompanyId",
+        "anyPurchaseId",
+        purchase as any,
+        payment,
+        "anyUserId"
+      )
     );
   })
 
@@ -81,6 +88,9 @@ class PurchaseMock {
   }
   getUserId() {
     return "anyUserId";
+  }
+  getId() {
+    return "anyPurchaseId";
   }
   loadAllProducts() {
     this._hasLoadedAllProducts = true;

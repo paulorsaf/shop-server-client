@@ -5,11 +5,13 @@ import { UserRegisteredInCompanyEvent } from "../modules/register/commands/event
 import { UserRegisteredEvent } from "../modules/register/commands/events/user-registered.event";
 import { EventRepository } from "../repositories/event.repository";
 import { ProductsPurchasedTotalStockUpdatedEvent } from "../modules/stocks/commands/update-product-stock-list/events/products-purchased-total-stock-updated.event";
+import { PaymentByPixSavedEvent } from "../modules/payment/events/payment-by-pix-saved.event";
 
 @EventsHandler(
     PurchaseCreatedEvent,
     ProductsPurchasedDecreasedStockEvent,
     ProductsPurchasedTotalStockUpdatedEvent,
+    PaymentByPixSavedEvent,
 
     UserRegisteredEvent,
     UserRegisteredInCompanyEvent

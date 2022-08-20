@@ -22,8 +22,16 @@ export class CreatePurchaseCommandHandler implements ICommandHandler<CreatePurch
 
         await purchase.save();
 
+        this.publishPurchaseCreatedEvent(command);
+    }
+
+    private publishPurchaseCreatedEvent(command: CreatePurchaseCommand) {
         this.eventBus.publish(new PurchaseCreatedEvent(
-            purchase.getCompanyId(), purchase, purchase.getUserId()
+            command.company.id,
+            command.purchase.getId(),
+            command.purchase,
+            command.paymentDetails,
+            command.user.id
         ))
     }
 

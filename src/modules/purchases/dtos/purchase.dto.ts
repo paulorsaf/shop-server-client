@@ -23,5 +23,6 @@ export type PurchaseProductDTO = {
 }
 
 export type PaymentDTO = {
+    receipt?: string;
     type: string;
 }

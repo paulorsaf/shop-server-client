@@ -52,21 +52,26 @@ describe('PurchasesController', () => {
       }
     } as any;
 
-    await controller.create(company, user, purchaseDto);
+    await controller.create(company, user, purchaseDto, "anyFile");
 
     expect(commandBus.executed).toEqual(
       new CreatePurchaseCommand(
         company,
         new Purchase({
-          companyId: "anyCompanyId", userId: "anyUserId", 
+          companyId: "anyCompanyId",
+          userId: "anyUserId",
+          payment: {
+            type: "MONEY",
+          },
           products: [new Product(
             "anyCompanyId", "anyProductId", 10, new Stock({
               id: "anyStockId", productId: "anyProductId"
             })
-          )],
-          payment: purchaseDto.payment
-        }),
-        user
+          )]
+        }), {
+          type: "MONEY",
+          receipt: "anyFile"
+        }, user
       )
     )
   })

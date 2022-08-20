@@ -8,6 +8,7 @@ import { PurchasesModule } from './modules/purchases/purchases.module';
 import { EventRepository } from './repositories/event.repository';
 import { StockModule } from './modules/stocks/stock.module';
 import { CompanyModule } from './modules/company/company.module';
+import { PaymentModule } from './modules/payment/payment.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { CompanyModule } from './modules/company/company.module';
     ProductsModule,
     RegisterModule,
     PurchasesModule,
+    PaymentModule,
     StockModule
   ],
   providers: [
