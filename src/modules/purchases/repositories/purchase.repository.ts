@@ -11,7 +11,7 @@ export class PurchaseRepository {
             .collection('purchases')
             .where("companyId", "==", query.companyId)
             .where("userId", "==", query.userId)
-            // .orderBy("createdAt", "desc")
+            .orderBy("createdAt", "desc")
             .get()
             .then(snapshot => {
                 return snapshot.docs.map(d => {
