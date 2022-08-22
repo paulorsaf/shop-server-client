@@ -1,6 +1,6 @@
 import { CommandHandler, EventBus, ICommandHandler } from "@nestjs/cqrs";
-import { StringifyOptions } from "querystring";
 import { PaymentByPixSavedEvent } from "../../events/payment-by-pix-saved.event";
+import { PaymentFailedEvent } from "../../events/payment-failed.event";
 import { PurchasePaymentByPix } from "../../model/purchase/purchase-payment-by-pix.model";
 import { SavePaymentByPixCommand } from "./save-payment-by-pix.command";
 
@@ -14,9 +14,12 @@ export class SavePaymentByPixCommandHandler implements ICommandHandler<SavePayme
     async execute(command: SavePaymentByPixCommand) {
         const purchasePayment = command.purchasePayment;
 
-        const receiptUrl = await purchasePayment.savePayment();
-
-        this.publishPaymentByPixSavedEvent(purchasePayment, receiptUrl);
+        try {
+            const receiptUrl = await purchasePayment.savePayment();
+            this.publishPaymentByPixSavedEvent(purchasePayment, receiptUrl);
+        } catch (error) {
+            this.publishPaymentFailedEvent(purchasePayment, error);
+        }
     }
 
     private publishPaymentByPixSavedEvent(
@@ -27,6 +30,19 @@ export class SavePaymentByPixCommandHandler implements ICommandHandler<SavePayme
                 purchasePayment.companyId, 
                 purchasePayment.purchaseId,
                 receiptUrl,
+                purchasePayment.userId
+            )
+        )
+    }
+
+    private publishPaymentFailedEvent(
+        purchasePayment: PurchasePaymentByPix, error: any
+    ) {
+        this.eventBus.publish(
+            new PaymentFailedEvent(
+                purchasePayment.companyId, 
+                purchasePayment.purchaseId,
+                error,
                 purchasePayment.userId
             )
         )

@@ -6,12 +6,14 @@ import { UserRegisteredEvent } from "../modules/register/commands/events/user-re
 import { EventRepository } from "../repositories/event.repository";
 import { ProductsPurchasedTotalStockUpdatedEvent } from "../modules/stocks/commands/update-product-stock-list/events/products-purchased-total-stock-updated.event";
 import { PaymentByPixSavedEvent } from "../modules/payment/events/payment-by-pix-saved.event";
+import { PaymentFailedEvent } from "../modules/payment/events/payment-failed.event";
 
 @EventsHandler(
     PurchaseCreatedEvent,
     ProductsPurchasedDecreasedStockEvent,
     ProductsPurchasedTotalStockUpdatedEvent,
     PaymentByPixSavedEvent,
+    PaymentFailedEvent,
 
     UserRegisteredEvent,
     UserRegisteredInCompanyEvent

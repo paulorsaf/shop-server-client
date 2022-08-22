@@ -2,6 +2,7 @@ import { CqrsModule, EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EventBusMock } from '../../../../mocks/event-bus.mock';
 import { PaymentByPixSavedEvent } from '../../events/payment-by-pix-saved.event';
+import { PaymentFailedEvent } from '../../events/payment-failed.event';
 import { SavePaymentByPixCommandHandler } from './save-payment-by-pix-command.handler';
 import { SavePaymentByPixCommand } from './save-payment-by-pix.command';
 
@@ -33,40 +34,53 @@ describe('SavePaymentByPixCommandHandler', () => {
     handler = module.get<SavePaymentByPixCommandHandler>(SavePaymentByPixCommandHandler);
   });
 
-  it('given save payment by pix, then save payment', async () => {
-    await handler.execute(command);
+  describe('given save payment by pix', () => {
 
-    expect(paymentByPix._isPaymentSaved).toBeTruthy();
+    beforeEach(() => {
+      paymentByPix._responseSavePayment = Promise.resolve("anyReceiptUrl")
+    })
+
+    it('then save payment by pix', async () => {
+      await handler.execute(command);
+  
+      expect(paymentByPix._isPaymentSaved).toBeTruthy();
+    })
+  
+    it('when payment saved, then publish payment by pix saved event', async () => {
+      await handler.execute(command);
+  
+      expect(eventBus.published).toEqual(
+        new PaymentByPixSavedEvent(
+          "anyCompanyId",
+          "anyPurchaseId", 
+          "anyReceiptUrl",
+          "anyUserId"
+        )
+      );
+    })
+
   })
 
-  it('given purchase saved, then publish payment by pix saved event', async () => {
-    paymentByPix._responseSavePayment = Promise.resolve("anyReceiptUrl")
+  describe('given save payment by pix failed', () => {
 
-    await handler.execute(command);
+    beforeEach(() => {
+      paymentByPix._responseSavePayment = Promise.reject({error: "anyError"});
+    })
 
-    expect(eventBus.published).toEqual(
-      new PaymentByPixSavedEvent(
-        "anyCompanyId",
-        "anyPurchaseId", 
-        "anyReceiptUrl",
-        "anyUserId"
-      )
-    );
+    it('then publish payment failed event', async () => {
+      await handler.execute(command);
+
+      expect(eventBus.published).toEqual(
+        new PaymentFailedEvent(
+          "anyCompanyId",
+          "anyPurchaseId",
+          {error: "anyError"},
+          "anyUserId"
+        )
+      );
+    })
+
   })
-
-  // describe('given error', () => {
-
-  //   it('then update purchase', async () => {
-  //     // add error to payment
-  //     // update status to verifying payment
-  //     expect(false).toBeTruthy();
-  //   })
-
-  //   it('then publish save payment by pix failed event', async () => {
-  //     expect(false).toBeTruthy();
-  //   })
-
-  // })
 
 });
 

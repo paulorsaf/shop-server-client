@@ -8,12 +8,13 @@ import { PaymentByPix } from '../model/payment/payment-by-pix.model';
 import { PurchasePaymentByPix } from '../model/purchase/purchase-payment-by-pix.model';
 import { PurchasePayment } from '../model/purchase/puchase-payment.model';
 import { Payment } from '../model/payment/payment.model';
+import { PaymentFailedEvent } from '../events/payment-failed.event';
+import { SavePaymentErrorCommand } from '../commands/save-payment-error/save-payment-error.command';
 
 describe('PaymentSagas', () => {
 
   let sagas: PaymentSagas;
   
-  let event: PaymentByPixSelectedEvent;
   let purchasePayment: PurchasePayment;
 
   beforeEach(async () => {
@@ -26,7 +27,6 @@ describe('PaymentSagas', () => {
       }),
       userId: "anyUserId"
     })
-    event = new PaymentByPixSelectedEvent(purchasePayment);
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [
@@ -42,6 +42,10 @@ describe('PaymentSagas', () => {
   });
 
   it('given purchase created, then execute save payment by pix command', done => {
+    const event = new PaymentByPixSelectedEvent(
+      purchasePayment
+    );
+
     sagas.paymentByPixSelected(of(event)).subscribe(response => {
       expect(response).toEqual(
         new SavePaymentByPixCommand(
@@ -53,6 +57,27 @@ describe('PaymentSagas', () => {
             }),
             userId: "anyUserId"
           })
+        )
+      );
+      done();
+    });
+  });
+
+  it('given payment failed, then execute save payment error command', done => {
+    const event = new PaymentFailedEvent(
+      "anyCompanyId",
+      "anyPurchaseId",
+      {error: "anyError"},
+      "anyUserId"
+    )
+
+    sagas.paymentFailed(of(event)).subscribe(response => {
+      expect(response).toEqual(
+        new SavePaymentErrorCommand(
+          "anyCompanyId",
+          "anyPurchaseId",
+          {error: "anyError"},
+          "anyUserId"
         )
       );
       done();
