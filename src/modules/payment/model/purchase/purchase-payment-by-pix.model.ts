@@ -22,13 +22,6 @@ export class PurchasePaymentByPix {
         return this.payment.saveReceipt({
             companyId: this.companyId,
             purchaseId: this.purchaseId
-        }).then(() => {
-            const receiptUrl = this.payment.receiptUrl;
-            this.#purchaseRepository.updatePaymentByPix({
-                purchaseId: this.purchaseId,
-                receiptUrl
-            });
-            return receiptUrl;
         })
     }
 

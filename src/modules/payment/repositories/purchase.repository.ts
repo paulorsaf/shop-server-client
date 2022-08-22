@@ -26,17 +26,18 @@ export class PurchaseRepository {
                         new Payment({
                             type: purchase.payment.type
                         })
-                        : null
+                        : null,
+                    userId: purchase.userId
                 })
             })
     }
 
-    updatePaymentByPix(params: UpdateParams) {
+    updatePaymentByPix(purchase: Purchase) {
         return admin.firestore()
             .collection('purchases')
-            .doc(params.purchaseId)
+            .doc(purchase.id)
             .update({
-                'payment.receiptUrl': params.receiptUrl,
+                'payment.receiptUrl': purchase.payment.receiptUrl,
                 status: "VERIFYING_PAYMENT"
             })
     }

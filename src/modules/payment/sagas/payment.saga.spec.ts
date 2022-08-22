@@ -43,20 +43,17 @@ describe('PaymentSagas', () => {
 
   it('given purchase created, then execute save payment by pix command', done => {
     const event = new PaymentByPixSelectedEvent(
-      purchasePayment
+      "anyCompanyId",
+      "anyPurchaseId",
+      "anyReceipt"
     );
 
     sagas.paymentByPixSelected(of(event)).subscribe(response => {
       expect(response).toEqual(
         new SavePaymentByPixCommand(
-          new PurchasePaymentByPix({
-            companyId: "anyCompanyId",
-            purchaseId: "anyPurchaseId",
-            payment: new PaymentByPix({
-              receipt: "anyReceipt"
-            }),
-            userId: "anyUserId"
-          })
+          "anyCompanyId",
+          "anyPurchaseId",
+          "anyReceipt"
         )
       );
       done();
@@ -67,8 +64,7 @@ describe('PaymentSagas', () => {
     const event = new PaymentFailedEvent(
       "anyCompanyId",
       "anyPurchaseId",
-      {error: "anyError"},
-      "anyUserId"
+      {error: "anyError"}
     )
 
     sagas.paymentFailed(of(event)).subscribe(response => {
@@ -76,8 +72,7 @@ describe('PaymentSagas', () => {
         new SavePaymentErrorCommand(
           "anyCompanyId",
           "anyPurchaseId",
-          {error: "anyError"},
-          "anyUserId"
+          {error: "anyError"}
         )
       );
       done();

@@ -5,8 +5,6 @@ import { SavePaymentByPixCommand } from "../commands/save-payment-by-pix/save-pa
 import { SavePaymentErrorCommand } from "../commands/save-payment-error/save-payment-error.command";
 import { PaymentByPixSelectedEvent } from "../events/payment-by-pix-selected.event";
 import { PaymentFailedEvent } from "../events/payment-failed.event";
-import { PaymentByPix } from "../model/payment/payment-by-pix.model";
-import { PurchasePaymentByPix } from "../model/purchase/purchase-payment-by-pix.model";
 
 @Injectable()
 export class PaymentSagas {
@@ -17,14 +15,9 @@ export class PaymentSagas {
             ofType(PaymentByPixSelectedEvent),
             map(event =>
                 new SavePaymentByPixCommand(
-                    new PurchasePaymentByPix({
-                        companyId: event.purchase.companyId,
-                        userId: event.purchase.userId,
-                        purchaseId: event.purchase.id,
-                        payment: new PaymentByPix({
-                            receipt: event.purchase.payment.receipt
-                        })
-                    })
+                    event.companyId,
+                    event.purchaseId,
+                    event.receipt
                 )
             )
         );
@@ -37,8 +30,7 @@ export class PaymentSagas {
                 new SavePaymentErrorCommand(
                     event.companyId,
                     event.purchaseId,
-                    event.error,
-                    event.userId
+                    event.error
                 )
             )
         );

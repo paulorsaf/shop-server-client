@@ -6,8 +6,6 @@ import { DecreaseStockOptionsOnPurchaseCommand } from '../../stocks/commands/dec
 import { PurchaseCreatedEvent } from '../commands/create-purchase/events/purchase-created.event';
 import { PurchaseSagas } from './purchases.saga';
 import { Stock } from '../../stocks/commands/decrease-amount-on-stock-options/model/stock.model';
-import { PurchasePayment } from '../../payment/model/purchase/puchase-payment.model';
-import { Payment } from '../../payment/model/payment/payment.model';
 import { SelectPurchasePaymentCommand } from '../../payment/commands/select-payment/select-purchase-payment.command';
 
 describe('PurchaseSagas', () => {
@@ -62,15 +60,9 @@ describe('PurchaseSagas', () => {
     sagas.purchaseCreatedMakePayment(of(event)).subscribe(response => {
       expect(response).toEqual(
         new SelectPurchasePaymentCommand(
-          new PurchasePayment({
-            companyId: "anyCompanyId",
-            id: "anyPurchaseId",
-            payment: new Payment({
-              receipt: "anyReceipt",
-              type: "anyType"
-            }),
-            userId: "anyUserId"
-          })
+          "anyCompanyId",
+          "anyPurchaseId",
+          "anyReceipt"
         )
       );
       done();

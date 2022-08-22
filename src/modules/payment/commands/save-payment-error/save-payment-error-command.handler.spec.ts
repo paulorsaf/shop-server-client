@@ -17,8 +17,7 @@ describe('SavePaymentErrorCommandHandler', () => {
     command = new SavePaymentErrorCommand(
       "anyCompanyId",
       "anyPurchaseId",
-      {error: "anyError"},
-      "anyUserId"
+      {error: "anyError"}
     );
 
     const module: TestingModule = await Test.createTestingModule({

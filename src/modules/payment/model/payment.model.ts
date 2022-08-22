@@ -1,8 +1,8 @@
 export class Payment {
 
     public error: any;
-    private readonly receiptUrl: string;
-    private readonly type: string;
+    receiptUrl: string;
+    readonly type: string;
 
     constructor(params: PaymentParams){
         this.error = params.error;

@@ -4,6 +4,7 @@ import { SavePaymentByPixCommandHandler } from './commands/save-payment-by-pix/s
 import { SavePaymentErrorCommandHandler } from './commands/save-payment-error/save-payment-error-command.handler';
 import { SelectPurchasePaymentCommandHandler } from './commands/select-payment/select-purchase-payment-command.handler';
 import { PurchaseRepository } from './repositories/purchase.repository';
+import { StorageRepository } from './repositories/storage.repository';
 import { PaymentSagas } from './sagas/payment.saga';
 
 @Module({
@@ -12,6 +13,7 @@ import { PaymentSagas } from './sagas/payment.saga';
   ],
   providers: [
     PurchaseRepository,
+    StorageRepository,
 
     SelectPurchasePaymentCommandHandler,
     SavePaymentByPixCommandHandler,

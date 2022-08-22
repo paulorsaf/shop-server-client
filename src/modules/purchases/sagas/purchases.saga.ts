@@ -39,15 +39,9 @@ export class PurchaseSagas {
             ofType(PurchaseCreatedEvent),
             map(event =>
                 new SelectPurchasePaymentCommand(
-                    new PurchasePayment({
-                        companyId: event.companyId,
-                        id: event.purchase.getId(),
-                        payment: new Payment({
-                            receipt: event.payment.receipt,
-                            type: event.payment.type
-                        }),
-                        userId: event.userId
-                    })
+                    event.companyId,
+                    event.purchaseId,
+                    event.payment.receipt
                 )    
             )
         );

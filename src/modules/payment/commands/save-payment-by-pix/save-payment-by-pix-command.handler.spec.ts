@@ -3,6 +3,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EventBusMock } from '../../../../mocks/event-bus.mock';
 import { PaymentByPixSavedEvent } from '../../events/payment-by-pix-saved.event';
 import { PaymentFailedEvent } from '../../events/payment-failed.event';
+import { PurchaseRepository } from '../../repositories/purchase.repository';
+import { StorageRepository } from '../../repositories/storage.repository';
 import { SavePaymentByPixCommandHandler } from './save-payment-by-pix-command.handler';
 import { SavePaymentByPixCommand } from './save-payment-by-pix.command';
 
@@ -11,14 +13,19 @@ describe('SavePaymentByPixCommandHandler', () => {
   let eventBus: EventBusMock;
   let handler: SavePaymentByPixCommandHandler;
 
-  let command: SavePaymentByPixCommand;
-  let paymentByPix: PaymentByPixMock;
+  let command = new SavePaymentByPixCommand(
+    "anyCompanyId",
+    "anyPurchaseId",
+    "anyReceipt"
+  );
+  let purchaseRepository: PurchaseRepositoryMock;
+  let storageRepository: StorageRepositoryMock;
 
   beforeEach(async () => {
     eventBus = new EventBusMock();
-    paymentByPix = new PaymentByPixMock();
 
-    command = new SavePaymentByPixCommand(paymentByPix as any);
+    purchaseRepository = new PurchaseRepositoryMock();
+    storageRepository = new StorageRepositoryMock();
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [
@@ -26,77 +33,108 @@ describe('SavePaymentByPixCommandHandler', () => {
       ],
       imports: [
         CqrsModule
+      ],
+      providers: [
+        PurchaseRepository,
+        StorageRepository
       ]
     })
     .overrideProvider(EventBus).useValue(eventBus)
+    .overrideProvider(PurchaseRepository).useValue(purchaseRepository)
+    .overrideProvider(StorageRepository).useValue(storageRepository)
     .compile();
 
     handler = module.get<SavePaymentByPixCommandHandler>(SavePaymentByPixCommandHandler);
   });
 
-  describe('given save payment by pix', () => {
+  describe('given purchase not found', () => {
 
-    beforeEach(() => {
-      paymentByPix._responseSavePayment = Promise.resolve("anyReceiptUrl")
+    it('then return null', async () => {
+      const response = await handler.execute(command);
+
+      expect(response).toBeNull();
     })
 
+  })
+
+  describe('given purchase found', () => {
+
+    let purchase: PurchaseMock;
+
+    beforeEach(() => {
+      purchase = new PurchaseMock();
+      purchaseRepository._response = purchase;
+
+      storageRepository._response = "anyReceiptUrl";
+    })
+
+    it('then save receipt on storage', async () => {
+      await handler.execute(command);
+  
+      expect(storageRepository._isStored).toBeTruthy();
+    })
+
+    it('then set payment receipt as stored receipt url', async () => {
+      await handler.execute(command);
+
+      expect(purchase.payment.receiptUrl).toEqual("anyReceiptUrl");
+    })
+  
     it('then save payment by pix', async () => {
       await handler.execute(command);
   
-      expect(paymentByPix._isPaymentSaved).toBeTruthy();
+      expect(purchaseRepository._isPaymentSaved).toBeTruthy();
     })
   
     it('when payment saved, then publish payment by pix saved event', async () => {
       await handler.execute(command);
   
-      expect(eventBus.published).toEqual(
-        new PaymentByPixSavedEvent(
-          "anyCompanyId",
-          "anyPurchaseId", 
-          "anyReceiptUrl",
-          "anyUserId"
-        )
-      );
+      expect(eventBus.published).toBeInstanceOf(PaymentByPixSavedEvent);
     })
 
-  })
+    it('when payment by pix failed, then publish payment failed event', async () => {
+      storageRepository._response = Promise.reject({error: "anyError"});
 
-  describe('given save payment by pix failed', () => {
-
-    beforeEach(() => {
-      paymentByPix._responseSavePayment = Promise.reject({error: "anyError"});
-    })
-
-    it('then publish payment failed event', async () => {
       await handler.execute(command);
-
-      expect(eventBus.published).toEqual(
-        new PaymentFailedEvent(
-          "anyCompanyId",
-          "anyPurchaseId",
-          {error: "anyError"},
-          "anyUserId"
-        )
-      );
+  
+      expect(eventBus.published).toBeInstanceOf(PaymentFailedEvent);
     })
 
   })
 
 });
 
-class PaymentByPixMock {
-  companyId = "anyCompanyId";
-  purchaseId = "anyPurchaseId";
-  payment = {
-    receiptUrl: "anyReceipt"
-  };
-  userId = "anyUserId"
+class PurchaseRepositoryMock {
+  _response;
 
   _isPaymentSaved = false;
-  _responseSavePayment;
 
-  savePayment() {
-    this._isPaymentSaved = true;
-    return this._responseSavePayment;
+  findByIdAndCompany() {
+    return this._response;
   }
+
+  updatePaymentByPix() {
+    this._isPaymentSaved = true;
+  }
+}
+
+class StorageRepositoryMock {
+  _response;
+
+  _isStored = false;
+
+  saveFile() {
+    this._isStored = true;
+    return this._response;
+  }
+}
+
+class PurchaseMock {
+  companyId = "anyCompanyId";
+  payment = {
+    receiptUrl: "",
+    type: "PIX"
+  };
+  id: "anyPurchaseId";
+  userId: "anyUserId";
 }

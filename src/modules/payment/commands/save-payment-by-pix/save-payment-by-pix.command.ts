@@ -1,7 +1,7 @@
-import { PurchasePaymentByPix } from "../../model/purchase/purchase-payment-by-pix.model";
-
 export class SavePaymentByPixCommand {
     constructor(
-        public readonly purchasePayment: PurchasePaymentByPix
+        public readonly companyId: string,
+        public readonly purchaseId: string,
+        public readonly receipt: string
     ){}
 }
