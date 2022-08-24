@@ -19,14 +19,14 @@ export class PurchaseSagas {
             map(event =>
                 new DecreaseStockOptionsOnPurchaseCommand(
                     event.companyId,
-                    event.purchase.getId(),
-                    event.purchase.getProducts().map(p => new Product({
-                        productId: p.getId(),
-                        amount: p.getAmount(),
-                        stock: new Stock({
-                            id: p.getStock().getId(),
-                            quantity: p.getStock().getQuantity()
-                        })
+                    event.purchaseId,
+                    event.purchase.products.map(p => ({
+                        amount: p.amount,
+                        productId: p.id,
+                        stock: {
+                            id: p.stock.id,
+                            quantity: p.stock.quantity
+                        }
                     })),
                     event.userId
                 )

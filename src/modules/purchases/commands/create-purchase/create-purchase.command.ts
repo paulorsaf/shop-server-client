@@ -1,19 +1,16 @@
-import { User } from "../../../../authentication/model/user";
-import { Company } from "../../../../authentication/model/company";
-import { Purchase } from "../../model/purchase.model";
+import { PurchaseDTO } from "../../dtos/purchase.dto";
 
 export class CreatePurchaseCommand {
 
     constructor(
-        public readonly company: Company,
-        public readonly purchase: Purchase,
-        public readonly paymentDetails: PaymentDetails,
+        public readonly companyId: string,
+        public readonly purchase: PurchaseDTO,
         public readonly user: User
     ){}
 
 }
 
-type PaymentDetails = {
-    receipt?: string;
-    type: string;
+type User = {
+    email: string;
+    id: string;
 }

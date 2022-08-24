@@ -6,6 +6,7 @@ import { CreatePurchaseCommandHandler } from './commands/create-purchase/create-
 import { ProductRepository } from './repositories/product.repository';
 import { PurchaseSagas } from './sagas/purchases.saga';
 import { FindPurchasesByUserAndCompanyQueryHandler } from './queries/find-all/find-purchases-by-user-and-company-query.handler';
+import { PurchaseRepository } from './repositories/purchase.repository';
 
 @Module({
   controllers: [PurchasesController],
@@ -15,6 +16,7 @@ import { FindPurchasesByUserAndCompanyQueryHandler } from './queries/find-all/fi
   ],
   providers: [
     ProductRepository,
+    PurchaseRepository,
 
     CreatePurchaseCommandHandler,
 

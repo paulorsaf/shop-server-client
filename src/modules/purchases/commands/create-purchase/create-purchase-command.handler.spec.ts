@@ -1,8 +1,9 @@
-import { NotFoundException } from '@nestjs/common';
 import { CqrsModule, EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EventBusMock } from '../../../../mocks/event-bus.mock';
 import { ProductOutOfStockException } from '../../exceptions/purchase.exceptions';
+import { ProductRepository } from '../../repositories/product.repository';
+import { PurchaseRepository } from '../../repositories/purchase.repository';
 import { CreatePurchaseCommandHandler } from './create-purchase-command.handler';
 import { CreatePurchaseCommand } from './create-purchase.command';
 import { PurchaseCreatedEvent } from './events/purchase-created.event';
@@ -11,18 +12,32 @@ describe('CreatePurchaseCommandHandler', () => {
 
   let eventBus: EventBusMock;
   let handler: CreatePurchaseCommandHandler;
+  let productRepository: ProductRepositoryMock;
+  let purchaseRepository: PurchaseRepositoryMock;
 
-  let company = {id: "anyCompanyId"} as any;
-  let user = {id: "anyUserId"} as any;
   let command: CreatePurchaseCommand;
-  const payment = {type: "anyType"};
-
-  let purchase: PurchaseMock;
 
   beforeEach(async () => {
-    purchase = new PurchaseMock();
+    productRepository = new ProductRepositoryMock();
+    purchaseRepository = new PurchaseRepositoryMock();
+
     command = new CreatePurchaseCommand(
-      company, purchase as any, payment, user
+      "anyCompanyId",
+      {
+        deliveryAddress: {
+          address: "address"
+        } as any,
+        products: [{
+          amount: 10,
+          productId: "anyProductId",
+          stockOptionId: "anyStockOptionId"
+        }],
+        payment: {
+          type: "anyPayment",
+          receipt: "anyReceipt"
+        }
+      },
+      { email: "any@email.com", id: "anyUserId" }
     );
 
     eventBus = new EventBusMock();
@@ -33,69 +48,65 @@ describe('CreatePurchaseCommandHandler', () => {
       ],
       imports: [
         CqrsModule
+      ],
+      providers: [
+        ProductRepository,
+        PurchaseRepository
       ]
     })
     .overrideProvider(EventBus).useValue(eventBus)
+    .overrideProvider(ProductRepository).useValue(productRepository)
+    .overrideProvider(PurchaseRepository).useValue(purchaseRepository)
     .compile();
 
     handler = module.get<CreatePurchaseCommandHandler>(CreatePurchaseCommandHandler);
+
+    productRepository._response = {
+      companyId: "anyCompanyId",
+      id: "anyProductId",
+      stock: {
+        color: "anyColor",
+        companyId: "anyCompanyId",
+        id: "anyStockId",
+        productId: "anyProductId",
+        quantity: 10,
+        size: "anySize"
+      }
+    };
   });
 
-  it('given create purchase, then load all purchase products', async () => {
+  it('given create purchase, then create new purchase', async () => {
     await handler.execute(command);
 
-    expect(purchase._hasLoadedAllProducts).toBeTruthy();
+    expect(purchaseRepository._created).toBeTruthy();
   })
 
   it('given amount of products is higher then products on stock, then throw exception', async () => {
-    purchase._productOutOfStock = {name: "anyProductName", getName: () => "anyName"};
+    productRepository._response.stock.quantity = 5;
 
     await expect(handler.execute(command)).rejects.toThrowError(ProductOutOfStockException);
-  })
-
-  it('given create purchase, then save purchase', async () => {
-    await handler.execute(command);
-
-    expect(purchase._hasSaved).toBeTruthy();
   })
 
   it('given purchase created, then publish purchase created event', async () => {
     await handler.execute(command);
 
-    expect(eventBus.published).toEqual(
-      new PurchaseCreatedEvent(
-        "anyCompanyId",
-        "anyPurchaseId",
-        purchase as any,
-        payment,
-        "anyUserId"
-      )
-    );
+    expect(eventBus.published).toBeInstanceOf(PurchaseCreatedEvent);
   })
 
 });
 
-class PurchaseMock {
-  _hasLoadedAllProducts;
-  _hasSaved;
-  _productOutOfStock;
+class ProductRepositoryMock {
+  _response;
 
-  findProductOutOfStock() {
-    return this._productOutOfStock;
+  findByIdWithStock() {
+    return this._response;
   }
-  getCompanyId() {
-    return "anyCompanyId";
-  }
-  getUserId() {
-    return "anyUserId";
-  }
-  getId() {
-    return "anyPurchaseId";
-  }
-  loadAllProducts() {
-    this._hasLoadedAllProducts = true;
-  }
-  save() {
-    this._hasSaved = true;
+}
+
+class PurchaseRepositoryMock {
+  _created = false;
+
+  create(params) {
+    this._created = true;
   }
 }

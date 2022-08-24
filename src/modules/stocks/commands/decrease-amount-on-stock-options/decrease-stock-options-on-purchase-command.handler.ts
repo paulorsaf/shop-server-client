@@ -1,4 +1,5 @@
 import { CommandHandler, EventBus, ICommandHandler } from "@nestjs/cqrs";
+import { StockRepository } from "../../repositories/stock.repository";
 import { DecreaseStockOptionsOnPurchaseCommand } from "./decrease-stock-options-on-purchase.command";
 import { ProductsPurchasedDecreasedStockEvent } from "./events/products-purchases-decreased-stock.event";
 
@@ -6,13 +7,18 @@ import { ProductsPurchasedDecreasedStockEvent } from "./events/products-purchase
 export class DecreaseStockOptionsOnPurchaseCommandHandler implements ICommandHandler<DecreaseStockOptionsOnPurchaseCommand> {
 
     constructor(
-        private eventBus: EventBus
+        private eventBus: EventBus,
+        private stockRepository: StockRepository
     ){}
 
     async execute(command: DecreaseStockOptionsOnPurchaseCommand) {
         const products = command.products;
-        
-        await Promise.all(products.map(p => p.decreaseAmountOnStock()));
+
+        await Promise.all(products.map(p => {
+            this.stockRepository.descreaseQuantityBy({
+                decreaseBy: p.amount, id: p.stock.id
+            })
+        }))
 
         this.publishProductsPurchasedDecreasedStockEvent(command);
     }
@@ -25,9 +31,9 @@ export class DecreaseStockOptionsOnPurchaseCommandHandler implements ICommandHan
                 command.companyId,
                 command.purchaseId,
                 command.products.map(p => ({
-                    amount: p.getAmount(),
-                    productId: p.getId(),
-                    stockId: p.getStock().getId()
+                    amount: p.amount,
+                    productId: p.productId,
+                    stockId: p.stock.id
                 })),
                 command.userId
             )

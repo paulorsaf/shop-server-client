@@ -1,35 +1,57 @@
 import { Injectable } from '@nestjs/common';
 import { format } from 'date-fns';
 import * as admin from 'firebase-admin';
-import { Purchase } from '../model/purchase.model';
+import { CreatePurchaseProductStock } from '../model/create-purchase-product-stock.model';
+import { CreatePurchaseProduct } from '../model/create-purchase-product.model';
+import { CreatePurchase } from '../model/create-purchase.model';
 
 @Injectable()
 export class PurchaseRepository {
 
-    findAll(query: FindAllQuery) {
+    findAllByUserAndCompany(query: FindAllQuery) {
         return admin.firestore()
             .collection('purchases')
             .where("companyId", "==", query.companyId)
-            .where("userId", "==", query.userId)
+            .where("user.id", "==", query.userId)
             .orderBy("createdAt", "desc")
             .get()
             .then(snapshot => {
                 return snapshot.docs.map(d => {
                     const data = d.data();
-                    return new Purchase({
+
+                    return new CreatePurchase({
                         companyId: data.companyId,
-                        userId: data.userId,
-                        id: data.id,
+                        id: d.id,
                         address: data.address,
+                        createdAt: data.createdAt,
                         payment: data.payment,
+                        products: data.products.map(p => 
+                            new CreatePurchaseProduct({
+                                companyId: p.companyId,
+                                id: p.id,
+                                stock: p.stock ? new CreatePurchaseProductStock({
+                                    companyId: p.stock.companyId,
+                                    id: p.stock.id,
+                                    productId: p.stock.productId,
+                                    color: p.stock.color,
+                                    quantity: p.stock.quantity,
+                                    size: p.stock.size
+                                }) : null,
+                                amount: p.amount,
+                                name: p.name
+                            })
+                        ),
                         status: data.status,
-                        createdAt: data.createdAt
+                        user: {
+                            email: data.user.email,
+                            id: data.user.id
+                        }
                     })
                 })
             })
     }
 
-    save(purchase: Purchase) {
+    create(purchase: CreatePurchase) {
         const purchaseObj = JSON.parse(JSON.stringify(purchase));
 
         return admin.firestore()

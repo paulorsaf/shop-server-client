@@ -7,6 +7,9 @@ import { PurchaseCreatedEvent } from '../commands/create-purchase/events/purchas
 import { PurchaseSagas } from './purchases.saga';
 import { Stock } from '../../stocks/commands/decrease-amount-on-stock-options/model/stock.model';
 import { SelectPurchasePaymentCommand } from '../../payment/commands/select-payment/select-purchase-payment.command';
+import { CreatePurchase } from '../model/create-purchase.model';
+import { CreatePurchaseProduct } from '../model/create-purchase-product.model';
+import { CreatePurchaseProductStock } from '../model/create-purchase-product-stock.model';
 
 describe('PurchaseSagas', () => {
 
@@ -18,9 +21,25 @@ describe('PurchaseSagas', () => {
     event = new PurchaseCreatedEvent(
       "anyCompanyId",
       "anyPurchaseId",
-      new PurchaseMock() as any, {
-        receipt: "anyReceipt",
-        type: "anyType"
+      new CreatePurchase({
+        companyId: "anyCompanyId",
+        products: [{
+          companyId: "anyCompanyId",
+          id: "anyProductId",
+          amount: 10,
+          stock: {
+            id: "anyStockId",
+            quantity: 10
+          }
+        } as any],
+        user: {
+          email: "any@email.com",
+          id: "anyUserId"
+        }
+      }),
+      {
+        type: "ANY TYPE",
+        receipt: "anyReceipt"
       },
       "anyUserId"
     );
@@ -44,11 +63,14 @@ describe('PurchaseSagas', () => {
         new DecreaseStockOptionsOnPurchaseCommand(
           "anyCompanyId",
           "anyPurchaseId",
-          [
-            new Product({
-              productId: "anyProductId", amount: 10, stock: new Stock({} as any)
-            })
-          ],
+          [{
+            amount: 10,
+            productId: "anyProductId",
+            stock: {
+              id: "anyStockId",
+              quantity: 10
+            }
+          }],
           "anyUserId"
         )
       );

@@ -7,9 +7,6 @@ import { Company } from '../../authentication/model/company';
 import { CommandBusMock } from '../../mocks/command-bus.mock';
 import { User } from '../../authentication/model/user';
 import { CreatePurchaseCommand } from './commands/create-purchase/create-purchase.command';
-import { Purchase } from './model/purchase.model';
-import { Product } from './model/product.model';
-import { Stock } from './model/stock.model';
 import { QueryBusMock } from '../../mocks/query-bus.mock';
 import { FindPurchasesByUserAndCompanyQuery } from './queries/find-all/find-purchases-by-user-and-company.query';
 
@@ -20,7 +17,7 @@ describe('PurchasesController', () => {
   let queryBus: QueryBusMock;
 
   const company: Company = {id: 'anyCompanyId'} as any;
-  const user: User = {id: "anyUserId"} as any;
+  const user: User = {email: "any@email.com", id: "anyUserId"} as any;
 
   beforeEach(async () => {
     commandBus = new CommandBusMock();
@@ -52,26 +49,21 @@ describe('PurchasesController', () => {
       }
     } as any;
 
-    await controller.create(company, user, purchaseDto, "anyFile");
+    await controller.create(
+      company, user, JSON.parse(JSON.stringify(purchaseDto)), "anyFile"
+    );
 
     expect(commandBus.executed).toEqual(
       new CreatePurchaseCommand(
-        company,
-        new Purchase({
-          companyId: "anyCompanyId",
-          userId: "anyUserId",
+        "anyCompanyId",
+        {
+          ...purchaseDto,
           payment: {
-            type: "MONEY",
-          },
-          products: [new Product(
-            "anyCompanyId", "anyProductId", 10, new Stock({
-              id: "anyStockId", productId: "anyProductId"
-            })
-          )]
-        }), {
-          type: "MONEY",
-          receipt: "anyFile"
-        }, user
+            ...purchaseDto.payment,
+            receipt: "anyFile",
+          }
+        },
+        { email: "any@email.com", id: "anyUserId" }
       )
     )
   })
@@ -81,10 +73,8 @@ describe('PurchasesController', () => {
 
     expect(queryBus.executedWith).toEqual(
       new FindPurchasesByUserAndCompanyQuery(
-        new Purchase({
-          companyId: "anyCompanyId",
-          userId: "anyUserId"
-        })
+        "anyCompanyId",
+        "anyUserId"
       )
     )
   })

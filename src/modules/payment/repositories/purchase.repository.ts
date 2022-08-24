@@ -47,7 +47,7 @@ export class PurchaseRepository {
             .collection('purchases')
             .doc(purchase.id)
             .update({
-                'payment.error': purchase.payment.error
+                'payment.error': JSON.parse(JSON.stringify(purchase.payment.error))
             });
     }
 
