@@ -9,6 +9,8 @@ import { User } from '../../authentication/model/user';
 import { CreatePurchaseCommand } from './commands/create-purchase/create-purchase.command';
 import { QueryBusMock } from '../../mocks/query-bus.mock';
 import { FindPurchasesByUserAndCompanyQuery } from './queries/find-all/find-purchases-by-user-and-company.query';
+import { RetryPaymentDTO, RetryPurchaseDTO } from './dtos/retry-purchase.dto';
+import { RetryPurchasePaymentCommand } from './commands/retry-purchase-payment/retry-purchase-payment.command';
 
 describe('PurchasesController', () => {
   
@@ -18,6 +20,17 @@ describe('PurchasesController', () => {
 
   const company: Company = {id: 'anyCompanyId'} as any;
   const user: User = {email: "any@email.com", id: "anyUserId"} as any;
+
+  const purchaseDto = {
+    products: [{
+      productId: "anyProductId",
+      stockOptionId: "anyStockId",
+      amount: 10
+    }],
+    payment: {
+      type: "MONEY"
+    }
+  } as any;
 
   beforeEach(async () => {
     commandBus = new CommandBusMock();
@@ -37,18 +50,18 @@ describe('PurchasesController', () => {
     controller = module.get<PurchasesController>(PurchasesController);
   });
 
-  it('given create purchase, then execute create purchase command', async () => {
-    const purchaseDto = {
-      products: [{
-        productId: "anyProductId",
-        stockOptionId: "anyStockId",
-        amount: 10
-      }],
-      payment: {
-        type: "MONEY"
-      }
-    } as any;
+  it('given find all purchases, then execute find purchases by user and company query', async () => {
+    await controller.findByUserAndCompany(company, user);
 
+    expect(queryBus.executedWith).toEqual(
+      new FindPurchasesByUserAndCompanyQuery(
+        "anyCompanyId",
+        "anyUserId"
+      )
+    )
+  })
+
+  it('given create purchase, then execute create purchase command', async () => {
     await controller.create(
       company, user, JSON.parse(JSON.stringify(purchaseDto)), "anyFile"
     );
@@ -68,15 +81,35 @@ describe('PurchasesController', () => {
     )
   })
 
-  it('given find all purchases, then execute find purchases by user and company query', async () => {
-    await controller.findByUserAndCompany(company, user);
+  describe('given retry purchase payment', () => {
 
-    expect(queryBus.executedWith).toEqual(
-      new FindPurchasesByUserAndCompanyQuery(
-        "anyCompanyId",
-        "anyUserId"
+    const retryPurchaseDTO: RetryPurchaseDTO = {
+      payment: {
+        type: "anyType"
+      }
+    }
+
+    beforeEach(async () => {
+      await controller.retryPayment(
+        company, user, "anyPurchaseId", retryPurchaseDTO, "anyFile"
+      );
+    })
+
+    it('then send receipt to retry purchase command', async () => {
+      expect(retryPurchaseDTO.payment.receipt).toEqual("anyFile");
+    })
+
+    it('then execute retry purchase payment command', async () => {
+      expect(commandBus.executed).toEqual(
+        new RetryPurchasePaymentCommand(
+          "anyCompanyId",
+          "anyPurchaseId",
+          retryPurchaseDTO,
+          { email: "any@email.com", id: "anyUserId" }
+        )
       )
-    )
+    })
+
   })
 
 });

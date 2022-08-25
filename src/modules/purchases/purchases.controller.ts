@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { AuthCompany } from '../../authentication/decorators/company.decorator';
 import { Company } from '../../authentication/model/company';
@@ -11,6 +11,8 @@ import { CreatePurchaseCommand } from './commands/create-purchase/create-purchas
 import { FindPurchasesByUserAndCompanyQuery } from './queries/find-all/find-purchases-by-user-and-company.query';
 import { Base64UploadToFileName } from '../../file-upload/decorators/base64-upload-to-file-name.decorator';
 import { Base64FileUploadToFileStrategy } from '../../file-upload/strategies/base64-upload-to-file-name.strategy';
+import { RetryPurchaseDTO } from './dtos/retry-purchase.dto';
+import { RetryPurchasePaymentCommand } from './commands/retry-purchase-payment/retry-purchase-payment.command';
 
 @Controller('purchases')
 export class PurchasesController {
@@ -45,6 +47,27 @@ export class PurchasesController {
       new CreatePurchaseCommand(
         company.id,
         purchaseDto,
+        { email: user.email, id: user.id }
+      )
+    )
+  }
+
+  @UseGuards(CompanyStrategy, JwtStrategy, Base64FileUploadToFileStrategy)
+  @Patch(':id/payments')
+  retryPayment(
+    @AuthCompany() company: Company,
+    @AuthUser() user: User,
+    @Param('id') id: string,
+    @Body() retryPurchaseDTO: RetryPurchaseDTO,
+    @Base64UploadToFileName() filePath: string
+  ) {
+    retryPurchaseDTO.payment.receipt = filePath;
+
+    return this.commandBus.execute(
+      new RetryPurchasePaymentCommand(
+        company.id,
+        id,
+        retryPurchaseDTO,
         { email: user.email, id: user.id }
       )
     )

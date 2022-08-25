@@ -10,6 +10,7 @@ import { SelectPurchasePaymentCommand } from '../../payment/commands/select-paym
 import { CreatePurchase } from '../model/create-purchase.model';
 import { CreatePurchaseProduct } from '../model/create-purchase-product.model';
 import { CreatePurchaseProductStock } from '../model/create-purchase-product-stock.model';
+import { PurchasePaymentRetriedEvent } from '../events/purchase-payment-retried.event';
 
 describe('PurchaseSagas', () => {
 
@@ -91,18 +92,23 @@ describe('PurchaseSagas', () => {
     });
   });
 
-});
+  it('given purchase payment retried, then execute select purchase payment command', done => {
+    const event = new PurchasePaymentRetriedEvent(
+      "anyCompanyId",
+      "anyPurchaseId",
+      { type: "anyType", receipt: "anyReceipt" }
+    );
 
-class PurchaseMock {
-  getId(){ return "anyPurchaseId" }
-  getProducts(){
-    return [{
-      getId: () => "anyProductId",
-      getStock: () => ({
-        getId: () => "andStockId",
-        getQuantity: () => 10
-      }),
-      getAmount: () => 10
-    }]
-  }
-}
+    sagas.purchasePaymentRetriedMakePayment(of(event)).subscribe(response => {
+      expect(response).toEqual(
+        new SelectPurchasePaymentCommand(
+          "anyCompanyId",
+          "anyPurchaseId",
+          "anyReceipt"
+        )
+      );
+      done();
+    });
+  });
+
+});

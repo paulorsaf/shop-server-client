@@ -8,6 +8,7 @@ import { PurchaseCreatedEvent } from "../commands/create-purchase/events/purchas
 import { PurchasePayment } from "../../payment/model/purchase/puchase-payment.model";
 import { Payment } from "../../payment/model/payment/payment.model";
 import { SelectPurchasePaymentCommand } from "../../payment/commands/select-payment/select-purchase-payment.command";
+import { PurchasePaymentRetriedEvent } from "../events/purchase-payment-retried.event";
 
 @Injectable()
 export class PurchaseSagas {
@@ -37,6 +38,19 @@ export class PurchaseSagas {
     purchaseCreatedMakePayment = (events$: Observable<any>): Observable<ICommand> => 
         events$.pipe(
             ofType(PurchaseCreatedEvent),
+            map(event =>
+                new SelectPurchasePaymentCommand(
+                    event.companyId,
+                    event.purchaseId,
+                    event.payment.receipt
+                )    
+            )
+        );
+
+    @Saga()
+    purchasePaymentRetriedMakePayment = (events$: Observable<any>): Observable<ICommand> => 
+        events$.pipe(
+            ofType(PurchasePaymentRetriedEvent),
             map(event =>
                 new SelectPurchasePaymentCommand(
                     event.companyId,

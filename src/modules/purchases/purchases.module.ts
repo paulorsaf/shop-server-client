@@ -7,6 +7,7 @@ import { ProductRepository } from './repositories/product.repository';
 import { PurchaseSagas } from './sagas/purchases.saga';
 import { FindPurchasesByUserAndCompanyQueryHandler } from './queries/find-all/find-purchases-by-user-and-company-query.handler';
 import { PurchaseRepository } from './repositories/purchase.repository';
+import { RetryPurchasePaymentCommandHandler } from './commands/retry-purchase-payment/retry-purchase-payment-command.handler';
 
 @Module({
   controllers: [PurchasesController],
@@ -19,6 +20,7 @@ import { PurchaseRepository } from './repositories/purchase.repository';
     PurchaseRepository,
 
     CreatePurchaseCommandHandler,
+    RetryPurchasePaymentCommandHandler,
 
     FindPurchasesByUserAndCompanyQueryHandler,
 

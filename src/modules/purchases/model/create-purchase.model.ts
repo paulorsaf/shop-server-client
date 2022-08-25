@@ -2,14 +2,14 @@ import { CreatePurchaseProduct } from "./create-purchase-product.model";
 
 export class CreatePurchase {
 
-    private readonly id: string;
-    private readonly companyId: string;
+    readonly id: string;
+    readonly companyId: string;
 
-    private readonly createdAt: string;
-    private readonly payment: Payment;
+    readonly createdAt: string;
+    readonly payment: Payment;
     readonly products: CreatePurchaseProduct[];
-    private readonly status: string;
-    private readonly user: User;
+    readonly status: string;
+    readonly user: User;
 
     constructor(param: PurchaseParam) {
         this.id = param.id;
