@@ -7,6 +7,8 @@ export class CreatePurchaseProduct {
 
     readonly amount: number;
     readonly name: string;
+    readonly price: number;
+    readonly priceWithDiscount: number;
     readonly stock: CreatePurchaseProductStock;
 
     constructor(param: PurchaseParam) {
@@ -15,6 +17,8 @@ export class CreatePurchaseProduct {
 
         this.amount = param.amount;
         this.name = param.name;
+        this.price = param.price;
+        this.priceWithDiscount = param.priceWithDiscount;
         this.stock = param.stock;
     }
 
@@ -33,6 +37,8 @@ type PurchaseParam = {
     companyId: string;
     id: string;
     name?: string;
+    price?: number;
+    priceWithDiscount?: number;
     stock: CreatePurchaseProductStock;
 }
 

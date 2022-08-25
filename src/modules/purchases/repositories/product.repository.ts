@@ -21,6 +21,8 @@ export class ProductRepository {
                     companyId: db.companyId,
                     name: db.name,
                     id: snapshot.id,
+                    price: db.price,
+                    priceWithDiscount: db.priceWithDiscount,
                     stock: await this.findStock(productId, stockId)
                 });
             })

@@ -38,7 +38,9 @@ export class PurchaseRepository {
                                     size: p.stock.size
                                 }) : null,
                                 amount: p.amount,
-                                name: p.name
+                                name: p.name,
+                                price: p.price,
+                                priceWithDiscount: p.priceWithDiscount
                             })
                         ),
                         status: data.status,
