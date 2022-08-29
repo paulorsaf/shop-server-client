@@ -5,6 +5,7 @@ export class CreatePurchase {
     readonly id: string;
     readonly companyId: string;
 
+    readonly address: any;
     readonly createdAt: string;
     readonly payment: Payment;
     readonly products: CreatePurchaseProduct[];
@@ -15,6 +16,7 @@ export class CreatePurchase {
         this.id = param.id;
         this.companyId = param.companyId;
 
+        this.address = param.address;
         this.createdAt = param.createdAt;
         this.payment = param.payment
         this.products = param.products;
