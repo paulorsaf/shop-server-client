@@ -10,6 +10,8 @@ export class ProductRepository {
             .collection('products')
             .where('companyId', '==', companyId)
             .where('categoryId', '==', categoryId)
+            .where('totalStock', '>', 0)
+            .orderBy('totalStock', 'asc')
             .orderBy('name', 'asc')
             .get()
             .then(snapshot =>
