@@ -11,6 +11,7 @@ import { QueryBusMock } from '../../mocks/query-bus.mock';
 import { FindPurchasesByUserAndCompanyQuery } from './queries/find-all/find-purchases-by-user-and-company.query';
 import { RetryPaymentDTO, RetryPurchaseDTO } from './dtos/retry-purchase.dto';
 import { RetryPurchasePaymentCommand } from './commands/retry-purchase-payment/retry-purchase-payment.command';
+import { FindPurchaseByIdQuery } from './queries/find-by-id/find-purchase-by-id.query';
 
 describe('PurchasesController', () => {
   
@@ -57,6 +58,18 @@ describe('PurchasesController', () => {
       new FindPurchasesByUserAndCompanyQuery(
         "anyCompanyId",
         "anyUserId"
+      )
+    )
+  })
+
+  it('given find purchase by id, then execute find purchase by id query', async () => {
+    await controller.findByUserId(company, user, "anyPurchaseId");
+
+    expect(queryBus.executedWith).toEqual(
+      new FindPurchaseByIdQuery(
+        "anyCompanyId",
+        "anyUserId",
+        "anyPurchaseId"
       )
     )
   })

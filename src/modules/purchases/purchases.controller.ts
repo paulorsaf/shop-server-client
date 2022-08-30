@@ -13,6 +13,7 @@ import { Base64UploadToFileName } from '../../file-upload/decorators/base64-uplo
 import { Base64FileUploadToFileStrategy } from '../../file-upload/strategies/base64-upload-to-file-name.strategy';
 import { RetryPurchaseDTO } from './dtos/retry-purchase.dto';
 import { RetryPurchasePaymentCommand } from './commands/retry-purchase-payment/retry-purchase-payment.command';
+import { FindPurchaseByIdQuery } from './queries/find-by-id/find-purchase-by-id.query';
 
 @Controller('purchases')
 export class PurchasesController {
@@ -29,6 +30,22 @@ export class PurchasesController {
       new FindPurchasesByUserAndCompanyQuery(
         company.id,
         user.id
+      )
+    )
+  }
+
+  @UseGuards(CompanyStrategy, JwtStrategy)
+  @Get(':id')
+  findByUserId(
+    @AuthCompany() company: Company,
+    @AuthUser() user: User,
+    @Param('id') purchaseId: string
+  ) {
+    return this.queryBus.execute(
+      new FindPurchaseByIdQuery(
+        company.id,
+        user.id,
+        purchaseId
       )
     )
   }
