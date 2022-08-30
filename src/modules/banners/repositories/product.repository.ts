@@ -14,7 +14,7 @@ export class ProductRepository {
                 if (snapshot.exists) {
                     const product = <Product> snapshot.data();
                     return new Product(
-                        product.id,
+                        snapshot.id,
                         product.images,
                         product.name,
                         product.price,
