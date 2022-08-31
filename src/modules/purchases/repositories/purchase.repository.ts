@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { format } from 'date-fns';
 import * as admin from 'firebase-admin';
-import { CreatePurchaseProductStock } from '../model/create-purchase-product-stock.model';
-import { CreatePurchaseProduct } from '../model/create-purchase-product.model';
-import { CreatePurchase } from '../model/create-purchase.model';
+import { PurchaseProductStock } from '../model/purchase-product-stock.model';
+import { PurchaseProduct } from '../model/purchase-product.model';
+import { Purchase } from '../model/purchase.model';
 
 @Injectable()
 export class PurchaseRepository {
 
-    create(purchase: CreatePurchase) {
+    create(purchase: Purchase) {
         const purchaseObj = JSON.parse(JSON.stringify(purchase));
 
         return admin.firestore()
@@ -36,7 +36,7 @@ export class PurchaseRepository {
             })
     }
 
-    findByIdAndCompanyId({companyId, purchaseId}: FindByCompanyAndId): Promise<CreatePurchase> {
+    findByIdAndCompanyId({companyId, purchaseId}: FindByCompanyAndId): Promise<Purchase> {
         return admin.firestore()
             .collection('purchases')
             .doc(purchaseId)
@@ -54,7 +54,7 @@ export class PurchaseRepository {
             })
     }
 
-    updatePayment(purchase: CreatePurchase) {
+    updatePayment(purchase: Purchase) {
         return admin.firestore()
             .collection('purchases')
             .doc(purchase.id)
@@ -64,17 +64,17 @@ export class PurchaseRepository {
     }
 
     private createPurchaseModel(id: string, data: admin.firestore.DocumentData) {
-        return new CreatePurchase({
+        return new Purchase({
             companyId: data.companyId,
             id: id,
             address: data.address,
             createdAt: data.createdAt,
             payment: data.payment,
             products: data.products.map(p => 
-                new CreatePurchaseProduct({
+                new PurchaseProduct({
                     companyId: p.companyId,
                     id: p.id,
-                    stock: p.stock ? new CreatePurchaseProductStock({
+                    stock: p.stock ? new PurchaseProductStock({
                         companyId: p.stock.companyId,
                         id: p.stock.id,
                         productId: p.stock.productId,

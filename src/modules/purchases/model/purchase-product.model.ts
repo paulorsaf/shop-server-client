@@ -1,6 +1,6 @@
-import { CreatePurchaseProductStock } from "./create-purchase-product-stock.model";
+import { PurchaseProductStock } from "./purchase-product-stock.model";
 
-export class CreatePurchaseProduct {
+export class PurchaseProduct {
 
     readonly companyId: string;
     readonly id: string;
@@ -9,7 +9,8 @@ export class CreatePurchaseProduct {
     readonly name: string;
     readonly price: number;
     readonly priceWithDiscount: number;
-    readonly stock: CreatePurchaseProductStock;
+    readonly stock: PurchaseProductStock;
+    readonly totalPrice: number;
 
     constructor(param: PurchaseParam) {
         this.companyId = param.companyId;
@@ -20,6 +21,7 @@ export class CreatePurchaseProduct {
         this.price = param.price;
         this.priceWithDiscount = param.priceWithDiscount;
         this.stock = param.stock;
+        this.totalPrice = this.calculateTotalPrice();
     }
 
     hasEnoughItemsOnStock() {
@@ -27,6 +29,11 @@ export class CreatePurchaseProduct {
             return false;
         }
         return true;
+    }
+
+    private calculateTotalPrice() {
+        let price = this.priceWithDiscount || this.price;
+        return this.amount * price;
     }
 
 }
@@ -39,11 +46,7 @@ type PurchaseParam = {
     name?: string;
     price?: number;
     priceWithDiscount?: number;
-    stock: CreatePurchaseProductStock;
-}
-
-type Payment = {
-    type: string;
+    stock: PurchaseProductStock;
 }
 
 export type Address = {

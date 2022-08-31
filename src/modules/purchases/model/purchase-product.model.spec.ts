@@ -1,4 +1,4 @@
-import { CreatePurchaseProduct } from "./create-purchase-product.model"
+import { PurchaseProduct } from "./purchase-product.model"
 
 describe('Purchase product model', () => {
 
@@ -7,7 +7,7 @@ describe('Purchase product model', () => {
         describe('given amount of products', () => {
 
             it('when higher then quantity on stock, then return false', () => {
-                const purchaseProduct = new CreatePurchaseProduct({
+                const purchaseProduct = new PurchaseProduct({
                     companyId: "anyCompanyId",
                     id: "anyProductId",
                     stock: {quantity: 10} as any,
@@ -18,7 +18,7 @@ describe('Purchase product model', () => {
             })
     
             it('when equal to quantity on stock, then return true', () => {
-                const purchaseProduct = new CreatePurchaseProduct({
+                const purchaseProduct = new PurchaseProduct({
                     companyId: "anyCompanyId",
                     id: "anyProductId",
                     stock: {quantity: 10} as any,
@@ -29,7 +29,7 @@ describe('Purchase product model', () => {
             })
     
             it('when lower then quantity on stock, then return true', () => {
-                const purchaseProduct = new CreatePurchaseProduct({
+                const purchaseProduct = new PurchaseProduct({
                     companyId: "anyCompanyId",
                     id: "anyProductId",
                     stock: {quantity: 10} as any,

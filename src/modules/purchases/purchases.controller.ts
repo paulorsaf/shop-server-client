@@ -36,7 +36,7 @@ export class PurchasesController {
 
   @UseGuards(CompanyStrategy, JwtStrategy)
   @Get(':id')
-  findByUserId(
+  findById(
     @AuthCompany() company: Company,
     @AuthUser() user: User,
     @Param('id') purchaseId: string

@@ -63,7 +63,7 @@ describe('PurchasesController', () => {
   })
 
   it('given find purchase by id, then execute find purchase by id query', async () => {
-    await controller.findByUserId(company, user, "anyPurchaseId");
+    await controller.findById(company, user, "anyPurchaseId");
 
     expect(queryBus.executedWith).toEqual(
       new FindPurchaseByIdQuery(

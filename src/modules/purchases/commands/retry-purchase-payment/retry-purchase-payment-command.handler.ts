@@ -1,5 +1,5 @@
 import { CommandHandler, EventBus, ICommandHandler } from "@nestjs/cqrs";
-import { CreatePurchase } from "../../model/create-purchase.model";
+import { Purchase } from "../../model/purchase.model";
 import { PurchaseRepository } from "../../repositories/purchase.repository";
 import { RetryPurchasePaymentCommand } from "./retry-purchase-payment.command";
 import { NotFoundException } from '@nestjs/common';
@@ -33,8 +33,8 @@ export class RetryPurchasePaymentCommandHandler implements ICommandHandler<Retry
         return purchase;
     }
 
-    private createPurchaseUpdate(purchase: CreatePurchase, command: RetryPurchasePaymentCommand) {
-        return new CreatePurchase({
+    private createPurchaseUpdate(purchase: Purchase, command: RetryPurchasePaymentCommand) {
+        return new Purchase({
             ...purchase,
             payment: {
                 error: undefined,

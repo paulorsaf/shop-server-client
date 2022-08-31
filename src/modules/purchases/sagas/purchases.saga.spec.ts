@@ -1,15 +1,11 @@
 import { CqrsModule } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { of } from 'rxjs';
-import { Product } from '../../stocks/commands/decrease-amount-on-stock-options/model/product.model';
 import { DecreaseStockOptionsOnPurchaseCommand } from '../../stocks/commands/decrease-amount-on-stock-options/decrease-stock-options-on-purchase.command';
 import { PurchaseCreatedEvent } from '../commands/create-purchase/events/purchase-created.event';
 import { PurchaseSagas } from './purchases.saga';
-import { Stock } from '../../stocks/commands/decrease-amount-on-stock-options/model/stock.model';
 import { SelectPurchasePaymentCommand } from '../../payment/commands/select-payment/select-purchase-payment.command';
-import { CreatePurchase } from '../model/create-purchase.model';
-import { CreatePurchaseProduct } from '../model/create-purchase-product.model';
-import { CreatePurchaseProductStock } from '../model/create-purchase-product-stock.model';
+import { Purchase } from '../model/purchase.model';
 import { PurchasePaymentRetriedEvent } from '../events/purchase-payment-retried.event';
 
 describe('PurchaseSagas', () => {
@@ -22,7 +18,7 @@ describe('PurchaseSagas', () => {
     event = new PurchaseCreatedEvent(
       "anyCompanyId",
       "anyPurchaseId",
-      new CreatePurchase({
+      new Purchase({
         companyId: "anyCompanyId",
         products: [{
           companyId: "anyCompanyId",

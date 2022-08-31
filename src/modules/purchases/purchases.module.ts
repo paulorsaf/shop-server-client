@@ -8,6 +8,7 @@ import { PurchaseSagas } from './sagas/purchases.saga';
 import { FindPurchasesByUserAndCompanyQueryHandler } from './queries/find-all/find-purchases-by-user-and-company-query.handler';
 import { PurchaseRepository } from './repositories/purchase.repository';
 import { RetryPurchasePaymentCommandHandler } from './commands/retry-purchase-payment/retry-purchase-payment-command.handler';
+import { FindPurchaseByIdQueryHandler } from './queries/find-by-id/find-purchase-by-id-query.handler';
 
 @Module({
   controllers: [PurchasesController],
@@ -23,6 +24,7 @@ import { RetryPurchasePaymentCommandHandler } from './commands/retry-purchase-pa
     RetryPurchasePaymentCommandHandler,
 
     FindPurchasesByUserAndCompanyQueryHandler,
+    FindPurchaseByIdQueryHandler,
 
     PurchaseSagas
   ]

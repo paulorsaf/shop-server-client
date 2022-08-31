@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as admin from 'firebase-admin';
-import { CreatePurchaseProductStock } from '../model/create-purchase-product-stock.model';
-import { CreatePurchaseProduct } from '../model/create-purchase-product.model';
+import { PurchaseProductStock } from '../model/purchase-product-stock.model';
+import { PurchaseProduct } from '../model/purchase-product.model';
 
 @Injectable()
 export class ProductRepository {
@@ -17,7 +17,7 @@ export class ProductRepository {
                 }
 
                 const db = <ProductDb> snapshot.data();
-                return new CreatePurchaseProduct({
+                return new PurchaseProduct({
                     companyId: db.companyId,
                     name: db.name,
                     id: snapshot.id,
@@ -43,7 +43,7 @@ export class ProductRepository {
                     return null;
                 }
 
-                return new CreatePurchaseProductStock({
+                return new PurchaseProductStock({
                     companyId: db.companyId,
                     id: snapshot.id,
                     productId: db.productId,

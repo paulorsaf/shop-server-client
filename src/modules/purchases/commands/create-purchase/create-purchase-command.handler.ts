@@ -1,7 +1,7 @@
 import { CommandHandler, EventBus, ICommandHandler } from "@nestjs/cqrs";
 import { ProductOutOfStockException } from "../../exceptions/purchase.exceptions";
-import { CreatePurchaseProduct } from "../../model/create-purchase-product.model";
-import { CreatePurchase } from "../../model/create-purchase.model";
+import { PurchaseProduct } from "../../model/purchase-product.model";
+import { Purchase } from "../../model/purchase.model";
 import { ProductRepository } from "../../repositories/product.repository";
 import { PurchaseRepository } from "../../repositories/purchase.repository";
 import { CreatePurchaseCommand } from './create-purchase.command';
@@ -25,7 +25,7 @@ export class CreatePurchaseCommandHandler implements ICommandHandler<CreatePurch
     }
 
     private async createPurchaseModel(command: CreatePurchaseCommand) {
-        return new CreatePurchase({
+        return new Purchase({
             companyId: command.companyId,
             payment: {
                 type: command.purchase.payment.type
@@ -44,7 +44,7 @@ export class CreatePurchaseCommandHandler implements ICommandHandler<CreatePurch
                 const product = await this.productRepository.findByIdWithStock(
                     p.productId, p.stockOptionId
                 );
-                const purchaseProduct = new CreatePurchaseProduct({
+                const purchaseProduct = new PurchaseProduct({
                     ...product,
                     address: command.purchase.deliveryAddress,
                     amount: p.amount
@@ -59,7 +59,7 @@ export class CreatePurchaseCommandHandler implements ICommandHandler<CreatePurch
     }
 
     private publishPurchaseCreatedEvent(
-        command: CreatePurchaseCommand, purchase: CreatePurchase, purchaseId: string
+        command: CreatePurchaseCommand, purchase: Purchase, purchaseId: string
     ) {
         this.eventBus.publish(new PurchaseCreatedEvent(
             command.companyId,

@@ -1,4 +1,4 @@
-export class CreatePurchaseProductStock {
+export class PurchaseProductStock {
 
     private readonly companyId: string;
     private readonly productId: string;
