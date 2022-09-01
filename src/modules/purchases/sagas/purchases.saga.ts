@@ -5,6 +5,7 @@ import { DecreaseStockOptionsOnPurchaseCommand } from "../../stocks/commands/dec
 import { PurchaseCreatedEvent } from "../commands/create-purchase/events/purchase-created.event";
 import { SelectPurchasePaymentCommand } from "../../payment/commands/select-payment/select-purchase-payment.command";
 import { PurchasePaymentRetriedEvent } from "../events/purchase-payment-retried.event";
+import { SendNewPurchaseEmailToCompanyCommand } from "../../email/commands/send-new-purchase-email-to-company/send-new-purchase-email-to-company.command";
 
 @Injectable()
 export class PurchaseSagas {
@@ -39,6 +40,18 @@ export class PurchaseSagas {
                     event.companyId,
                     event.purchaseId,
                     event.payment.receipt
+                )    
+            )
+        );
+
+    @Saga()
+    purchaseCreatedSendEmailToCompany = (events$: Observable<any>): Observable<ICommand> => 
+        events$.pipe(
+            ofType(PurchaseCreatedEvent),
+            map(event =>
+                new SendNewPurchaseEmailToCompanyCommand(
+                    event.companyId,
+                    event.purchaseId
                 )    
             )
         );

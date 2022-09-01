@@ -9,12 +9,14 @@ import { EventRepository } from './repositories/event.repository';
 import { StockModule } from './modules/stocks/stock.module';
 import { CompanyModule } from './modules/company/company.module';
 import { PaymentModule } from './modules/payment/payment.module';
+import { EmailModule } from './modules/email/email.module';
 
 @Module({
   imports: [
     BannersModule,
     CategoriesModule,
     CompanyModule,
+    EmailModule,
     ProductsModule,
     RegisterModule,
     PurchasesModule,

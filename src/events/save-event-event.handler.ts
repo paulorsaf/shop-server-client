@@ -8,6 +8,8 @@ import { ProductsPurchasedTotalStockUpdatedEvent } from "../modules/stocks/comma
 import { PaymentByPixSavedEvent } from "../modules/payment/events/payment-by-pix-saved.event";
 import { PaymentFailedEvent } from "../modules/payment/events/payment-failed.event";
 import { PurchasePaymentRetriedEvent } from "../modules/purchases/events/purchase-payment-retried.event";
+import { NewPurchaseEmailSentToCompanyEvent } from "../modules/email/events/new-purchase-email-sent-to-company.event";
+import { SendNewPurchaseEmailToCompanyFailedEvent } from "src/modules/email/events/send-new-purchase-email-to-company-failed.event";
 
 @EventsHandler(
     PurchaseCreatedEvent,
@@ -16,6 +18,9 @@ import { PurchasePaymentRetriedEvent } from "../modules/purchases/events/purchas
     PaymentByPixSavedEvent,
     PaymentFailedEvent,
     PurchasePaymentRetriedEvent,
+
+    NewPurchaseEmailSentToCompanyEvent,
+    SendNewPurchaseEmailToCompanyFailedEvent,
 
     UserRegisteredEvent,
     UserRegisteredInCompanyEvent

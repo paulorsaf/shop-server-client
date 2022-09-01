@@ -26,6 +26,7 @@ export class CreatePurchaseCommandHandler implements ICommandHandler<CreatePurch
 
     private async createPurchaseModel(command: CreatePurchaseCommand) {
         return new Purchase({
+            address: command.purchase.deliveryAddress,
             companyId: command.companyId,
             payment: {
                 type: command.purchase.payment.type

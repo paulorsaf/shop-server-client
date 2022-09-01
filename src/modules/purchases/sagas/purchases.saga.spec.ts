@@ -7,6 +7,7 @@ import { PurchaseSagas } from './purchases.saga';
 import { SelectPurchasePaymentCommand } from '../../payment/commands/select-payment/select-purchase-payment.command';
 import { Purchase } from '../model/purchase.model';
 import { PurchasePaymentRetriedEvent } from '../events/purchase-payment-retried.event';
+import { SendNewPurchaseEmailToCompanyCommand } from '../../email/commands/send-new-purchase-email-to-company/send-new-purchase-email-to-company.command';
 
 describe('PurchaseSagas', () => {
 
@@ -82,6 +83,18 @@ describe('PurchaseSagas', () => {
           "anyCompanyId",
           "anyPurchaseId",
           "anyReceipt"
+        )
+      );
+      done();
+    });
+  });
+
+  it('given purchase created, then execute send new purchase email to company command', done => {
+    sagas.purchaseCreatedSendEmailToCompany(of(event)).subscribe(response => {
+      expect(response).toEqual(
+        new SendNewPurchaseEmailToCompanyCommand(
+          "anyCompanyId",
+          "anyPurchaseId"
         )
       );
       done();
