@@ -8,6 +8,7 @@ import { SelectPurchasePaymentCommand } from '../../payment/commands/select-paym
 import { Purchase } from '../model/purchase.model';
 import { PurchasePaymentRetriedEvent } from '../events/purchase-payment-retried.event';
 import { SendNewPurchaseEmailToCompanyCommand } from '../../email/commands/send-new-purchase-email-to-company/send-new-purchase-email-to-company.command';
+import { SendNewPurchaseEmailToClientCommand } from '../../email/commands/send-new-purchase-email-to-client/send-new-purchase-email-to-client.command';
 
 describe('PurchaseSagas', () => {
 
@@ -55,51 +56,67 @@ describe('PurchaseSagas', () => {
     sagas = module.get<PurchaseSagas>(PurchaseSagas);
   });
 
-  it('given purchase created, then publish decrease amount on stock options', done => {
-    sagas.purchaseCreatedDecreaseStock(of(event)).subscribe(response => {
-      expect(response).toEqual(
-        new DecreaseStockOptionsOnPurchaseCommand(
-          "anyCompanyId",
-          "anyPurchaseId",
-          [{
-            amount: 10,
-            productId: "anyProductId",
-            stock: {
-              id: "anyStockId",
-              quantity: 10
-            }
-          }],
-          "anyUserId"
-        )
-      );
-      done();
-    });
-  });
+  describe('given purchase created', () => {
 
-  it('given purchase created, then execute select purchase payment command', done => {
-    sagas.purchaseCreatedMakePayment(of(event)).subscribe(response => {
-      expect(response).toEqual(
-        new SelectPurchasePaymentCommand(
-          "anyCompanyId",
-          "anyPurchaseId",
-          "anyReceipt"
-        )
-      );
-      done();
+    it('then publish decrease amount on stock options', done => {
+      sagas.purchaseCreatedDecreaseStock(of(event)).subscribe(response => {
+        expect(response).toEqual(
+          new DecreaseStockOptionsOnPurchaseCommand(
+            "anyCompanyId",
+            "anyPurchaseId",
+            [{
+              amount: 10,
+              productId: "anyProductId",
+              stock: {
+                id: "anyStockId",
+                quantity: 10
+              }
+            }],
+            "anyUserId"
+          )
+        );
+        done();
+      });
     });
-  });
+  
+    it('then execute select purchase payment command', done => {
+      sagas.purchaseCreatedMakePayment(of(event)).subscribe(response => {
+        expect(response).toEqual(
+          new SelectPurchasePaymentCommand(
+            "anyCompanyId",
+            "anyPurchaseId",
+            "anyReceipt"
+          )
+        );
+        done();
+      });
+    });
+  
+    it('then execute send new purchase email to company command', done => {
+      sagas.purchaseCreatedSendEmailToCompany(of(event)).subscribe(response => {
+        expect(response).toEqual(
+          new SendNewPurchaseEmailToCompanyCommand(
+            "anyCompanyId",
+            "anyPurchaseId"
+          )
+        );
+        done();
+      });
+    });
+  
+    it('then execute send new purchase email to client command', done => {
+      sagas.purchaseCreatedSendEmailToClient(of(event)).subscribe(response => {
+        expect(response).toEqual(
+          new SendNewPurchaseEmailToClientCommand(
+            "anyCompanyId",
+            "anyPurchaseId"
+          )
+        );
+        done();
+      });
+    });
 
-  it('given purchase created, then execute send new purchase email to company command', done => {
-    sagas.purchaseCreatedSendEmailToCompany(of(event)).subscribe(response => {
-      expect(response).toEqual(
-        new SendNewPurchaseEmailToCompanyCommand(
-          "anyCompanyId",
-          "anyPurchaseId"
-        )
-      );
-      done();
-    });
-  });
+  })
 
   it('given purchase payment retried, then execute select purchase payment command', done => {
     const event = new PurchasePaymentRetriedEvent(
