@@ -68,7 +68,7 @@ export class EmailRepository {
     private getNewPurchaseEmailForCompanyHtmlClientContent(purchase: Purchase) {
         return `
             <p>
-                Recebemos a sua compra.<br/>>
+                Recebemos a sua compra.<br/>
                 ${
                     purchase.payment.type === "MONEY" ?
                         "Por favor, aguarde enquanto atendemos o seu pedido."
