@@ -10,9 +10,11 @@ import { StockModule } from './modules/stocks/stock.module';
 import { CompanyModule } from './modules/company/company.module';
 import { PaymentModule } from './modules/payment/payment.module';
 import { EmailModule } from './modules/email/email.module';
+import { AddressModule } from './modules/address/address.module';
 
 @Module({
   imports: [
+    AddressModule,
     BannersModule,
     CategoriesModule,
     CompanyModule,

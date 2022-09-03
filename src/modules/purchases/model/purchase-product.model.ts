@@ -49,7 +49,7 @@ type PurchaseParam = {
     stock: PurchaseProductStock;
 }
 
-export type Address = {
+type Address = {
     street: string;
     number: string;
     complement: string;
