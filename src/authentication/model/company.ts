@@ -1,5 +1,6 @@
 export type Company = {
     address: Address;
+    cityDeliveryPrice: number;
     id: string;
     name: string
 }

@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AddressController } from './address.controller';
 import { CqrsModule } from '@nestjs/cqrs';
 import { AuthenticationModule } from '../../authentication/authentication.module';
-import { FindAddressByZipcodeQueryHandler } from './commands/find-address-by-zipcode/find-address-by-zipcode-query.handler';
+import { FindAddressByZipcodeQueryHandler } from './queries/find-address-by-zipcode/find-address-by-zipcode-query.handler';
 import { AddressRepository } from './repositories/address.repository';
 
 @Module({

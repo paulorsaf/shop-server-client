@@ -11,6 +11,7 @@ import { CompanyModule } from './modules/company/company.module';
 import { PaymentModule } from './modules/payment/payment.module';
 import { EmailModule } from './modules/email/email.module';
 import { AddressModule } from './modules/address/address.module';
+import { DeliveriesModule } from './modules/delivery/deliveries.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { AddressModule } from './modules/address/address.module';
     BannersModule,
     CategoriesModule,
     CompanyModule,
+    DeliveriesModule,
     EmailModule,
     ProductsModule,
     RegisterModule,

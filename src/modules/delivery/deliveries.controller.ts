@@ -3,10 +3,10 @@ import { QueryBus } from '@nestjs/cqrs';
 import { AuthCompany } from '../../authentication/decorators/company.decorator';
 import { Company } from '../../authentication/model/company';
 import { CompanyStrategy } from '../../authentication/guards/company.strategy';
-import { FindAddressByZipcodeQuery } from './queries/find-address-by-zipcode/find-address-by-zipcode.query';
+import { FindDeliveryPriceByZipCodeQuery } from './queries/find-delivery-price-by-zipcode/find-delivery-price-by-zipcode.query';
 
-@Controller('address/zipcode')
-export class AddressController {
+@Controller('deliveries')
+export class DeliveriesController {
 
   constructor(
     private queryBus: QueryBus
@@ -16,7 +16,8 @@ export class AddressController {
   @Get(':zipCode')
   findByZipCode(@AuthCompany() company: Company, @Param('zipCode') zipCode: string) {
     return this.queryBus.execute(
-      new FindAddressByZipcodeQuery(
+      new FindDeliveryPriceByZipCodeQuery(
+        {address: company.address, cityDeliveryPrice: company.cityDeliveryPrice},
         zipCode
       )
     )
