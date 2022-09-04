@@ -1,12 +1,13 @@
 import { Injectable } from "@nestjs/common";
 import { ICommand, ofType, Saga } from "@nestjs/cqrs";
-import { map, Observable } from "rxjs";
+import { iif, map, Observable, of, switchMap } from "rxjs";
 import { DecreaseStockOptionsOnPurchaseCommand } from "../../stocks/commands/decrease-amount-on-stock-options/decrease-stock-options-on-purchase.command";
 import { PurchaseCreatedEvent } from "../commands/create-purchase/events/purchase-created.event";
 import { SelectPurchasePaymentCommand } from "../../payment/commands/select-payment/select-purchase-payment.command";
 import { PurchasePaymentRetriedEvent } from "../events/purchase-payment-retried.event";
 import { SendNewPurchaseEmailToCompanyCommand } from "../../email/commands/send-new-purchase-email-to-company/send-new-purchase-email-to-company.command";
 import { SendNewPurchaseEmailToClientCommand } from "../../email/commands/send-new-purchase-email-to-client/send-new-purchase-email-to-client.command";
+import { SavePurchaseGeolocationCommand } from "../../address/commands/save-purchase-geolocation/save-purchase-geolocation.command";
 
 @Injectable()
 export class PurchaseSagas {
@@ -66,6 +67,18 @@ export class PurchaseSagas {
                     event.companyId,
                     event.purchaseId
                 )    
+            )
+        );
+
+    @Saga()
+    purchaseCreatedSavePurchaseGeolocation = (events$: Observable<any>): Observable<ICommand> => 
+        events$.pipe(
+            ofType(PurchaseCreatedEvent),
+            map(event =>
+                new SavePurchaseGeolocationCommand(
+                    event.companyId,
+                    event.purchaseId
+                )
             )
         );
 

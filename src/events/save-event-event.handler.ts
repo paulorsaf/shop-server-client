@@ -12,6 +12,7 @@ import { NewPurchaseEmailSentToCompanyEvent } from "../modules/email/events/new-
 import { SendNewPurchaseEmailToCompanyFailedEvent } from "../modules/email/events/send-new-purchase-email-to-company-failed.event";
 import { NewPurchaseEmailSentToClientEvent } from "../modules/email/events/new-purchase-email-sent-to-client.event";
 import { SendNewPurchaseEmailToClientFailedEvent } from "../modules/email/events/send-new-purchase-email-to-client-failed.event";
+import { PurchaseGeolocationSavedEvent } from "../modules/address/events/puchase-geolocation-saved.event";
 
 @EventsHandler(
     PurchaseCreatedEvent,
@@ -19,6 +20,7 @@ import { SendNewPurchaseEmailToClientFailedEvent } from "../modules/email/events
     ProductsPurchasedTotalStockUpdatedEvent,
     PaymentByPixSavedEvent,
     PaymentFailedEvent,
+    PurchaseGeolocationSavedEvent,
     PurchasePaymentRetriedEvent,
 
     NewPurchaseEmailSentToCompanyEvent,

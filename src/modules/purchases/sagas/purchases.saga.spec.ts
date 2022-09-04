@@ -5,37 +5,38 @@ import { DecreaseStockOptionsOnPurchaseCommand } from '../../stocks/commands/dec
 import { PurchaseCreatedEvent } from '../commands/create-purchase/events/purchase-created.event';
 import { PurchaseSagas } from './purchases.saga';
 import { SelectPurchasePaymentCommand } from '../../payment/commands/select-payment/select-purchase-payment.command';
-import { Purchase } from '../model/purchase.model';
 import { PurchasePaymentRetriedEvent } from '../events/purchase-payment-retried.event';
 import { SendNewPurchaseEmailToCompanyCommand } from '../../email/commands/send-new-purchase-email-to-company/send-new-purchase-email-to-company.command';
 import { SendNewPurchaseEmailToClientCommand } from '../../email/commands/send-new-purchase-email-to-client/send-new-purchase-email-to-client.command';
+import { SavePurchaseGeolocationCommand } from '../../address/commands/save-purchase-geolocation/save-purchase-geolocation.command';
 
 describe('PurchaseSagas', () => {
 
   let sagas: PurchaseSagas;
   
   let event: PurchaseCreatedEvent;
+  let purchase = {
+    companyId: "anyCompanyId",
+    products: [{
+      companyId: "anyCompanyId",
+      id: "anyProductId",
+      amount: 10,
+      stock: {
+        id: "anyStockId",
+        quantity: 10
+      }
+    } as any],
+    user: {
+      email: "any@email.com",
+      id: "anyUserId"
+    }
+  } as any
 
   beforeEach(async () => {
     event = new PurchaseCreatedEvent(
       "anyCompanyId",
       "anyPurchaseId",
-      new Purchase({
-        companyId: "anyCompanyId",
-        products: [{
-          companyId: "anyCompanyId",
-          id: "anyProductId",
-          amount: 10,
-          stock: {
-            id: "anyStockId",
-            quantity: 10
-          }
-        } as any],
-        user: {
-          email: "any@email.com",
-          id: "anyUserId"
-        }
-      }),
+      purchase,
       {
         type: "ANY TYPE",
         receipt: "anyReceipt"
@@ -108,6 +109,18 @@ describe('PurchaseSagas', () => {
       sagas.purchaseCreatedSendEmailToClient(of(event)).subscribe(response => {
         expect(response).toEqual(
           new SendNewPurchaseEmailToClientCommand(
+            "anyCompanyId",
+            "anyPurchaseId"
+          )
+        );
+        done();
+      });
+    });
+  
+    it('then execute save purchase geolocation command', done => {
+      sagas.purchaseCreatedSavePurchaseGeolocation(of(event)).subscribe(response => {
+        expect(response).toEqual(
+          new SavePurchaseGeolocationCommand(
             "anyCompanyId",
             "anyPurchaseId"
           )
