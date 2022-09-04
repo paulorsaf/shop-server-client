@@ -27,6 +27,7 @@ describe('CreatePurchaseCommandHandler', () => {
         deliveryAddress: {
           address: "address"
         } as any,
+        deliveryPrice: 10,
         products: [{
           amount: 10,
           productId: "anyProductId",

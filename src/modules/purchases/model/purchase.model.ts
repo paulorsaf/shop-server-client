@@ -7,6 +7,7 @@ export class Purchase {
 
     readonly address: any;
     readonly createdAt: string;
+    readonly deliveryPrice: number;
     readonly payment: Payment;
     readonly products: PurchaseProduct[];
     readonly status: string;
@@ -21,6 +22,7 @@ export class Purchase {
 
         this.address = param.address;
         this.createdAt = param.createdAt;
+        this.deliveryPrice = param.deliveryPrice;
         this.payment = param.payment
         this.products = param.products;
         this.status = param.status;
@@ -54,6 +56,7 @@ type PurchaseParam = {
 
     address?: Address;
     createdAt?: string;
+    deliveryPrice?: number;
     payment?: Payment;
     products?: PurchaseProduct[];
     status?: string;

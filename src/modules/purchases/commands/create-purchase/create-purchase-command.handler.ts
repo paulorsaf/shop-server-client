@@ -28,6 +28,7 @@ export class CreatePurchaseCommandHandler implements ICommandHandler<CreatePurch
         return new Purchase({
             address: command.purchase.deliveryAddress,
             companyId: command.companyId,
+            deliveryPrice: command.purchase.deliveryPrice,
             payment: {
                 type: command.purchase.payment.type
             },

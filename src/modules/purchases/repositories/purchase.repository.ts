@@ -69,6 +69,7 @@ export class PurchaseRepository {
             id: id,
             address: data.address,
             createdAt: data.createdAt,
+            deliveryPrice: data.deliveryPrice,
             payment: data.payment,
             products: data.products.map(p => 
                 new PurchaseProduct({
