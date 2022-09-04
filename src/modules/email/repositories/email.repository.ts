@@ -80,7 +80,7 @@ export class EmailRepository {
     }
 
     private getPurchaseContent(purchase: Purchase) {
-        return `<fieldset></fieldset>
+        return `<fieldset>
                     <legend style="font-weigth:600">Detalhes da compra:</legend>
                     ${purchase.products.map(p => 
                         `<div style="padding-bottom:10px;">
