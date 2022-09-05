@@ -5,7 +5,7 @@ export type User = {
     cpfCnpj: string,
     email: string,
     name: string,
-    password: string,
+    password?: string,
     phone: string,
     type: UserType;
 }

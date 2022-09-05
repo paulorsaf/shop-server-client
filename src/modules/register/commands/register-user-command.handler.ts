@@ -50,7 +50,6 @@ export class RegisterUserCommandHandler implements ICommandHandler<RegisterUserC
             cpfCnpj: command.cpfCnpj,
             email: command.email,
             name: command.name,
-            password: command.password,
             phone: command.phone,
             type: UserType.CLIENT
         };
@@ -60,7 +59,7 @@ export class RegisterUserCommandHandler implements ICommandHandler<RegisterUserC
         this.eventBus.publish(
             new UserRegisteredEvent(userUid, command.companyId, {
                 cpfCnpj: user.cpfCnpj, email: user.email, name: user.name,
-                password: user.password, phone: user.phone, type: user.type
+                phone: user.phone, type: user.type
             })
         );
     }

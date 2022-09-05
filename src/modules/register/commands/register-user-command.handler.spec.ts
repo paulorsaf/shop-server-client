@@ -57,7 +57,6 @@ describe('RegisterUserCommandHandler', () => {
       cpfCnpj: "anyCpf",
       email: "anyEmail",
       name: "anyName",
-      password: "anyPassword",
       phone: "anyPhone",
       type: UserType.CLIENT
     };
@@ -87,7 +86,7 @@ describe('RegisterUserCommandHandler', () => {
       expect(eventBus.published).toEqual(
         new UserRegisteredEvent("anyUserUid", command.companyId, {
           cpfCnpj: user.cpfCnpj, email: user.email, name: user.name,
-          password: user.password, phone: user.phone, type: user.type
+          phone: user.phone, type: user.type
         })
       );
     });
