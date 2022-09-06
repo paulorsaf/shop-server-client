@@ -4,7 +4,6 @@ import { AppModule } from './app.module';
 import * as express from 'express';
 import * as admin from 'firebase-admin';
 import * as functions from 'firebase-functions';
-import { SentryService } from '@ntegral/nestjs-sentry';
 
 const server = express();
 
@@ -22,7 +21,6 @@ export const createNestServer = async (expressInstance) => {
       logger: false
     }
   );
-  app.useLogger(SentryService.SentryServiceInstance());
   app.enableCors({origin: '*'})
 
   return app.init();
