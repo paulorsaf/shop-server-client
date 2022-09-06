@@ -20,7 +20,8 @@ export class FindProductByIdQueryHandler implements IQueryHandler<FindProductByI
         if (stockOptions) {
             return new Product(
                 product.companyId, product.id, product.name, product.price,
-                product.priceWithDiscount, product.images, stockOptions
+                product.priceWithDiscount, product.images, stockOptions,
+                product.description
             );
         }
 

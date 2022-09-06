@@ -8,7 +8,8 @@ export class Product {
         public readonly price: number,
         public readonly priceWithDiscount: number,
         public readonly images: ProductImage,
-        public readonly stock: ProductStock[]
+        public readonly stock: ProductStock[],
+        public readonly description: string
     ){}
 }
 
