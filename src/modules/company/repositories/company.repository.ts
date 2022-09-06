@@ -16,6 +16,7 @@ export class CompanyRepository {
                 }
                 const db = snapshot.data();
                 return new Company({
+                    address: db.address,
                     id: db.id,
                     name: db.name,
                     pixKey: db.pixKey
