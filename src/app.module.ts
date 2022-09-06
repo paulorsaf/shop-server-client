@@ -12,6 +12,8 @@ import { PaymentModule } from './modules/payment/payment.module';
 import { EmailModule } from './modules/email/email.module';
 import { AddressModule } from './modules/address/address.module';
 import { DeliveriesModule } from './modules/delivery/deliveries.module';
+import { SentryModule } from '@ntegral/nestjs-sentry';
+import { LogLevel } from '@nestjs/common/services/logger.service';
 
 @Module({
   imports: [
@@ -25,7 +27,14 @@ import { DeliveriesModule } from './modules/delivery/deliveries.module';
     RegisterModule,
     PurchasesModule,
     PaymentModule,
-    StockModule
+    StockModule,
+
+    SentryModule.forRoot({
+      dsn: process.env.SENTRY_DNS,
+      environment: 'production',
+      logLevels: ["error"],
+      release: "1.0.0"
+    })
   ],
   providers: [
     EventRepository,
