@@ -21,7 +21,7 @@ export class UserRepository {
             .doc(createUser.uid)
             .create({
                 ...createUser.user,
-                createdAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss')
+                createdAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss').replace(" ", "T")
             })
     }
 

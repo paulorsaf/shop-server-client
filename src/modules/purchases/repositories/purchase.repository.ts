@@ -15,7 +15,7 @@ export class PurchaseRepository {
             .collection('purchases')
             .add({
                 ...purchaseObj,
-                createdAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+                createdAt: format(new Date(), 'yyyy-MM-dd HH:mm:ss').replace(" ", "T"),
                 status: "CREATED"
             })
             .then(response => response.id)
