@@ -23,7 +23,8 @@ export class ProductRepository {
                     product.priceWithDiscount,
                     product.images,
                     null,
-                    product.description
+                    product.description,
+                    product.weight
                 );
             });
     }

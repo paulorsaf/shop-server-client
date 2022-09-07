@@ -35,12 +35,15 @@ describe('DeliveriesController', () => {
   });
 
   it('given find address by zip code, then execute find address by zip code query', async () => {
-    await controller.findByZipCode(company, "anyZipCode");
+    const products = [{weight: 1, amount: 2}];
+
+    await controller.findByZipCode(company, "anyZipCode", products);
 
     expect(queryBus.executedWith).toEqual(
       new FindDeliveryPriceByZipCodeQuery(
         {address: "anyAddress" as any, cityDeliveryPrice: 10},
-        "anyZipCode"
+        "anyZipCode",
+        products
       )
     )
   })

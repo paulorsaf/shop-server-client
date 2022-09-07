@@ -1,26 +1,26 @@
-import { NotFoundException } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ZipCodeNotFoundException } from '../../exceptions/zipcode-not-found.exception';
 import { AddressRepository } from '../../repositories/address.repository';
 import { DeliveryRepository } from '../../repositories/delivery.repository';
 import { FindDeliveryPriceByZipCodeQueryHandler } from './find-delivery-price-by-zipcode-query.handler';
-import { FindDeliveryPriceByZipCodeQuery } from './find-delivery-price-by-zipcode.query';
 
 describe('FindDeliveryPriceByZipCodeQueryHandler', () => {
 
   let handler: FindDeliveryPriceByZipCodeQueryHandler;
 
-  let command = new FindDeliveryPriceByZipCodeQuery(
-    {address: {city: "anyCity"} as any, cityDeliveryPrice: 10},
-    'anyZipCode'
-  );
+  let query;
   let addressRepository: AddressRepositoryMock;
   let deliveryRepository: DeliveryRepositoryMock;
 
   beforeEach(async () => {
     addressRepository = new AddressRepositoryMock();
     deliveryRepository = new DeliveryRepositoryMock();
+    query = {
+      company: {address: {city: "anyCity"} as any, cityDeliveryPrice: 10},
+      zipCode: 'anyZipCode',
+      products: [{amount: 2, weight: 3}]
+    };
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [
@@ -46,26 +46,54 @@ describe('FindDeliveryPriceByZipCodeQueryHandler', () => {
     it('when company is in the same city, then return city delivery value', async () => {
       addressRepository._response = {city: "anyCity"};
 
-      const response = await handler.execute(command);
+      const response = await handler.execute(query);
   
       expect(response).toEqual(10);
     });
 
-    it('when company is in a different city, then return mail delivery price', async () => {
-      addressRepository._response = {city: "anyOtherCity"};
-      deliveryRepository._response = 100;
+    describe('when company is in a different city', () => {
 
-      const response = await handler.execute(command);
-  
-      expect(response).toEqual(100);
-    });
+      beforeEach(() => {
+        addressRepository._response = {city: "anyOtherCity"};
+        deliveryRepository._response = 100;
+      })
+
+      it('and products have weight, then calculate delivery price with total weight', async () => {
+        await handler.execute(query);
+    
+        expect(deliveryRepository._calledWith.totalWeight).toEqual(6);
+      });
+
+      it('and no products defined, then calculate delivery price weight of 1kg', async () => {
+        query.products = [];
+
+        await handler.execute(query);
+    
+        expect(deliveryRepository._calledWith.totalWeight).toEqual(1);
+      });
+
+      it('and products dont have weight defined, then calculate delivery price weight of 1kg', async () => {
+        query.products[0].weight = undefined;
+
+        await handler.execute(query);
+    
+        expect(deliveryRepository._calledWith.totalWeight).toEqual(1);
+      });
+
+      it('then return mail delivery price', async () => {
+        const response = await handler.execute(query);
+    
+        expect(response).toEqual(100);
+      });
+
+    })
 
   });
 
   describe('given address not found by zipcode', () => {
 
     it('then throw not found error', async () => {
-      await expect(handler.execute(command)).rejects.toThrowError(ZipCodeNotFoundException);
+      await expect(handler.execute(query)).rejects.toThrowError(ZipCodeNotFoundException);
     });
 
   });
@@ -75,7 +103,7 @@ describe('FindDeliveryPriceByZipCodeQueryHandler', () => {
     it('then throw not found error', async () => {
       addressRepository._response = Promise.reject({});
 
-      await expect(handler.execute(command)).rejects.toThrowError(ZipCodeNotFoundException);
+      await expect(handler.execute(query)).rejects.toThrowError(ZipCodeNotFoundException);
     });
 
   });
@@ -90,8 +118,10 @@ class AddressRepositoryMock {
 }
 
 class DeliveryRepositoryMock {
+  _calledWith;
   _response;
-  findDeliveryPrice() {
+  findDeliveryPrice(params) {
+    this._calledWith = params;
     return this._response;
   }
 }

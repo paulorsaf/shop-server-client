@@ -1,16 +1,14 @@
 import { Injectable } from "@nestjs/common";
-import { calcularPrecoPrazo, consultarCep, PrecoPrazoResponse } from "correios-brasil/dist";
-import { resolve } from "path/posix";
-import { Address } from "../model/address.model";
+import { calcularPrecoPrazo, PrecoPrazoResponse } from "correios-brasil/dist";
 
 @Injectable()
 export class DeliveryRepository {
 
-    findDeliveryPrice(origin: string, destination: string): Promise<number> {
+    findDeliveryPrice(params: FindDeliveryPrice): Promise<number> {
         const args = {
-            sCepOrigem: origin.replace(/[^\d]/g, ''),
-            sCepDestino: destination.replace(/[^\d]/g, ''),
-            nVlPeso: '1',
+            sCepOrigem: params.origin.replace(/[^\d]/g, ''),
+            sCepDestino: params.destination.replace(/[^\d]/g, ''),
+            nVlPeso: params.totalWeight.toFixed(2),
             nCdFormato: '1',
             nVlComprimento: '20',
             nVlAltura: '20',
@@ -24,4 +22,10 @@ export class DeliveryRepository {
         });
     }
 
+}
+
+type FindDeliveryPrice = {
+    destination: string;
+    origin: string;
+    totalWeight: number;
 }
