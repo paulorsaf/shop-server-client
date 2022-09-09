@@ -5,16 +5,19 @@ import { EventBusMock } from '../../../../mocks/event-bus.mock';
 import { PaymentByPixSelectedEvent } from '../../events/payment-by-pix-selected.event';
 import { SelectPurchasePaymentCommandHandler } from './select-purchase-payment-command.handler';
 import { SelectPurchasePaymentCommand } from './select-purchase-payment.command';
+import { PaymentByCreditCardSelectedEvent } from '../../events/payment-by-credit-card-selected.event';
+import { Purchase } from '../../model/purchase.model';
 
 describe('SelectPurchasePaymentCommandHandler', () => {
 
   let eventBus: EventBusMock;
   let handler: SelectPurchasePaymentCommandHandler;
 
+  const payment = {receipt: "anyReceipt"} as any;
   let command = new SelectPurchasePaymentCommand(
     "anyCompanyId",
     "anyPurchaseId",
-    "anyReceipt"
+    payment
   );
   let purchaseRepository: PurchaseRepositoryMock;
 
@@ -40,30 +43,60 @@ describe('SelectPurchasePaymentCommandHandler', () => {
     handler = module.get<SelectPurchasePaymentCommandHandler>(SelectPurchasePaymentCommandHandler);
   });
 
-  it('given create payment, when payment by money, then dont publish any event', async () => {
-    const purchase = new PurchaseMock();
-    purchase.payment.type = "MONEY";
-    purchaseRepository._response = Promise.resolve(purchase);
+  describe('given create payment', () => {
 
-    await handler.execute(command);
+    it('when payment by money, then dont publish any event', async () => {
+      const purchase = new Purchase({
+        payment: {
+          type: "MONEY"
+        } as any
+      });
+      purchaseRepository._response = Promise.resolve(purchase);
+  
+      await handler.execute(command);
+  
+      expect(eventBus.published).toBeUndefined();
+    })
+  
+    it('when payment by pix, then publish payment by pix selected event', async () => {
+      const purchase = new Purchase({
+        payment: {
+          type: "PIX"
+        } as any
+      });
+      purchaseRepository._response = Promise.resolve(purchase);
+  
+      await handler.execute(command);
+  
+      expect(eventBus.published).toEqual(
+        new PaymentByPixSelectedEvent(
+          "anyCompanyId",
+          "anyPurchaseId",
+          "anyReceipt"
+        )
+      );
+    })
+  
+    it('when payment by credit card, then publish payment by credit card selected event', async () => {
+      const purchase = new Purchase({
+        payment: {
+          type: "CREDIT_CARD"
+        } as any
+      });
+      purchaseRepository._response = Promise.resolve(purchase);
+  
+      await handler.execute(command);
+  
+      expect(eventBus.published).toEqual(
+        new PaymentByCreditCardSelectedEvent(
+          "anyCompanyId",
+          "anyPurchaseId",
+          command.payment.billingAddress,
+          command.payment.creditCard
+        )
+      );
+    })
 
-    expect(eventBus.published).toBeUndefined();
-  })
-
-  it('given create payment, when payment by pix, then publish payment by pix selected event', async () => {
-    const purchase = new PurchaseMock();
-    purchase.payment.type = "PIX";
-    purchaseRepository._response = Promise.resolve(purchase);
-
-    await handler.execute(command);
-
-    expect(eventBus.published).toEqual(
-      new PaymentByPixSelectedEvent(
-        "anyCompanyId",
-        "anyPurchaseId",
-        "anyReceipt"
-      )
-    );
   })
 
 });
@@ -73,11 +106,5 @@ class PurchaseRepositoryMock {
 
   findByIdAndCompany() {
     return this._response;
-  }
-}
-
-class PurchaseMock {
-  payment = {
-    type: ""
   }
 }

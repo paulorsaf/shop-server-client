@@ -71,6 +71,7 @@ export class PurchaseRepository {
             createdAt: data.createdAt,
             deliveryPrice: data.deliveryPrice,
             payment: data.payment,
+            price: data.price,
             products: data.products.map(p => 
                 new PurchaseProduct({
                     companyId: p.companyId,
@@ -86,7 +87,8 @@ export class PurchaseRepository {
                     amount: p.amount,
                     name: p.name,
                     price: p.price,
-                    priceWithDiscount: p.priceWithDiscount
+                    priceWithDiscount: p.priceWithDiscount,
+                    weight: p.weight
                 })
             ),
             status: data.status,

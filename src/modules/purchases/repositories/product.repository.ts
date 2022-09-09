@@ -23,7 +23,8 @@ export class ProductRepository {
                     id: snapshot.id,
                     price: db.price,
                     priceWithDiscount: db.priceWithDiscount,
-                    stock: await this.findStock(productId, stockId)
+                    stock: await this.findStock(productId, stockId),
+                    weight: db.weight
                 });
             })
     }
@@ -63,6 +64,7 @@ type ProductDb = {
     name: string;
     price: number;
     priceWithDiscount: number;
+    weight: number;
 }
 
 type StockDb = {

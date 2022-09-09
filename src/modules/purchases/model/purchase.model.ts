@@ -1,3 +1,4 @@
+import { PurchasePriceResponse } from "../../../models/purchase-price.model";
 import { PurchaseProduct } from "./purchase-product.model";
 
 export class Purchase {
@@ -7,14 +8,14 @@ export class Purchase {
 
     readonly address: any;
     readonly createdAt: string;
-    readonly deliveryPrice: number;
     readonly payment: Payment;
     readonly products: PurchaseProduct[];
     readonly status: string;
     readonly user: User;
-
+    
     readonly totalAmount: number;
-    readonly totalPrice: number;
+
+    private price: Price;
 
     constructor(param: PurchaseParam) {
         this.id = param.id;
@@ -22,14 +23,13 @@ export class Purchase {
 
         this.address = param.address;
         this.createdAt = param.createdAt;
-        this.deliveryPrice = param.deliveryPrice;
         this.payment = param.payment
+        this.price = param.price;
         this.products = param.products;
         this.status = param.status;
         this.user = param.user;
 
         this.totalAmount = this.calculateTotalAmount();
-        this.totalPrice = this.calculateTotalPrice();
     }
 
     private calculateTotalAmount() {
@@ -40,12 +40,15 @@ export class Purchase {
         return total;
     }
 
-    private calculateTotalPrice() {
-        let total = 0;
-        if (this.products) {
-            this.products.forEach(p => total += p.totalPrice);
-        }
-        return total;
+    setPrice(price: PurchasePriceResponse) {
+        this.price = {
+            delivery: price.deliveryPrice,
+            paymentFee: this.payment.type === "CREDIT_CARD" ? price.paymentFee : 0,
+            products: price.productsPrice,
+            total: price.totalPrice,
+            totalWithPaymentFee: this.payment.type === "CREDIT_CARD" ?
+                price.totalPriceWithPaymentFee : price.totalPrice
+        };
     }
 
 }
@@ -58,6 +61,7 @@ type PurchaseParam = {
     createdAt?: string;
     deliveryPrice?: number;
     payment?: Payment;
+    price?: Price;
     products?: PurchaseProduct[];
     status?: string;
     user?: User;
@@ -76,12 +80,30 @@ type Address = {
     zipCode: string;
     city: string;
     state: string;
-    latitude: number;
-    longitude: number;
+    latitude?: number;
+    longitude?: number;
 }
 
 type Payment = {
+    card?: CreditCard;
     error?: any;
+    id?: string;
     receiptUrl?: string;
     type: string;
+}
+
+type CreditCard = {
+    brand: string;
+    exp_month: number;
+    exp_year: number;
+    id: string;
+    last4: string;
+}
+
+type Price = {
+    products: number;
+    delivery: number;
+    paymentFee: number;
+    total: number;
+    totalWithPaymentFee: number;
 }

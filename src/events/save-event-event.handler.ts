@@ -13,12 +13,16 @@ import { SendNewPurchaseEmailToCompanyFailedEvent } from "../modules/email/event
 import { NewPurchaseEmailSentToClientEvent } from "../modules/email/events/new-purchase-email-sent-to-client.event";
 import { SendNewPurchaseEmailToClientFailedEvent } from "../modules/email/events/send-new-purchase-email-to-client-failed.event";
 import { PurchaseGeolocationSavedEvent } from "../modules/address/events/puchase-geolocation-saved.event";
+import { PaymentByCreditCardCreatedEvent } from "../modules/payment/events/payment-by-credit-card-created.event";
+import { PaymentSuccessEmailSentToClientEvent } from "../modules/email/events/payment-success-email-sent-to-client.event";
+import { SendPaymentSuccessEmailToClientFailedEvent } from "../modules/email/events/send-payment-success-email-to-client-failed.event";
 
 @EventsHandler(
     PurchaseCreatedEvent,
     ProductsPurchasedDecreasedStockEvent,
     ProductsPurchasedTotalStockUpdatedEvent,
     PaymentByPixSavedEvent,
+    PaymentByCreditCardCreatedEvent,
     PaymentFailedEvent,
     PurchaseGeolocationSavedEvent,
     PurchasePaymentRetriedEvent,
@@ -27,6 +31,8 @@ import { PurchaseGeolocationSavedEvent } from "../modules/address/events/puchase
     SendNewPurchaseEmailToCompanyFailedEvent,
     NewPurchaseEmailSentToClientEvent,
     SendNewPurchaseEmailToClientFailedEvent,
+    PaymentSuccessEmailSentToClientEvent,
+    SendPaymentSuccessEmailToClientFailedEvent,
 
     UserRegisteredEvent,
     UserRegisteredInCompanyEvent

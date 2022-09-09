@@ -9,6 +9,11 @@ import { FindPurchasesByUserAndCompanyQueryHandler } from './queries/find-all/fi
 import { PurchaseRepository } from './repositories/purchase.repository';
 import { RetryPurchasePaymentCommandHandler } from './commands/retry-purchase-payment/retry-purchase-payment-command.handler';
 import { FindPurchaseByIdQueryHandler } from './queries/find-by-id/find-purchase-by-id-query.handler';
+import { CalculatePurchasePriceQueryHandler } from './queries/calculate-purchase-price/calculate-purchase-price-query.handler';
+import { DeliveryRepository } from '../../repositories/delivery.repository';
+import { DeliveryService } from '../../services/delivery.service';
+import { AddressRepository } from '../../repositories/address.repository';
+import { PurchasePriceService } from '../../services/purchase-price.service';
 
 @Module({
   controllers: [PurchasesController],
@@ -17,14 +22,21 @@ import { FindPurchaseByIdQueryHandler } from './queries/find-by-id/find-purchase
     AuthenticationModule
   ],
   providers: [
+    AddressRepository,
+    DeliveryRepository,
+    DeliveryService,
     ProductRepository,
     PurchaseRepository,
+
+    PurchasePriceService,
 
     CreatePurchaseCommandHandler,
     RetryPurchasePaymentCommandHandler,
 
     FindPurchasesByUserAndCompanyQueryHandler,
     FindPurchaseByIdQueryHandler,
+
+    CalculatePurchasePriceQueryHandler,
 
     PurchaseSagas
   ]

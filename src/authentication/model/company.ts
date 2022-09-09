@@ -2,7 +2,8 @@ export type Company = {
     address: Address;
     cityDeliveryPrice: number;
     id: string;
-    name: string
+    name: string;
+    payment: CompanyPayment;
 }
 
 type Address = {
@@ -15,4 +16,15 @@ type Address = {
     state: string;
     latitude: number;
     longitude: number;
+}
+
+type CompanyPayment = {
+    creditCard: {
+        fee: {
+            percentage: number;
+            value: number;
+        }
+    },
+    flags: string[];
+    pixKey: string;
 }

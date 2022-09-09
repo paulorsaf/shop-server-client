@@ -11,6 +11,7 @@ export class PurchaseProduct {
     readonly priceWithDiscount: number;
     readonly stock: PurchaseProductStock;
     readonly totalPrice: number;
+    readonly weight: number;
 
     constructor(param: PurchaseParam) {
         this.companyId = param.companyId;
@@ -22,6 +23,7 @@ export class PurchaseProduct {
         this.priceWithDiscount = param.priceWithDiscount;
         this.stock = param.stock;
         this.totalPrice = this.calculateTotalPrice();
+        this.weight = param.weight;
     }
 
     hasEnoughItemsOnStock() {
@@ -47,6 +49,7 @@ type PurchaseParam = {
     price?: number;
     priceWithDiscount?: number;
     stock: PurchaseProductStock;
+    weight: number;
 }
 
 type Address = {
@@ -57,6 +60,6 @@ type Address = {
     zipCode: string;
     city: string;
     state: string;
-    latitude: number;
-    longitude: number;
+    latitude?: number;
+    longitude?: number;
 }

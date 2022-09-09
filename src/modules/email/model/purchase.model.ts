@@ -6,21 +6,21 @@ export class Purchase {
     readonly address: any;
     readonly company: Company;
     readonly payment: Payment;
+    readonly price: Price;
     readonly products: PurchaseProduct[];
     readonly user: User;
 
     readonly totalAmount: number;
-    readonly totalPrice: number;
 
     constructor(param: PurchaseParam) {
         this.address = param.address;
         this.company = param.company;
         this.payment = param.payment
+        this.price = param.price;
         this.products = param.products;
         this.user = param.user;
 
         this.totalAmount = this.calculateTotalAmount();
-        this.totalPrice = this.calculateTotalPrice();
     }
 
     private calculateTotalAmount() {
@@ -31,20 +31,13 @@ export class Purchase {
         return total;
     }
 
-    private calculateTotalPrice() {
-        let total = 0;
-        if (this.products) {
-            this.products.forEach(p => total += p.totalPrice);
-        }
-        return total;
-    }
-
 }
 
 type PurchaseParam = {
     address: Address;
     company: Company;
     payment: Payment;
+    price: Price;
     products: PurchaseProduct[];
     user: User;
 }
@@ -66,7 +59,23 @@ type Address = {
 }
 
 type Payment = {
+    card: PayByCreditCardResponse;
     error?: any;
     receiptUrl?: string;
     type: string;
+}
+
+type PayByCreditCardResponse = {
+    brand: string;
+    exp_month: number;
+    exp_year: number;
+    last4: string;
+}
+
+type Price = {
+    products: number;
+    delivery: number;
+    paymentFee: number;
+    total: number;
+    totalWithPaymentFee: number;
 }

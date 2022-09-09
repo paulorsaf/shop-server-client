@@ -9,9 +9,10 @@ import { User } from '../../authentication/model/user';
 import { CreatePurchaseCommand } from './commands/create-purchase/create-purchase.command';
 import { QueryBusMock } from '../../mocks/query-bus.mock';
 import { FindPurchasesByUserAndCompanyQuery } from './queries/find-all/find-purchases-by-user-and-company.query';
-import { RetryPaymentDTO, RetryPurchaseDTO } from './dtos/retry-purchase.dto';
+import { RetryPurchaseDTO } from './dtos/retry-purchase.dto';
 import { RetryPurchasePaymentCommand } from './commands/retry-purchase-payment/retry-purchase-payment.command';
 import { FindPurchaseByIdQuery } from './queries/find-by-id/find-purchase-by-id.query';
+import { CalculatePurchasePriceQuery } from './queries/calculate-purchase-price/calculate-purchase-price.query';
 
 describe('PurchasesController', () => {
   
@@ -19,19 +20,13 @@ describe('PurchasesController', () => {
   let commandBus: CommandBusMock;
   let queryBus: QueryBusMock;
 
-  const company: Company = {id: 'anyCompanyId'} as any;
-  const user: User = {email: "any@email.com", id: "anyUserId"} as any;
-
-  const purchaseDto = {
-    products: [{
-      productId: "anyProductId",
-      stockOptionId: "anyStockId",
-      amount: 10
-    }],
-    payment: {
-      type: "MONEY"
-    }
+  const company: Company = {
+    id: 'anyCompanyId',
+    address: {city: "anyCity", zipCode: "anyZipCode"},
+    cityDeliveryPrice: 10,
+    payment: {id: "anyPayment"}
   } as any;
+  const user: User = {email: "any@email.com", id: "anyUserId"} as any;
 
   beforeEach(async () => {
     commandBus = new CommandBusMock();
@@ -74,24 +69,65 @@ describe('PurchasesController', () => {
     )
   })
 
-  it('given create purchase, then execute create purchase command', async () => {
-    await controller.create(
-      company, user, JSON.parse(JSON.stringify(purchaseDto)), "anyFile"
-    );
+  it('given calculate price, then execute calculate purchase price query', async () => {
+    const dto = {
+      address: {destinationZipCode: "anyDestination"},
+      cityDeliveryPrice: 10,
+      paymentType: "anyPaymentType",
+      products: [{id: "anyProduct"}]
+    } as any;
 
-    expect(commandBus.executed).toEqual(
-      new CreatePurchaseCommand(
-        "anyCompanyId",
-        {
-          ...purchaseDto,
-          payment: {
-            ...purchaseDto.payment,
-            receipt: "anyFile",
-          }
+    await controller.calculatePrice(company, dto);
+
+    expect(queryBus.executedWith).toEqual(
+      new CalculatePurchasePriceQuery({
+        ...dto,
+        address: {
+          ...dto.address,
+          originZipCode: "anyZipCode"
         },
-        { email: "any@email.com", id: "anyUserId" }
-      )
+        companyCity: "anyCity",
+        payment: company.payment
+      })
     )
+  })
+
+  describe('given create purchase', () => {
+
+    it('then execute create purchase command', async () => {
+      const purchaseDto = {
+        id: "anyPurchaseDTO",
+        payment: {}
+      } as any;
+  
+      await controller.create(company, user, purchaseDto, "anyFile");
+  
+      expect(commandBus.executed).toEqual(
+        new CreatePurchaseCommand(
+          {
+            cityDeliveryPrice: 10,
+            companyCity: "anyCity",
+            id: "anyCompanyId",
+            payment: {id: "anyPayment"} as any,
+            zipCode: "anyZipCode"
+          },
+          purchaseDto,
+          { email: "any@email.com", id: "anyUserId" }
+        )
+      )
+    })
+
+    it('then send receipt to create purchase command', async () => {
+      const purchaseDto = {
+        id: "anyPurchaseDTO",
+        payment: {}
+      } as any;
+  
+      await controller.create(company, user, purchaseDto, "anyFile");
+  
+      expect(purchaseDto.payment.receipt).toEqual("anyFile");
+    })
+
   })
 
   describe('given retry purchase payment', () => {

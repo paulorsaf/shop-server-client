@@ -1,5 +1,5 @@
 import { IQueryHandler, QueryHandler } from "@nestjs/cqrs";
-import { ZipCodeNotFoundException } from "../../exceptions/zipcode-not-found.exception";
+import { ZipCodeNotFoundException } from "../../../../exceptions/zipcode-not-found.exception";
 import { AddressRepository } from "../../repositories/address.repository";
 import { FindAddressByZipcodeQuery } from "./find-address-by-zipcode.query";
 

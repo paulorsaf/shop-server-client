@@ -4,14 +4,14 @@ export class Company {
     readonly address: any;
     readonly id: string;
     readonly name: string;
-    readonly pixKey: string;
+    readonly payment: CompanyPayment;
 
     constructor(params: CompanyParams){
         this.aboutUs = params.aboutUs;
         this.address = params.address;
         this.id = params.id;
         this.name = params.name;
-        this.pixKey = params.pixKey;
+        this.payment = params.payment;
     }
 
 }
@@ -21,5 +21,12 @@ type CompanyParams = {
     address: any;
     id: string;
     name: string;
+    payment: CompanyPayment;
+}
+
+type CompanyPayment = {
+    creditCard: {
+        flags: string[]
+    }
     pixKey: string;
 }

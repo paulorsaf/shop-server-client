@@ -15,6 +15,7 @@ describe('PurchaseSagas', () => {
   let sagas: PurchaseSagas;
   
   let event: PurchaseCreatedEvent;
+  const paymentDto = { type: "ANY TYPE", receipt: "anyReceipt" };
   let purchase = {
     companyId: "anyCompanyId",
     products: [{
@@ -37,10 +38,7 @@ describe('PurchaseSagas', () => {
       "anyCompanyId",
       "anyPurchaseId",
       purchase,
-      {
-        type: "ANY TYPE",
-        receipt: "anyReceipt"
-      },
+      paymentDto,
       "anyUserId"
     );
 
@@ -86,7 +84,7 @@ describe('PurchaseSagas', () => {
           new SelectPurchasePaymentCommand(
             "anyCompanyId",
             "anyPurchaseId",
-            "anyReceipt"
+            paymentDto
           )
         );
         done();
@@ -135,7 +133,7 @@ describe('PurchaseSagas', () => {
     const event = new PurchasePaymentRetriedEvent(
       "anyCompanyId",
       "anyPurchaseId",
-      { type: "anyType", receipt: "anyReceipt" }
+      paymentDto
     );
 
     sagas.purchasePaymentRetriedMakePayment(of(event)).subscribe(response => {
@@ -143,7 +141,7 @@ describe('PurchaseSagas', () => {
         new SelectPurchasePaymentCommand(
           "anyCompanyId",
           "anyPurchaseId",
-          "anyReceipt"
+          paymentDto
         )
       );
       done();

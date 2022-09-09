@@ -1,5 +1,6 @@
 import { CqrsModule, EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
+import { PurchasePriceService } from '../../../../services/purchase-price.service';
 import { EventBusMock } from '../../../../mocks/event-bus.mock';
 import { ProductOutOfStockException } from '../../exceptions/purchase.exceptions';
 import { ProductRepository } from '../../repositories/product.repository';
@@ -14,15 +15,23 @@ describe('CreatePurchaseCommandHandler', () => {
   let handler: CreatePurchaseCommandHandler;
   let productRepository: ProductRepositoryMock;
   let purchaseRepository: PurchaseRepositoryMock;
+  let purchasePriceService: PurchasePriceServiceMock;
 
   let command: CreatePurchaseCommand;
 
   beforeEach(async () => {
     productRepository = new ProductRepositoryMock();
     purchaseRepository = new PurchaseRepositoryMock();
+    purchasePriceService = new PurchasePriceServiceMock();
 
     command = new CreatePurchaseCommand(
-      "anyCompanyId",
+      {
+        cityDeliveryPrice: 10,
+        companyCity: "anyCity",
+        id: "anyCompanyId",
+        payment: {id: "anyPayment"} as any,
+        zipCode: "anyZipCode"
+      },
       {
         deliveryAddress: {
           address: "address"
@@ -52,12 +61,14 @@ describe('CreatePurchaseCommandHandler', () => {
       ],
       providers: [
         ProductRepository,
-        PurchaseRepository
+        PurchaseRepository,
+        PurchasePriceService
       ]
     })
     .overrideProvider(EventBus).useValue(eventBus)
     .overrideProvider(ProductRepository).useValue(productRepository)
     .overrideProvider(PurchaseRepository).useValue(purchaseRepository)
+    .overrideProvider(PurchasePriceService).useValue(purchasePriceService)
     .compile();
 
     handler = module.get<CreatePurchaseCommandHandler>(CreatePurchaseCommandHandler);
@@ -107,7 +118,13 @@ class ProductRepositoryMock {
 class PurchaseRepositoryMock {
   _created = false;
 
-  create(params) {
+  create() {
     this._created = true;
+  }
+}
+
+class PurchasePriceServiceMock {
+  calculatePrice() {
+    return {};
   }
 }

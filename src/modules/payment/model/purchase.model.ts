@@ -5,20 +5,36 @@ export class Purchase {
     readonly companyId: string;
     readonly id: string;
     readonly payment: Payment;
-    readonly userId: string;
+    readonly price: Price;
+    readonly user: User;
 
     constructor(params: PurchaseParams){
         this.companyId = params.companyId;
-        this.payment = params.payment;
         this.id = params.id;
-        this.userId = params.userId;
+        this.payment = params.payment;
+        this.price = params.price;
+        this.user = params.user;
     }
 
 }
 
 type PurchaseParams = {
-    companyId: string;
+    companyId?: string;
     payment?: Payment;
-    id: string;
-    userId: string;
+    id?: string;
+    price?: Price;
+    user?: User;
+}
+
+type User = {
+    email: string,
+    id: string
+}
+
+type Price = {
+    products: number;
+    delivery: number;
+    paymentFee: number;
+    total: number;
+    totalWithPaymentFee: number;
 }

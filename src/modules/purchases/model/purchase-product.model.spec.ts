@@ -11,7 +11,8 @@ describe('Purchase product model', () => {
                     companyId: "anyCompanyId",
                     id: "anyProductId",
                     stock: {quantity: 10} as any,
-                    amount: 15
+                    amount: 15,
+                    weight: 1
                 })
     
                 expect(purchaseProduct.hasEnoughItemsOnStock()).toBeFalsy();
@@ -22,7 +23,8 @@ describe('Purchase product model', () => {
                     companyId: "anyCompanyId",
                     id: "anyProductId",
                     stock: {quantity: 10} as any,
-                    amount: 10
+                    amount: 10,
+                    weight: 1
                 })
     
                 expect(purchaseProduct.hasEnoughItemsOnStock()).toBeTruthy();
@@ -33,7 +35,8 @@ describe('Purchase product model', () => {
                     companyId: "anyCompanyId",
                     id: "anyProductId",
                     stock: {quantity: 10} as any,
-                    amount: 5
+                    amount: 5,
+                    weight: 1
                 })
     
                 expect(purchaseProduct.hasEnoughItemsOnStock()).toBeTruthy();

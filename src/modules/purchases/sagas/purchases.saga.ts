@@ -41,7 +41,7 @@ export class PurchaseSagas {
                 new SelectPurchasePaymentCommand(
                     event.companyId,
                     event.purchaseId,
-                    event.payment.receipt
+                    event.payment
                 )    
             )
         );
@@ -90,7 +90,7 @@ export class PurchaseSagas {
                 new SelectPurchasePaymentCommand(
                     event.companyId,
                     event.purchaseId,
-                    event.payment.receipt
+                    event.payment
                 )    
             )
         );

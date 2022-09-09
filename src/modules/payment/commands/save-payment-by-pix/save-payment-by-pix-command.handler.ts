@@ -49,7 +49,7 @@ export class SavePaymentByPixCommandHandler implements ICommandHandler<SavePayme
                 purchase.companyId, 
                 purchase.id,
                 purchase.payment.receiptUrl,
-                purchase.userId
+                purchase.user.id
             )
         )
     }

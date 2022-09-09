@@ -21,6 +21,14 @@ export class EmailRepository {
         return Promise.resolve({});
     }
 
+    sendPaymentSuccessToClient(purchase: Purchase){
+        const smtpEmail = this.createPaymentSuccessEmailForClient(purchase);
+
+        this.sendTransactionEmail(smtpEmail);
+        
+        return Promise.resolve({});
+    }
+
     private sendTransactionEmail(smtpEmail: SendingBlue.SendSmtpEmail){
         const apiKey = process.env.SENDINBLUE_API_KEY;
         if (apiKey) {
@@ -54,7 +62,19 @@ export class EmailRepository {
             name: purchase.company.name
         };
         smtpEmail.to = [{email: purchase.user.email}];
-        smtpEmail.htmlContent = this.getNewPurchaseEmailForCompanyHtmlClientContent(purchase);
+        smtpEmail.htmlContent = this.getNewPurchaseEmailForClientHtmlContent(purchase);
+        return smtpEmail;
+    }
+
+    private createPaymentSuccessEmailForClient(purchase: Purchase) {
+        const smtpEmail = new SendingBlue.SendSmtpEmail();
+        smtpEmail.subject = "Pagamento confirmado";
+        smtpEmail.sender = {
+            email: purchase.company.email,
+            name: purchase.company.name
+        };
+        smtpEmail.to = [{email: purchase.user.email}];
+        smtpEmail.htmlContent = this.getPaymentSuccessEmailFormClientHtmlContent(purchase);
         return smtpEmail;
     }
 
@@ -65,7 +85,7 @@ export class EmailRepository {
         `;
     }
 
-    private getNewPurchaseEmailForCompanyHtmlClientContent(purchase: Purchase) {
+    private getNewPurchaseEmailForClientHtmlContent(purchase: Purchase) {
         return `
             <p>
                 Recebemos a sua compra.<br/>
@@ -74,6 +94,15 @@ export class EmailRepository {
                         "Por favor, aguarde enquanto atendemos o seu pedido."
                         : "Por favor, aguarde enquanto confirmamos o seu pagamento."
                 }
+                ${this.getPurchaseContent(purchase)}
+            </p>
+        `;
+    }
+
+    private getPaymentSuccessEmailFormClientHtmlContent(purchase: Purchase) {
+        return `
+            <p>
+                Confirmamos o seu pagamento.<br/>
                 ${this.getPurchaseContent(purchase)}
             </p>
         `;
@@ -104,7 +133,7 @@ export class EmailRepository {
                         <div>
                             Total:
                             ${purchase.totalAmount} ${purchase.totalAmount === 1 ? "produto" : "produtos"}
-                            por R$ ${purchase.totalPrice.toFixed(2)}
+                            por R$ ${purchase.price?.total?.toFixed(2)}
                         </div>
                     </b>
                 </fieldset>
@@ -128,6 +157,46 @@ export class EmailRepository {
                 <fieldset>
                     <legend style="font-weigth:600">Dados do pagamento:</legend>
                     Tipo de pagamento: ${this.getPaymentDescription(purchase)}<br/>
+
+                    ${
+                        purchase.price ? 
+                        `
+                        <table style="border:none;border-spacing:0;margin:10px 0;">
+                            <tr>
+                                <td style="border:none">Produtos:</td>
+                                <td style="border:none" align="right">R$ ${purchase.price?.products?.toFixed(2)}</td>
+                            </tr>
+                            ${
+                                purchase.address ?
+                                `
+                                <tr>
+                                    <td style="border:none">Taxa de entrega:</td>
+                                    <td style="border:none" align="right">R$ ${purchase.price?.delivery?.toFixed(2)}</td>
+                                </tr>
+                                ` : ""
+                            }
+                            ${
+                                purchase.payment.type === 'CREDIT_CARD' ?
+                                `
+                                <tr>
+                                    <td style="border:none">Taxa do Cartão de crédito:</td>
+                                    <td style="border:none" align="right">R$ ${purchase.price?.paymentFee?.toFixed(2)}</td>
+                                </tr>
+                                ` : ""
+                            }
+                            <tr>
+                                <td style="border:none">Total:</td>
+                                <td style="border:none" align="right">R$ ${purchase.price?.totalWithPaymentFee?.toFixed(2)}</td>
+                            </tr>
+                        </table>
+                        ` : ""
+                    }
+                    ${purchase.payment.type === "CREDIT_CARD" && purchase.payment.card ?
+                        `<div>Bandeira: ${purchase.payment.card.brand}</div>
+                         <div>Número: **** **** **** ${purchase.payment.card.last4}</div>
+                         <div>Expiração: ${purchase.payment.card.exp_month}/${purchase.payment.card.exp_year}</div>`
+                        : ''
+                    }
                     ${purchase.payment.receiptUrl ?
                         `<a href="${purchase.payment.receiptUrl}" target="_blank">Ver recibo</a><br/>`
                         : ''
@@ -139,6 +208,9 @@ export class EmailRepository {
     private getPaymentDescription(purchase: Purchase) {
         if (purchase.payment.type === "MONEY") {
             return "Dinheiro";
+        }
+        if (purchase.payment.type === "CREDIT_CARD") {
+            return "Cartão de crédito";
         }
         return purchase.payment.type;
     }

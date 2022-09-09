@@ -5,10 +5,12 @@ import { calcularPrecoPrazo, PrecoPrazoResponse } from "correios-brasil/dist";
 export class DeliveryRepository {
 
     findDeliveryPrice(params: FindDeliveryPrice): Promise<number> {
+        const totalWeight = this.getProductsTotalWeight(params.products);
+
         const args = {
             sCepOrigem: params.origin.replace(/[^\d]/g, ''),
             sCepDestino: params.destination.replace(/[^\d]/g, ''),
-            nVlPeso: params.totalWeight.toFixed(2),
+            nVlPeso: totalWeight.toFixed(2),
             nCdFormato: '1',
             nVlComprimento: '20',
             nVlAltura: '20',
@@ -22,10 +24,22 @@ export class DeliveryRepository {
         });
     }
 
+    private getProductsTotalWeight(products: {amount: number, weight: number}[]) {
+        if (!products?.length) {
+            return 1;
+        }
+
+        let total = 0;
+        products.filter(p => p.amount && p.weight).forEach(p => {
+            total += (p.amount * p.weight)
+        });
+        return total || 1;
+    }
+
 }
 
 type FindDeliveryPrice = {
     destination: string;
     origin: string;
-    totalWeight: number;
+    products: {amount: number, weight: number}[];
 }

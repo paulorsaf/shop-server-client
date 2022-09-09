@@ -13,8 +13,8 @@ export type PurchaseAddressDTO = {
     zipCode: string;
     city: string;
     state: string;
-    latitude: number;
-    longitude: number;
+    latitude?: number;
+    longitude?: number;
 }
 
 export type PurchaseProductDTO = {
@@ -24,6 +24,17 @@ export type PurchaseProductDTO = {
 }
 
 export type PaymentDTO = {
+    billingAddress?: PurchaseAddressDTO;
+    creditCard?: CreditCardDTO;
     receipt?: string;
     type: string;
+}
+
+export type CreditCardDTO = {
+    cardFlag: string;
+    cardHolder: string;
+    cardNumber: string;
+    cardMonth: string;
+    cardYear: string;
+    cardCvc: string;
 }

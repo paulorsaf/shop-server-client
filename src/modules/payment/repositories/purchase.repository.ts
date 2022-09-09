@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import * as admin from 'firebase-admin';
 import { Payment } from '../model/payment.model';
 import { Purchase } from '../model/purchase.model';
+import { PayByCreditCardResponse } from './payment-gateway/payment-gateway.interface';
 
 @Injectable()
 export class PurchaseRepository {
@@ -27,7 +28,11 @@ export class PurchaseRepository {
                             type: purchase.payment.type
                         })
                         : null,
-                    userId: purchase.userId
+                    price: purchase.price,
+                    user: {
+                        email: purchase.user.email,
+                        id: purchase.user.id
+                    }
                 })
             })
     }
@@ -39,6 +44,19 @@ export class PurchaseRepository {
             .update({
                 'payment.receiptUrl': purchase.payment.receiptUrl,
                 status: "VERIFYING_PAYMENT"
+            })
+    }
+
+    updatePaymentByCreditCard(update: UpdatePaymentByCreditCard) {
+        return admin.firestore()
+            .collection('purchases')
+            .doc(update.purchaseId)
+            .update({
+                'payment.receiptUrl': update.paymentDetails.receiptUrl,
+                'payment.card': update.paymentDetails.cardDetails,
+                'payment.id': update.paymentDetails.id,
+                'payment.status': update.paymentDetails.status,
+                status: "PAID"
             })
     }
 
@@ -56,4 +74,9 @@ export class PurchaseRepository {
 type UpdateParams = {
     purchaseId: string;
     receiptUrl: string;
+}
+
+type UpdatePaymentByCreditCard = {
+    purchaseId: string;
+    paymentDetails: PayByCreditCardResponse;
 }

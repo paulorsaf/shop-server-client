@@ -14,6 +14,8 @@ import { Base64FileUploadToFileStrategy } from '../../file-upload/strategies/bas
 import { RetryPurchaseDTO } from './dtos/retry-purchase.dto';
 import { RetryPurchasePaymentCommand } from './commands/retry-purchase-payment/retry-purchase-payment.command';
 import { FindPurchaseByIdQuery } from './queries/find-by-id/find-purchase-by-id.query';
+import { CalculatePriceDTO } from './dtos/calculate-price.dto';
+import { CalculatePurchasePriceQuery } from './queries/calculate-purchase-price/calculate-purchase-price.query';
 
 @Controller('purchases')
 export class PurchasesController {
@@ -31,6 +33,24 @@ export class PurchasesController {
         company.id,
         user.id
       )
+    )
+  }
+
+  @UseGuards(CompanyStrategy, JwtStrategy)
+  @Patch('prices')
+  calculatePrice(@AuthCompany() company: Company, @Body() priceDto: CalculatePriceDTO) {
+    return this.queryBus.execute(
+      new CalculatePurchasePriceQuery({
+        address: {
+          destinationZipCode: priceDto.address?.destinationZipCode,
+          originZipCode: company.address.zipCode
+        },
+        cityDeliveryPrice: company.cityDeliveryPrice,
+        companyCity: company.address.city,
+        payment: company.payment,
+        paymentType: priceDto.paymentType,
+        products: priceDto.products
+      })
     )
   }
 
@@ -62,7 +82,13 @@ export class PurchasesController {
 
     return this.commandBus.execute(
       new CreatePurchaseCommand(
-        company.id,
+        {
+          cityDeliveryPrice: company.cityDeliveryPrice,
+          companyCity: company.address.city,
+          id: company.id,
+          payment: company.payment,
+          zipCode: company.address.zipCode
+        },
         purchaseDto,
         { email: user.email, id: user.id }
       )

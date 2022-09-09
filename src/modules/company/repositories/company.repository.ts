@@ -20,7 +20,7 @@ export class CompanyRepository {
                     address: db.address,
                     id: db.id,
                     name: db.name,
-                    pixKey: db.pixKey
+                    payment: db.payment
                 })
             })
     }

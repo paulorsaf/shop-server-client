@@ -59,10 +59,20 @@ describe('SavePaymentByPixCommandHandler', () => {
 
   describe('given purchase found', () => {
 
-    let purchase: PurchaseMock;
+    let purchase;
 
     beforeEach(() => {
-      purchase = new PurchaseMock();
+      purchase = {
+        companyId: "anyCompanyId",
+        payment: {
+          receiptUrl: "",
+          type: "PIX"
+        },
+        id: "anyPurchaseId",
+        user: {
+          id: "anyUserId"
+        }
+      };
       purchaseRepository._response = purchase;
 
       storageRepository._response = "anyReceiptUrl";
@@ -127,14 +137,4 @@ class StorageRepositoryMock {
     this._isStored = true;
     return this._response;
   }
-}
-
-class PurchaseMock {
-  companyId = "anyCompanyId";
-  payment = {
-    receiptUrl: "",
-    type: "PIX"
-  };
-  id: "anyPurchaseId";
-  userId: "anyUserId";
 }

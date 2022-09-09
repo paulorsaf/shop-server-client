@@ -1,4 +1,4 @@
-import { Address } from "../model/address.model";
+import { Address } from "../../../models/address.model";
 
 export type CompanyDTO = {
     address: Address;

@@ -30,12 +30,14 @@
     "@sendinblue/client": "^3.2.2",
     "correios-brasil": "^3.0.0",
     "date-fns": "^2.29.1",
+    "dotenv": "^16.0.2",
     "firebase": "^9.9.0",
     "firebase-admin": "^11.0.0",
     "firebase-functions": "^3.22.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
+    "stripe": "^10.8.0",
     "webpack": "^5.74.0"
   },
   "devDependencies": {

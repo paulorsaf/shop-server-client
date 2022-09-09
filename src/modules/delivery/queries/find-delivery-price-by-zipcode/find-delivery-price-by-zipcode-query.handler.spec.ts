@@ -1,8 +1,7 @@
 import { CqrsModule } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
+import { DeliveryService } from '../../../../services/delivery.service';
 import { ZipCodeNotFoundException } from '../../exceptions/zipcode-not-found.exception';
-import { AddressRepository } from '../../repositories/address.repository';
-import { DeliveryRepository } from '../../repositories/delivery.repository';
 import { FindDeliveryPriceByZipCodeQueryHandler } from './find-delivery-price-by-zipcode-query.handler';
 
 describe('FindDeliveryPriceByZipCodeQueryHandler', () => {
@@ -10,12 +9,11 @@ describe('FindDeliveryPriceByZipCodeQueryHandler', () => {
   let handler: FindDeliveryPriceByZipCodeQueryHandler;
 
   let query;
-  let addressRepository: AddressRepositoryMock;
-  let deliveryRepository: DeliveryRepositoryMock;
+  let deliveryService: DeliveryServiceMock;
 
   beforeEach(async () => {
-    addressRepository = new AddressRepositoryMock();
-    deliveryRepository = new DeliveryRepositoryMock();
+    deliveryService = new DeliveryServiceMock();
+
     query = {
       company: {address: {city: "anyCity"} as any, cityDeliveryPrice: 10},
       zipCode: 'anyZipCode',
@@ -30,78 +28,27 @@ describe('FindDeliveryPriceByZipCodeQueryHandler', () => {
         CqrsModule
       ],
       providers: [
-        AddressRepository,
-        DeliveryRepository
+        DeliveryService
       ]
     })
-    .overrideProvider(AddressRepository).useValue(addressRepository)
-    .overrideProvider(DeliveryRepository).useValue(deliveryRepository)
+    .overrideProvider(DeliveryService).useValue(deliveryService)
     .compile();
 
     handler = module.get<FindDeliveryPriceByZipCodeQueryHandler>(FindDeliveryPriceByZipCodeQueryHandler);
   });
 
-  describe('given address found by zipcode', () => {
+  describe('given find delivery price by zip code', () => {
 
-    it('when company is in the same city, then return city delivery value', async () => {
-      addressRepository._response = {city: "anyCity"};
+    it('when success, then return delivery price', async () => {
+      deliveryService._response = Promise.resolve(10);
+      
+      const price = await handler.execute(query);
 
-      const response = await handler.execute(query);
-  
-      expect(response).toEqual(10);
+      expect(price).toEqual(10);
     });
 
-    describe('when company is in a different city', () => {
-
-      beforeEach(() => {
-        addressRepository._response = {city: "anyOtherCity"};
-        deliveryRepository._response = 100;
-      })
-
-      it('and products have weight, then calculate delivery price with total weight', async () => {
-        await handler.execute(query);
-    
-        expect(deliveryRepository._calledWith.totalWeight).toEqual(6);
-      });
-
-      it('and no products defined, then calculate delivery price weight of 1kg', async () => {
-        query.products = [];
-
-        await handler.execute(query);
-    
-        expect(deliveryRepository._calledWith.totalWeight).toEqual(1);
-      });
-
-      it('and products dont have weight defined, then calculate delivery price weight of 1kg', async () => {
-        query.products[0].weight = undefined;
-
-        await handler.execute(query);
-    
-        expect(deliveryRepository._calledWith.totalWeight).toEqual(1);
-      });
-
-      it('then return mail delivery price', async () => {
-        const response = await handler.execute(query);
-    
-        expect(response).toEqual(100);
-      });
-
-    })
-
-  });
-
-  describe('given address not found by zipcode', () => {
-
-    it('then throw not found error', async () => {
-      await expect(handler.execute(query)).rejects.toThrowError(ZipCodeNotFoundException);
-    });
-
-  });
-
-  describe('given error on find address by zipcode', () => {
-
-    it('then throw not found error', async () => {
-      addressRepository._response = Promise.reject({});
+    it('when fail, then throw zip code not found exception', async () => {
+      deliveryService._response = Promise.reject({});
 
       await expect(handler.execute(query)).rejects.toThrowError(ZipCodeNotFoundException);
     });
@@ -110,17 +57,10 @@ describe('FindDeliveryPriceByZipCodeQueryHandler', () => {
 
 });
 
-class AddressRepositoryMock {
-  _response;
-  findByZipCode() {
-    return this._response;
-  }
-}
-
-class DeliveryRepositoryMock {
+class DeliveryServiceMock {
   _calledWith;
   _response;
-  findDeliveryPrice(params) {
+  calculateDelivery(params) {
     this._calledWith = params;
     return this._response;
   }

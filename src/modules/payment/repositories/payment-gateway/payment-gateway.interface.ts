@@ -1,0 +1,30 @@
+import { AddressDTO, CreditCardDTO } from "../../dtos/payment.dto";
+
+export interface PaymentGateway {
+
+    payByCreditCard(payment: MakePayment): Promise<PayByCreditCardResponse>;
+
+}
+
+export type MakePayment = {
+    billingAddress: AddressDTO,
+    companyId: string,
+    creditCard: CreditCardDTO,
+    totalPrice: number;
+    user: {
+        email: string;
+    }
+}
+
+export type PayByCreditCardResponse = {
+    cardDetails: {
+        brand: string;
+        exp_month: number;
+        exp_year: number;
+        id: string;
+        last4: string;
+    };
+    id: string;
+    receiptUrl: string;
+    status: string;
+}
