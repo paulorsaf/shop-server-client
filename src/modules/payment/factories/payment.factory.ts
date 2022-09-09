@@ -10,7 +10,7 @@ export class PaymentFactory {
     createPayment(companyId: string): PaymentGateway {
         const env = dotenv.config();
 
-        const stripeKey = env.parsed[`${companyId}_KEY`];
+        const stripeKey = env.parsed[`_${companyId.toUpperCase()}_PAYMENT_KEY`];
         const apiVersion = '2022-08-01'
         const stripe = new Stripe(stripeKey, {apiVersion});
         

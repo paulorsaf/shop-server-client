@@ -1,20 +1,25 @@
 steps:
-    - name: node
-      entrypoint: npm
-      args: ['install', --legacy-peer-deps]
-    - name: node
-      entrypoint: npm
-      args: ['run', 'build']
-    - name: node
-      entrypoint: npm
-      args: ['test']
-    # - name: node
-    #   entrypoint: npm
-    #   args: ['run', 'test:e2e']
-    - name: 'gcr.io/cloud-builders/gcloud'
-      args:
-      - functions
-      - deploy
-      - shop-client-server
-      - --memory=256MB
-      - --region=southamerica-east1
+  - name: node
+    entrypoint: npm
+    args: ['install', --legacy-peer-deps]
+  - name: node
+    entrypoint: npm
+    args: ['run', 'build']
+  - name: node
+    entrypoint: npm
+    args: ['test']
+  # - name: node
+  #   entrypoint: npm
+  #   args: ['run', 'test:e2e']
+  - name: node:10.15.1
+    entrypoint: npm
+    args: ["run", "create-env"]
+    env:
+      - '_TOQX2RIFBZ5TAV2NS2FG_PAYMENT_KEY=${_TOQX2RIFBZ5TAV2NS2FG_PAYMENT_KEY}'
+  - name: 'gcr.io/cloud-builders/gcloud'
+    args:
+    - functions
+    - deploy
+    - shop-client-server
+    - --memory=256MB
+    - --region=southamerica-east1
