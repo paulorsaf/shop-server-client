@@ -65,15 +65,10 @@ export class PurchaseRepository {
             .collection('purchases')
             .doc(purchase.id)
             .update({
-                'payment.error': JSON.parse(JSON.stringify(purchase.payment.error))
+                'payment.error': purchase.payment.error?.toString() || "Internal server error"
             });
     }
 
-}
-
-type UpdateParams = {
-    purchaseId: string;
-    receiptUrl: string;
 }
 
 type UpdatePaymentByCreditCard = {
