@@ -1,6 +1,6 @@
 import Stripe from 'stripe';
 import { InternalServerErrorException } from '@nestjs/common';
-import { MakePayment, PayByCreditCardResponse, PaymentGateway } from './payment-gateway.interface';
+import { FindCreditCards, FindCreditCardsResponse, MakePayment, PayByCreditCardResponse, PaymentGateway } from './payment-gateway.interface';
 
 export class StripeRepository implements PaymentGateway {
 
@@ -10,9 +10,28 @@ export class StripeRepository implements PaymentGateway {
         this.stripe = stripe;
     }
 
+    async findCreditCards(find: FindCreditCards): Promise<FindCreditCardsResponse[]> {
+        const customer = await this.findCustomer(find.email);
+        if (!customer) {
+            return [];
+        }
+
+        const creditCards = await this.findCustomerCreditCards(customer);
+
+        return creditCards.data
+            .filter(d => d.card)
+            .map(d => ({
+                brand: d.card.brand,
+                exp_month: d.card.exp_month,
+                exp_year: d.card.exp_year,
+                id: d.id,
+                last4: d.card.last4
+            }));
+    }
+
     async payByCreditCard(payment: MakePayment): Promise<PayByCreditCardResponse> {
         try {
-            const customer = await this.getCustomer(payment.user.email);
+            const customer = await this.findOrCreateCustomer(payment.user.email);
             const paymentMethod = await this.createPaymentMethod(customer, payment);
             const paymentIntent = await this.createPaymentIntent(customer, paymentMethod, payment);
 
@@ -25,6 +44,17 @@ export class StripeRepository implements PaymentGateway {
         } catch (error) {
             throw new InternalServerErrorException(error.message);
         }
+    }
+
+    private async findCustomerCreditCards(customer: Stripe.Customer): Promise<Stripe.ApiList<Stripe.PaymentMethod>> {
+        const creditCards = await this.stripe.paymentMethods.list({
+            type: 'card',
+            customer: customer.id
+        })
+        if (!creditCards?.data?.length) {
+            return {data: []} as any;
+        }
+        return creditCards;
     }
 
     private createCardDetails(intent: Stripe.PaymentIntent, method: Stripe.PaymentMethod) {
@@ -47,18 +77,26 @@ export class StripeRepository implements PaymentGateway {
         return intent.charges.data[0].receipt_url;
     }
 
-    private async getCustomer(email: string) {
+    private async findOrCreateCustomer(email: string) {
+        let customer = await this.findCustomer(email);
+        if (!customer) {
+            return this.createCustomer(email);
+        }
+        return customer;
+    }
+
+    private async findCustomer(email: string) {
         const customers = await this.stripe.customers.search({
             query: `email:\'${email}\'`, limit: 1
         });
 
-        let customer = customers?.data?.length ? customers.data[0] : null;
-        if (!customer) {
-            customer = await this.stripe.customers.create({
-                email: email
-            })
-        }
-        return customer;
+        return customers?.data?.length ? customers.data[0] : null;;
+    }
+
+    private async createCustomer(email: string) {
+        return await this.stripe.customers.create({
+            email: email
+        })
     }
 
     private async createPaymentMethod(customer: Stripe.Customer, payment: MakePayment) {

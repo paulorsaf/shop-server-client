@@ -5,20 +5,29 @@ import { SavePaymentByPixCommandHandler } from './commands/save-payment-by-pix/s
 import { SavePaymentErrorCommandHandler } from './commands/save-payment-error/save-payment-error-command.handler';
 import { SelectPurchasePaymentCommandHandler } from './commands/select-payment/select-purchase-payment-command.handler';
 import { PaymentFactory } from './factories/payment.factory';
+import { PaymentsController } from './payment.controller';
 import { StripeRepository } from './repositories/payment-gateway/stripe.repository';
 import { PurchaseRepository } from './repositories/purchase.repository';
 import { StorageRepository } from './repositories/storage.repository';
 import { PaymentSagas } from './sagas/payment.saga';
+import { AuthenticationModule } from '../../authentication/authentication.module';
+import { FindUserCreditCardsQueryHandler } from './queries/find-user-credit-cards/find-user-credit-cards-query.handler';
 
 @Module({
+  controllers: [
+    PaymentsController
+  ],
   imports: [
-    CqrsModule
+    CqrsModule,
+    AuthenticationModule
   ],
   providers: [
     StripeRepository,
     PaymentFactory,
     PurchaseRepository,
     StorageRepository,
+
+    FindUserCreditCardsQueryHandler,
 
     SelectPurchasePaymentCommandHandler,
     SavePaymentByPixCommandHandler,

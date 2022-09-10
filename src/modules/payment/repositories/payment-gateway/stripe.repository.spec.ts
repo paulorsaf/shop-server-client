@@ -13,6 +13,46 @@ describe('Stripe repository', () => {
         repository = new StripeRepository(stripe as any);
     });
 
+    describe('given find credit cards', () => {
+
+        const email = "any@email.com";
+        const card = {
+            brand: "anyBrand",
+            exp_month: "anyExpMonth",
+            exp_year: "anyExpYear",
+            id: "anyPaymentMethodId",
+            last4: "anyLast4"
+        };
+
+        beforeEach(() => {
+            stripe._customerSearchResponse = Promise.resolve({data: [{id: "anyCustomerId"}]});
+            stripe._paymentMethodListResponse = {data: [{id: "anyPaymentMethodId", card}]};
+        })
+
+        it('when success, then return payment data', async () => {
+            const response = await repository.findCreditCards({email});
+    
+            expect(response).toEqual([card]);
+        })
+
+        it('when customer not found, then return empty', async () => {
+            stripe._customerSearchResponse = {data: []};
+
+            const response = await repository.findCreditCards({email});
+
+            expect(response).toEqual([]);
+        })
+
+        it('when credit cards not found, then return empty', async () => {
+            stripe._paymentMethodListResponse = {data: []};
+
+            const response = await repository.findCreditCards({email});
+
+            expect(response).toEqual([]);
+        })
+
+    })
+
     describe('given payment by credit card', () => {
 
         let payment: MakePayment;
@@ -137,6 +177,7 @@ class StripeMock {
     _customerSearchResponse;
     _paymentMadeResponse;
     _paymentMethodCreateResponse;
+    _paymentMethodListResponse;
 
     _isCustomerCreated = false;
     _isPaymentMade = false;
@@ -161,7 +202,8 @@ class StripeMock {
         create: () => {
             this._isPaymentMethodCreated = true;
             return this._paymentMethodCreateResponse;
-        }
+        },
+        list: () => this._paymentMethodListResponse
     }
 
 }
