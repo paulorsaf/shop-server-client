@@ -12,6 +12,7 @@ import { StorageRepository } from './repositories/storage.repository';
 import { PaymentSagas } from './sagas/payment.saga';
 import { AuthenticationModule } from '../../authentication/authentication.module';
 import { FindUserCreditCardsQueryHandler } from './queries/find-user-credit-cards/find-user-credit-cards-query.handler';
+import { DeleteCreditCardByIdCommandHandler } from './commands/delete-credit-card-by-id/delete-credit-card-by-id-command.handler';
 
 @Module({
   controllers: [
@@ -29,6 +30,7 @@ import { FindUserCreditCardsQueryHandler } from './queries/find-user-credit-card
 
     FindUserCreditCardsQueryHandler,
 
+    DeleteCreditCardByIdCommandHandler,
     SelectPurchasePaymentCommandHandler,
     SavePaymentByPixCommandHandler,
     SavePaymentErrorCommandHandler,

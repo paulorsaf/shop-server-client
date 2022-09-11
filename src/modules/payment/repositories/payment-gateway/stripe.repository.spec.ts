@@ -53,6 +53,47 @@ describe('Stripe repository', () => {
 
     })
 
+    describe('given find credit card by id', () => {
+
+        const id = "anyPaymentMethodId";
+        const card = {
+            brand: "anyBrand",
+            exp_month: "anyExpMonth",
+            exp_year: "anyExpYear",
+            id: "anyPaymentMethodId",
+            last4: "anyLast4"
+        };
+
+        it('when credit card found, then return credit card', async () => {
+            stripe._paymentMethodRetrieveResponse = {id: "anyPaymentMethodId", card};
+
+            const response = await repository.findCreditCardById(id);
+    
+            expect(response).toEqual(card);
+        })
+
+        it('when credit card not found, then return empty', async () => {
+            stripe._customerSearchResponse = {data: []};
+
+            const response = await repository.findCreditCardById(id);
+
+            expect(response).toBeNull();
+        })
+
+    })
+
+    describe('given delete credit card by id', () => {
+
+        const id = "anyPaymentMethodId";
+
+        it('then delete credit card', async () => {
+            await repository.deleteCreditCard(id);
+    
+            expect(stripe._isPaymentMethodDeleted).toBeTruthy();
+        })
+
+    })
+
     describe('given payment by credit card', () => {
 
         let payment: MakePayment;
@@ -178,11 +219,13 @@ class StripeMock {
     _paymentMadeResponse;
     _paymentMethodCreateResponse;
     _paymentMethodListResponse;
+    _paymentMethodRetrieveResponse;
 
     _isCustomerCreated = false;
     _isPaymentMade = false;
     _isPaymentMethodAttached = false;
     _isPaymentMethodCreated = false;
+    _isPaymentMethodDeleted = false;
 
     paymentIntents = {
         create: () => {
@@ -203,7 +246,9 @@ class StripeMock {
             this._isPaymentMethodCreated = true;
             return this._paymentMethodCreateResponse;
         },
-        list: () => this._paymentMethodListResponse
+        detach: () => this._isPaymentMethodDeleted = true,
+        list: () => this._paymentMethodListResponse,
+        retrieve: () => this._paymentMethodRetrieveResponse
     }
 
 }

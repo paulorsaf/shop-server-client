@@ -16,6 +16,7 @@ import { PurchaseGeolocationSavedEvent } from "../modules/address/events/puchase
 import { PaymentByCreditCardCreatedEvent } from "../modules/payment/events/payment-by-credit-card-created.event";
 import { PaymentSuccessEmailSentToClientEvent } from "../modules/email/events/payment-success-email-sent-to-client.event";
 import { SendPaymentSuccessEmailToClientFailedEvent } from "../modules/email/events/send-payment-success-email-to-client-failed.event";
+import { CreditCardDeletedEvent } from "../modules/payment/events/credit-card-deleted.event";
 
 @EventsHandler(
     PurchaseCreatedEvent,
@@ -26,6 +27,8 @@ import { SendPaymentSuccessEmailToClientFailedEvent } from "../modules/email/eve
     PaymentFailedEvent,
     PurchaseGeolocationSavedEvent,
     PurchasePaymentRetriedEvent,
+
+    CreditCardDeletedEvent,
 
     NewPurchaseEmailSentToCompanyEvent,
     SendNewPurchaseEmailToCompanyFailedEvent,

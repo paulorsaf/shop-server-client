@@ -2,6 +2,8 @@ import { AddressDTO, CreditCardDTO } from "../../dtos/payment.dto";
 
 export interface PaymentGateway {
 
+    deleteCreditCard(id: string);
+    findCreditCardById(id: string): Promise<FindCreditCardsResponse>;
     findCreditCards(find: FindCreditCards): Promise<FindCreditCardsResponse[]>;
     payByCreditCard(payment: MakePayment): Promise<PayByCreditCardResponse>;
 

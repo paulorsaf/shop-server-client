@@ -10,6 +10,25 @@ export class StripeRepository implements PaymentGateway {
         this.stripe = stripe;
     }
 
+    async deleteCreditCard(id: string) {
+        await this.stripe.paymentMethods.detach(id);
+    }
+
+    async findCreditCardById(id: string): Promise<FindCreditCardsResponse> {
+        const response = await this.stripe.paymentMethods.retrieve(id);
+        if (!response?.card) {
+            return null;
+        }
+
+        return {
+            brand: response.card.brand,
+            exp_month: response.card.exp_month,
+            exp_year: response.card.exp_year,
+            id: response.id,
+            last4: response.card.last4
+        };
+    }
+
     async findCreditCards(find: FindCreditCards): Promise<FindCreditCardsResponse[]> {
         const customer = await this.findCustomer(find.email);
         if (!customer) {
