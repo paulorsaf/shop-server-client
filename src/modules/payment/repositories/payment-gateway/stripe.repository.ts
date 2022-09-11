@@ -1,6 +1,6 @@
 import Stripe from 'stripe';
 import { InternalServerErrorException } from '@nestjs/common';
-import { FindCreditCards, FindCreditCardsResponse, MakePayment, PayByCreditCardResponse, PaymentGateway } from './payment-gateway.interface';
+import { FindCreditCards, FindCreditCardsResponse, MakePayment, MakePaymentBySavedCreditCard, PayByCreditCardResponse, PaymentGateway } from './payment-gateway.interface';
 
 export class StripeRepository implements PaymentGateway {
 
@@ -52,10 +52,31 @@ export class StripeRepository implements PaymentGateway {
         try {
             const customer = await this.findOrCreateCustomer(payment.user.email);
             const paymentMethod = await this.createPaymentMethod(customer, payment);
-            const paymentIntent = await this.createPaymentIntent(customer, paymentMethod, payment);
+            const paymentIntent =
+                await this.createPaymentIntent(customer, paymentMethod.id, payment.totalPrice);
 
             return Promise.resolve({
-                cardDetails: this.createCardDetails(paymentIntent, paymentMethod),
+                cardDetails: this.createCardDetails(paymentIntent, paymentMethod.id),
+                id: paymentIntent.id,
+                receiptUrl: this.getReceiptUrl(paymentIntent),
+                status: paymentIntent.status
+            });
+        } catch (error) {
+            throw new InternalServerErrorException(error.message);
+        }
+    }
+
+    async payBySavedCreditCard(payment: MakePaymentBySavedCreditCard): Promise<PayByCreditCardResponse> {
+        try {
+            const customer = await this.findCustomer(payment.user.email);
+            if (!customer) {
+                throw new InternalServerErrorException("Cartão não encontrado");
+            }
+            const paymentIntent =
+                await this.createPaymentIntent(customer, payment.id, payment.totalPrice);
+
+            return Promise.resolve({
+                cardDetails: this.createCardDetails(paymentIntent, payment.id),
                 id: paymentIntent.id,
                 receiptUrl: this.getReceiptUrl(paymentIntent),
                 status: paymentIntent.status
@@ -76,7 +97,7 @@ export class StripeRepository implements PaymentGateway {
         return creditCards;
     }
 
-    private createCardDetails(intent: Stripe.PaymentIntent, method: Stripe.PaymentMethod) {
+    private createCardDetails(intent: Stripe.PaymentIntent, paymentMethodId: string) {
         if (!intent.charges.data?.length) {
             return null;
         }
@@ -84,7 +105,7 @@ export class StripeRepository implements PaymentGateway {
             brand: intent.charges.data[0].payment_method_details?.card?.brand,
             exp_month: intent.charges.data[0].payment_method_details?.card?.exp_month,
             exp_year: intent.charges.data[0].payment_method_details?.card?.exp_year,
-            id: method.id,
+            id: paymentMethodId,
             last4: intent.charges.data[0].payment_method_details?.card?.last4
         };
     }
@@ -143,14 +164,16 @@ export class StripeRepository implements PaymentGateway {
         return paymentMethod;
     }
 
-    private async createPaymentIntent(customer: Stripe.Customer, method: Stripe.PaymentMethod, payment: MakePayment) {
+    private async createPaymentIntent(
+        customer: Stripe.Customer, paymentMethodId: string, totalPrice: number
+    ) {
         const paymentIntent = await this.stripe.paymentIntents.create({
-            amount: parseInt((payment.totalPrice * 100).toFixed(0)),
+            amount: parseInt((totalPrice * 100).toFixed(0)),
             currency: 'brl',
             customer: customer.id,
             confirm: true,
             capture_method: 'automatic',
-            payment_method: method.id
+            payment_method: paymentMethodId
         })
         return paymentIntent
     }

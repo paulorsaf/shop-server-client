@@ -13,6 +13,7 @@ import { PaymentSagas } from './sagas/payment.saga';
 import { AuthenticationModule } from '../../authentication/authentication.module';
 import { FindUserCreditCardsQueryHandler } from './queries/find-user-credit-cards/find-user-credit-cards-query.handler';
 import { DeleteCreditCardByIdCommandHandler } from './commands/delete-credit-card-by-id/delete-credit-card-by-id-command.handler';
+import { MakePaymentBySavedCreditCardCommandHandler } from './commands/make-payment-by-saved-credit-card/make-payment-by-saved-credit-card-command.handler';
 
 @Module({
   controllers: [
@@ -35,6 +36,7 @@ import { DeleteCreditCardByIdCommandHandler } from './commands/delete-credit-car
     SavePaymentByPixCommandHandler,
     SavePaymentErrorCommandHandler,
     MakePaymentByCreditCardCommandHandler,
+    MakePaymentBySavedCreditCardCommandHandler,
 
     PaymentSagas
   ]

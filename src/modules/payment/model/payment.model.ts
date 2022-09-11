@@ -1,6 +1,6 @@
 export class Payment {
 
-    public error: any;
+    error: any;
     receiptUrl: string;
     readonly type: string;
 

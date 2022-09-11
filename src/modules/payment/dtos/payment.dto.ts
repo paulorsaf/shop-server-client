@@ -2,6 +2,7 @@
 export type PaymentDTO = {
     billingAddress?: AddressDTO;
     creditCard?: CreditCardDTO;
+    creditCardId?: string;
     receipt?: string;
     type: string;
 }

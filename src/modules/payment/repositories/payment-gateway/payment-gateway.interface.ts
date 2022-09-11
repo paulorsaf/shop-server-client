@@ -6,6 +6,7 @@ export interface PaymentGateway {
     findCreditCardById(id: string): Promise<FindCreditCardsResponse>;
     findCreditCards(find: FindCreditCards): Promise<FindCreditCardsResponse[]>;
     payByCreditCard(payment: MakePayment): Promise<PayByCreditCardResponse>;
+    payBySavedCreditCard(payment: MakePaymentBySavedCreditCard): Promise<PayByCreditCardResponse>;
 
 }
 
@@ -25,6 +26,14 @@ export type MakePayment = {
     billingAddress: AddressDTO,
     companyId: string,
     creditCard: CreditCardDTO,
+    totalPrice: number;
+    user: {
+        email: string;
+    }
+}
+
+export type MakePaymentBySavedCreditCard = {
+    id: string;
     totalPrice: number;
     user: {
         email: string;

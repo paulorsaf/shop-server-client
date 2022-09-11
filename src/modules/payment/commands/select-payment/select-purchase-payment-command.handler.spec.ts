@@ -7,6 +7,7 @@ import { SelectPurchasePaymentCommandHandler } from './select-purchase-payment-c
 import { SelectPurchasePaymentCommand } from './select-purchase-payment.command';
 import { PaymentByCreditCardSelectedEvent } from '../../events/payment-by-credit-card-selected.event';
 import { Purchase } from '../../model/purchase.model';
+import { PaymentBySavedCreditCardSelectedEvent } from '../../events/payment-by-saved-credit-card-selected.event';
 
 describe('SelectPurchasePaymentCommandHandler', () => {
 
@@ -77,7 +78,7 @@ describe('SelectPurchasePaymentCommandHandler', () => {
       );
     })
   
-    it('when payment by credit card, then publish payment by credit card selected event', async () => {
+    it('when payment by new credit card, then publish payment by credit card selected event', async () => {
       const purchase = new Purchase({
         payment: {
           type: "CREDIT_CARD"
@@ -93,6 +94,27 @@ describe('SelectPurchasePaymentCommandHandler', () => {
           "anyPurchaseId",
           command.payment.billingAddress,
           command.payment.creditCard
+        )
+      );
+    })
+  
+    it('when payment by saved credit card, then publish payment by saved credit card selected event', async () => {
+      payment.creditCardId = "anyCreditCardId";
+
+      const purchase = new Purchase({
+        payment: {
+          type: "CREDIT_CARD"
+        } as any
+      });
+      purchaseRepository._response = Promise.resolve(purchase);
+  
+      await handler.execute(command);
+  
+      expect(eventBus.published).toEqual(
+        new PaymentBySavedCreditCardSelectedEvent(
+          "anyCompanyId",
+          "anyPurchaseId",
+          "anyCreditCardId"
         )
       );
     })

@@ -1,5 +1,5 @@
 import { InternalServerErrorException } from "@nestjs/common";
-import { MakePayment } from "./payment-gateway.interface";
+import { MakePayment, MakePaymentBySavedCreditCard } from "./payment-gateway.interface";
 import { StripeRepository } from "./stripe.repository";
 
 describe('Stripe repository', () => {
@@ -205,6 +205,92 @@ describe('Stripe repository', () => {
             stripe._paymentMadeResponse = Promise.reject("anyError");
 
             await expect(repository.payByCreditCard(payment))
+                .rejects.toThrowError(InternalServerErrorException);
+        })
+
+    })
+
+    describe('given payment by saved credit card', () => {
+
+        let payment: MakePaymentBySavedCreditCard;
+
+        beforeEach(() => {
+            payment = {
+                id: "anyCreditCardId",
+                totalPrice: 15,
+                user: {
+                    email: "testing@email.com"
+                }
+            };
+
+            stripe._customerSearchResponse = Promise.resolve({data: [{id: "anyCustomerId"}]});
+            stripe._paymentMadeResponse = Promise.resolve({
+                id: "anyPaymentIntentId",
+                charges: {
+                    data: [{
+                        receipt_url: "anyReceiptUrl",
+                        payment_method_details: {
+                            card: {
+                                brand: "anyBrand",
+                                exp_month: "anyExpMonth",
+                                exp_year: "anyExpYear",
+                                last4: "1234"
+                            }
+                        }
+                    }]
+                },
+                status: "anyPaymentIntentStatus"
+            });
+        })
+
+        it('when success, then return payment data', async () => {
+            const response = await repository.payBySavedCreditCard(payment);
+    
+            expect(response).toEqual({
+                cardDetails: {
+                    brand: "anyBrand",
+                    exp_month: "anyExpMonth",
+                    exp_year: "anyExpYear",
+                    id: "anyCreditCardId",
+                    last4: "1234"
+                },
+                id: "anyPaymentIntentId",
+                receiptUrl: "anyReceiptUrl",
+                status: "anyPaymentIntentStatus"
+            })
+        })
+
+        it('when customer found, then do not create new customer', async () => {
+            await repository.payBySavedCreditCard(payment);
+
+            expect(stripe._isCustomerCreated).toBeFalsy();
+        })
+
+        it('when customer not found, then throw internal server error exception', async () => {
+            stripe._customerSearchResponse = {data: []};
+            stripe._customerCreateResponse = {id: "anyCustomerId"};
+
+            await expect(repository.payBySavedCreditCard(payment))
+                .rejects.toThrowError(InternalServerErrorException);
+        })
+
+        it('when search customer failed, then return internal server error', async () => {
+            stripe._customerSearchResponse = Promise.reject("anyError");
+
+            await expect(repository.payBySavedCreditCard(payment))
+                .rejects.toThrowError(InternalServerErrorException);
+        })
+
+        it('when customer found, then make payment', async () => {
+            await repository.payBySavedCreditCard(payment);
+
+            expect(stripe._isPaymentMade).toBeTruthy();
+        })
+
+        it('when payment failed, then return internal server error', async () => {
+            stripe._paymentMadeResponse = Promise.reject("anyError");
+
+            await expect(repository.payBySavedCreditCard(payment))
                 .rejects.toThrowError(InternalServerErrorException);
         })
 

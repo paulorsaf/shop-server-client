@@ -42,7 +42,7 @@ export class PurchaseSagas {
                     event.companyId,
                     event.purchaseId,
                     event.payment
-                )    
+                )
             )
         );
 

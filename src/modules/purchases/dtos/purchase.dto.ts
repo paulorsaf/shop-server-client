@@ -26,6 +26,7 @@ export type PurchaseProductDTO = {
 export type PaymentDTO = {
     billingAddress?: PurchaseAddressDTO;
     creditCard?: CreditCardDTO;
+    creditCardId?: string;
     receipt?: string;
     type: string;
 }

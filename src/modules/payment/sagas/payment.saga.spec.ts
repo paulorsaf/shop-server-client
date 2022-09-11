@@ -12,6 +12,8 @@ import { PaymentByCreditCardSelectedEvent } from '../events/payment-by-credit-ca
 import { MakePaymentByCreditCardCommand } from '../commands/make-payment-by-credit-card/make-payment-by-credit-card.command';
 import { PaymentByCreditCardCreatedEvent } from '../events/payment-by-credit-card-created.event';
 import { SendPaymentSuccessEmailToClientCommand } from '../../email/commands/send-payment-success-email-to-client/send-payment-success-email-to-client.command';
+import { PaymentBySavedCreditCardSelectedEvent } from '../events/payment-by-saved-credit-card-selected.event';
+import { MakePaymentBySavedCreditCardCommand } from '../commands/make-payment-by-saved-credit-card/make-payment-by-saved-credit-card.command';
 
 describe('PaymentSagas', () => {
 
@@ -80,6 +82,25 @@ describe('PaymentSagas', () => {
           "anyPurchaseId",
           billingAddress,
           creditCard
+        )
+      );
+      done();
+    });
+  });
+
+  it('given payment by saved credit card selected, then execute make payment by saved credit card command', done => {
+    const event = new PaymentBySavedCreditCardSelectedEvent(
+      "anyCompanyId",
+      "anyPurchaseId",
+      "anyCreditCardId"
+    );
+
+    sagas.paymentBySavedCreditCardSelected(of(event)).subscribe(response => {
+      expect(response).toEqual(
+        new MakePaymentBySavedCreditCardCommand(
+          "anyCompanyId",
+          "anyPurchaseId",
+          "anyCreditCardId"
         )
       );
       done();

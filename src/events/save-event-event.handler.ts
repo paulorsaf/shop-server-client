@@ -17,6 +17,7 @@ import { PaymentByCreditCardCreatedEvent } from "../modules/payment/events/payme
 import { PaymentSuccessEmailSentToClientEvent } from "../modules/email/events/payment-success-email-sent-to-client.event";
 import { SendPaymentSuccessEmailToClientFailedEvent } from "../modules/email/events/send-payment-success-email-to-client-failed.event";
 import { CreditCardDeletedEvent } from "../modules/payment/events/credit-card-deleted.event";
+import { PaymentBySavedCreditCardSelectedEvent } from "../modules/payment/events/payment-by-saved-credit-card-selected.event";
 
 @EventsHandler(
     PurchaseCreatedEvent,
@@ -24,6 +25,7 @@ import { CreditCardDeletedEvent } from "../modules/payment/events/credit-card-de
     ProductsPurchasedTotalStockUpdatedEvent,
     PaymentByPixSavedEvent,
     PaymentByCreditCardCreatedEvent,
+    PaymentBySavedCreditCardSelectedEvent,
     PaymentFailedEvent,
     PurchaseGeolocationSavedEvent,
     PurchasePaymentRetriedEvent,
