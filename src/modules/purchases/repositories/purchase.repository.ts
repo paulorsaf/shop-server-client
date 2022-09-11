@@ -91,6 +91,7 @@ export class PurchaseRepository {
                     weight: p.weight
                 })
             ),
+            reason: data.reason,
             status: data.status,
             user: {
                 email: data.user.email,
