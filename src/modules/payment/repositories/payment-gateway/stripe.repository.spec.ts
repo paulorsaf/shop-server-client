@@ -100,7 +100,7 @@ describe('Stripe repository', () => {
 
         beforeEach(() => {
             payment = {
-                billingAddress: {id: "anyBillingAddress"} as any,
+                billingAddress: {zipCode: "anyZipCode"} as any,
                 companyId: "TOQx2rIfbZ5tav2nS2fg",
                 creditCard: {
                     cardNumber: "4111 1111 1111 1111",

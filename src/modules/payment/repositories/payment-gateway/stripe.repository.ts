@@ -126,6 +126,16 @@ export class StripeRepository implements PaymentGateway {
                 number: payment.creditCard.cardNumber,
                 cvc: payment.creditCard.cardCvc
             },
+            billing_details: {
+                address: {
+                    city: payment.billingAddress.city,
+                    country: "BR",
+                    line1: payment.billingAddress.number,
+                    line2: payment.billingAddress.neighborhood,
+                    postal_code: payment.billingAddress.zipCode.replace(/[^\d]/g, ''),
+                    state: payment.billingAddress.state
+                }
+            },
             type: 'card'
         });
         this.stripe.paymentMethods.attach(paymentMethod.id, {customer: customer.id});
