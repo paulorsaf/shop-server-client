@@ -9,9 +9,7 @@ async function bootstrap() {
     storageBucket: 'gs://shop-354211.appspot.com'
   })
 
-  const app = await NestFactory.create(AppModule, {
-    logger: ['error', 'warn', 'debug']
-  });
+  const app = await NestFactory.create(AppModule);
 
   app.enableCors({origin: '*'});
   app.use(json({ limit: '1mb' }));

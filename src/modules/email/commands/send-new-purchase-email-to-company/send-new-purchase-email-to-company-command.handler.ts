@@ -23,11 +23,12 @@ export class SendNewPurchaseEmailToCompanyCommandHandler implements ICommandHand
             throw new NotFoundException('Compra nao encontrada');
         }
 
-        await this.emailRepository.sendNewPurchaseToCompany(purchase).then(() => {
+        try {
+            await this.emailRepository.sendNewPurchaseToCompany(purchase);
             this.publishNewPurchaseEmailSentToCompanyEvent(command);
-        }).catch(error => {
+        } catch (error) {
             this.publishSendNewPurchaseEmailToCompanyFailedEvent(command, error);
-        });
+        }
     }
 
     private publishNewPurchaseEmailSentToCompanyEvent(command: SendNewPurchaseEmailToCompanyCommand) {

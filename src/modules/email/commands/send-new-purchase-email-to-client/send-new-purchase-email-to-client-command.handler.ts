@@ -23,11 +23,12 @@ export class SendNewPurchaseEmailToClientCommandHandler implements IQueryHandler
             throw new NotFoundException('Compra nao encontrada');
         }
 
-        await this.emailRepository.sendNewPurchaseToClient(purchase).then(() => {
+        try {
+            await this.emailRepository.sendNewPurchaseToClient(purchase);
             this.publishNewPurchaseEmailSentToClientEvent(command);
-        }).catch(error => {
+        } catch (error) {
             this.publishSendNewPurchaseEmailToClientFailedEvent(command, error);
-        });
+        }
     }
 
     private publishNewPurchaseEmailSentToClientEvent(command: SendNewPurchaseEmailToClientCommand) {
