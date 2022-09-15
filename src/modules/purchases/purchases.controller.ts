@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, NotFoundException, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { AuthCompany } from '../../authentication/decorators/company.decorator';
 import { Company } from '../../authentication/model/company';
@@ -16,6 +16,7 @@ import { RetryPurchasePaymentCommand } from './commands/retry-purchase-payment/r
 import { FindPurchaseByIdQuery } from './queries/find-by-id/find-purchase-by-id.query';
 import { CalculatePriceDTO } from './dtos/calculate-price.dto';
 import { CalculatePurchasePriceQuery } from './queries/calculate-purchase-price/calculate-purchase-price.query';
+import { FindLastPurchaseByCompanyAndUserIdQuery } from './queries/find-last-purchase-by-company-and-user-id/find-last-purchase-by-company-and-user-id.query';
 
 @Controller('purchases')
 export class PurchasesController {
@@ -37,20 +38,13 @@ export class PurchasesController {
   }
 
   @UseGuards(CompanyStrategy, JwtStrategy)
-  @Patch('prices')
-  calculatePrice(@AuthCompany() company: Company, @Body() priceDto: CalculatePriceDTO) {
+  @Get('/last')
+  findLastPurchaseByUserAndCompany(@AuthCompany() company: Company, @AuthUser() user: User) {
     return this.queryBus.execute(
-      new CalculatePurchasePriceQuery({
-        address: {
-          destinationZipCode: priceDto.address?.destinationZipCode,
-          originZipCode: company.address.zipCode
-        },
-        cityDeliveryPrice: company.cityDeliveryPrice,
-        companyCity: company.address.city,
-        payment: company.payment,
-        paymentType: priceDto.paymentType,
-        products: priceDto.products
-      })
+      new FindLastPurchaseByCompanyAndUserIdQuery(
+        company.id,
+        user.id
+      )
     )
   }
 
@@ -67,6 +61,24 @@ export class PurchasesController {
         user.id,
         purchaseId
       )
+    )
+  }
+
+  @UseGuards(CompanyStrategy, JwtStrategy)
+  @Patch('prices')
+  calculatePrice(@AuthCompany() company: Company, @Body() priceDto: CalculatePriceDTO) {
+    return this.queryBus.execute(
+      new CalculatePurchasePriceQuery({
+        address: {
+          destinationZipCode: priceDto.address?.destinationZipCode,
+          originZipCode: company.address.zipCode
+        },
+        cityDeliveryPrice: company.cityDeliveryPrice,
+        companyCity: company.address.city,
+        payment: company.payment,
+        paymentType: priceDto.paymentType,
+        products: priceDto.products
+      })
     )
   }
 

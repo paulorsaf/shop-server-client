@@ -13,6 +13,7 @@ import { RetryPurchaseDTO } from './dtos/retry-purchase.dto';
 import { RetryPurchasePaymentCommand } from './commands/retry-purchase-payment/retry-purchase-payment.command';
 import { FindPurchaseByIdQuery } from './queries/find-by-id/find-purchase-by-id.query';
 import { CalculatePurchasePriceQuery } from './queries/calculate-purchase-price/calculate-purchase-price.query';
+import { FindLastPurchaseByCompanyAndUserIdQuery } from './queries/find-last-purchase-by-company-and-user-id/find-last-purchase-by-company-and-user-id.query';
 
 describe('PurchasesController', () => {
   
@@ -51,6 +52,17 @@ describe('PurchasesController', () => {
 
     expect(queryBus.executedWith).toEqual(
       new FindPurchasesByUserAndCompanyQuery(
+        "anyCompanyId",
+        "anyUserId"
+      )
+    )
+  })
+
+  it('given find last purchase, then execute find last purchase by user and company query', async () => {
+    await controller.findLastPurchaseByUserAndCompany(company, user);
+
+    expect(queryBus.executedWith).toEqual(
+      new FindLastPurchaseByCompanyAndUserIdQuery(
         "anyCompanyId",
         "anyUserId"
       )

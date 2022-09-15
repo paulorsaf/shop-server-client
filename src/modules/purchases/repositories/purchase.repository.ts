@@ -21,7 +21,7 @@ export class PurchaseRepository {
             .then(response => response.id)
     }
 
-    findAllByUserAndCompany(query: FindAllQuery) {
+    findAllByUserAndCompany(query: FindByCompanyAndUser) {
         return admin.firestore()
             .collection('purchases')
             .where("companyId", "==", query.companyId)
@@ -51,6 +51,24 @@ export class PurchaseRepository {
                 }
 
                 return this.createPurchaseModel(snapshot.id, db);
+            })
+    }
+
+    findByUserIdAndCompanyId({companyId, userId}: FindByCompanyAndUser): Promise<Purchase> {
+        return admin.firestore()
+            .collection('purchases')
+            .where('companyId', '==', companyId)
+            .where('user.id', '==', userId)
+            .orderBy('createdAt', 'desc')
+            .limit(1)
+            .get()
+            .then(snapshot => {
+                if (snapshot.empty) {
+                    return null;
+                }
+                const doc = snapshot.docs[0];
+                const db = doc.data();
+                return this.createPurchaseModel(doc.id, db);
             })
     }
 
@@ -107,7 +125,7 @@ type FindByCompanyAndId = {
     purchaseId: string;
 }
 
-type FindAllQuery = {
+type FindByCompanyAndUser = {
     companyId: string;
     userId: string;
 }
