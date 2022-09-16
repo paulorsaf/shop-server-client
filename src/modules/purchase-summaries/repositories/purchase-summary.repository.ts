@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as admin from 'firebase-admin';
 import { DailyPurchasesSummary, PurchaseSummary } from '../models/daily-purchases-summary.model';
+import { Purchase } from '../models/purchase.model';
 
 @Injectable()
 export class PurchaseSummaryRepository {
@@ -38,12 +39,24 @@ export class PurchaseSummaryRepository {
             })
     }
 
-    updatePaymentError(update: UpdatePaymentError) {
+    updatePaymentError({dailyPurchaseId, purchase, error}: UpdatePaymentError) {
         return admin.firestore()
             .collection('purchase-summaries')
-            .doc(update.dailyPurchaseId)
+            .doc(dailyPurchaseId)
             .update({
-                [`purchases.${update.purchaseId}.payment.error`]: update.error?.toString() || ""
+                [`purchases.${purchase.id}.payment.error`]: error?.toString() || "",
+                [`purchases.${purchase.id}.status`]: purchase.status
+            })
+    }
+
+    updatePaymentSuccess({dailyPurchaseId, purchase}: UpdatePayment) {
+        return admin.firestore()
+            .collection('purchase-summaries')
+            .doc(dailyPurchaseId)
+            .update({
+                [`purchases.${purchase.id}.payment.error`]: "",
+                [`purchases.${purchase.id}.payment.receiptUrl`]: purchase.payment.receiptUrl,
+                [`purchases.${purchase.id}.status`]: purchase.status
             })
     }
 
@@ -54,8 +67,11 @@ type FindByCompanyIdAndDate = {
     date: string
 }
 
-type UpdatePaymentError = {
+type UpdatePayment = {
     dailyPurchaseId: string;
-    purchaseId: string;
-    error: any;
+    purchase: Purchase
 }
+
+type UpdatePaymentError = {
+    error: any
+} & UpdatePayment;

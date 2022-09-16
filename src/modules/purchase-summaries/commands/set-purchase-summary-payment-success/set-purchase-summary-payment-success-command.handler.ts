@@ -2,17 +2,17 @@ import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { format } from "date-fns";
 import { PurchaseSummaryRepository } from "../../repositories/purchase-summary.repository";
 import { PurchaseRepository } from "../../repositories/purchase.repository";
-import { SetPurchaseSummaryPaymentErrorCommand } from "./set-purchase-summary-payment-error.command";
+import { SetPurchaseSummaryPaymentSuccessCommand } from "./set-purchase-summary-payment-success.command";
 
-@CommandHandler(SetPurchaseSummaryPaymentErrorCommand)
-export class SetPurchaseSummaryPaymentErrorCommandHandler implements ICommandHandler<SetPurchaseSummaryPaymentErrorCommand> {
+@CommandHandler(SetPurchaseSummaryPaymentSuccessCommand)
+export class SetPurchaseSummaryPaymentSuccessCommandHandler implements ICommandHandler<SetPurchaseSummaryPaymentSuccessCommand> {
 
     constructor(
         private purchaseRepository: PurchaseRepository,
         private purchaseSummaryRepository: PurchaseSummaryRepository
     ){}
 
-    async execute(command: SetPurchaseSummaryPaymentErrorCommand) {
+    async execute(command: SetPurchaseSummaryPaymentSuccessCommand) {
         const purchase = await this.purchaseRepository.findByIdAndCompanyId({
             companyId: command.companyId, id: command.purchaseId
         });
@@ -23,9 +23,8 @@ export class SetPurchaseSummaryPaymentErrorCommandHandler implements ICommandHan
                 date: format(new Date(purchase.createdAt), 'yyyy-MM-dd')
             });
 
-            await this.purchaseSummaryRepository.updatePaymentError({
+            await this.purchaseSummaryRepository.updatePaymentSuccess({
                 dailyPurchaseId: dailyPurchaseSummary.id,
-                error: command.error,
                 purchase
             })
         }

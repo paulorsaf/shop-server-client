@@ -3,21 +3,21 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EventBusMock } from '../../../../mocks/event-bus.mock';
 import { PurchaseSummaryRepository } from '../../repositories/purchase-summary.repository';
 import { PurchaseRepository } from '../../repositories/purchase.repository';
-import { SetPurchaseSummaryPaymentErrorCommandHandler } from './set-purchase-summary-payment-error-command.handler';
-import { SetPurchaseSummaryPaymentErrorCommand } from './set-purchase-summary-payment-error.command';
+import { SetPurchaseSummaryPaymentSuccessCommandHandler } from './set-purchase-summary-payment-success-command.handler';
+import { SetPurchaseSummaryPaymentSuccessCommand } from './set-purchase-summary-payment-success.command';
 
-describe('SetPurchaseSummaryPaymentErrorCommandHandler', () => {
+describe('SetPurchaseSummaryPaymentSuccessCommandHandler', () => {
 
   let eventBus: EventBusMock;
-  let handler: SetPurchaseSummaryPaymentErrorCommandHandler;
+  let handler: SetPurchaseSummaryPaymentSuccessCommandHandler;
 
-  let command: SetPurchaseSummaryPaymentErrorCommand;
+  let command: SetPurchaseSummaryPaymentSuccessCommand;
   let purchaseRepository: PurchaseRepositoryMock;
   let purchaseSummaryRepository: PurchaseSummaryRepositoryMock;
 
   beforeEach(async () => {
-    command = new SetPurchaseSummaryPaymentErrorCommand(
-      "anyCompanyId", "anyPurchaseId", {error: "anyError"}
+    command = new SetPurchaseSummaryPaymentSuccessCommand(
+      "anyCompanyId", "anyPurchaseId"
     );
     eventBus = new EventBusMock();
     purchaseRepository = new PurchaseRepositoryMock();
@@ -25,7 +25,7 @@ describe('SetPurchaseSummaryPaymentErrorCommandHandler', () => {
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [
-        SetPurchaseSummaryPaymentErrorCommandHandler
+        SetPurchaseSummaryPaymentSuccessCommandHandler
       ],
       imports: [
         CqrsModule
@@ -40,10 +40,10 @@ describe('SetPurchaseSummaryPaymentErrorCommandHandler', () => {
     .overrideProvider(PurchaseSummaryRepository).useValue(purchaseSummaryRepository)
     .compile();
 
-    handler = module.get<SetPurchaseSummaryPaymentErrorCommandHandler>(SetPurchaseSummaryPaymentErrorCommandHandler);
+    handler = module.get<SetPurchaseSummaryPaymentSuccessCommandHandler>(SetPurchaseSummaryPaymentSuccessCommandHandler);
   });
 
-  it('given purchase not found, then do not update purchase summary payment error', async () => {
+  it('given purchase not found, then do not update purchase summary payment success', async () => {
     purchaseRepository._response = null;
   
     await handler.execute(command);
@@ -54,7 +54,9 @@ describe('SetPurchaseSummaryPaymentErrorCommandHandler', () => {
   describe('given purchase found', () => {
 
     beforeEach(() => {
-      purchaseRepository._response = {id: 1, createdAt: '2022-09-16T12:32:58', payment: {error: "any error"}};
+      purchaseRepository._response = {
+        id: 1, createdAt: '2022-09-16T12:32:58', payment: {receiptUrl: "anyUrl"}
+      };
       purchaseSummaryRepository._response = {id: 1};
     })
 
@@ -80,7 +82,7 @@ class PurchaseSummaryRepositoryMock {
   findByCompanyIdAndDate() {
     return this._response;
   }
-  updatePaymentError() {
+  updatePaymentSuccess() {
     this._isUpdated = true;
   }
 }

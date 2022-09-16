@@ -15,6 +15,8 @@ import { SendPaymentSuccessEmailToClientCommand } from '../../email/commands/sen
 import { PaymentBySavedCreditCardSelectedEvent } from '../events/payment-by-saved-credit-card-selected.event';
 import { MakePaymentBySavedCreditCardCommand } from '../commands/make-payment-by-saved-credit-card/make-payment-by-saved-credit-card.command';
 import { SetPurchaseSummaryPaymentErrorCommand } from '../../purchase-summaries/commands/set-purchase-summary-payment-error/set-purchase-summary-payment-error.command';
+import { SetPurchaseSummaryPaymentSuccessCommand } from '../../purchase-summaries/commands/set-purchase-summary-payment-success/set-purchase-summary-payment-success.command';
+import { PaymentByPixSavedEvent } from '../events/payment-by-pix-saved.event';
 
 describe('PaymentSagas', () => {
 
@@ -144,24 +146,62 @@ describe('PaymentSagas', () => {
     
   })
 
-  it('given payment by credit card created, then execute send email client payment succeeded command', done => {
-    const payment = {id: "anyPayment"} as any;
+  describe('given payment by credit card created', () => {
 
+    const payment = {id: "anyPayment"} as any;
     const event = new PaymentByCreditCardCreatedEvent(
       "anyCompanyId",
       "anyPurchaseId",
       payment
     );
 
-    sagas.paymentByCreditCardCreated(of(event)).subscribe(response => {
-      expect(response).toEqual(
-        new SendPaymentSuccessEmailToClientCommand(
-          "anyCompanyId",
-          "anyPurchaseId"
-        )
-      );
-      done();
+    it('then execute send email client payment succeeded command', done => {
+      sagas.paymentByCreditCardCreated(of(event)).subscribe(response => {
+        expect(response).toEqual(
+          new SendPaymentSuccessEmailToClientCommand(
+            "anyCompanyId",
+            "anyPurchaseId"
+          )
+        );
+        done();
+      });
     });
-  });
+
+    it('then execute set purchase summary payment success command', done => {
+      sagas.paymentByCreditCardCreatedUpdatePurchaseSummary(of(event)).subscribe(response => {
+        expect(response).toEqual(
+          new SetPurchaseSummaryPaymentSuccessCommand(
+            "anyCompanyId",
+            "anyPurchaseId"
+          )
+        );
+        done();
+      });
+    });
+
+  })
+
+  describe('given payment by pix saved', () => {
+
+    const event = new PaymentByPixSavedEvent(
+      "anyCompanyId",
+      "anyPurchaseId",
+      "anyReceiptUrl",
+      "anyUserId"
+    );
+
+    it('then execute set purchase summary payment success command', done => {
+      sagas.paymentByPixSavedUpdatePurchaseSummary(of(event)).subscribe(response => {
+        expect(response).toEqual(
+          new SetPurchaseSummaryPaymentSuccessCommand(
+            "anyCompanyId",
+            "anyPurchaseId"
+          )
+        );
+        done();
+      });
+    });
+
+  })
 
 });

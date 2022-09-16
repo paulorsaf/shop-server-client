@@ -27,7 +27,7 @@ export class SavePaymentByPixCommandHandler implements ICommandHandler<SavePayme
             const fileUrl = await this.saveFileOnRepository(command);
 
             purchase.payment.receiptUrl = fileUrl;
-            this.purchaseRepository.updatePaymentByPix(purchase)
+            await this.purchaseRepository.updatePaymentByPix(purchase)
 
             this.publishPaymentByPixSavedEvent(purchase);
         } catch (error) {
