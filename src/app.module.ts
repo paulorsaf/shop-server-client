@@ -12,6 +12,7 @@ import { PaymentModule } from './modules/payment/payment.module';
 import { EmailModule } from './modules/email/email.module';
 import { AddressModule } from './modules/address/address.module';
 import { DeliveriesModule } from './modules/delivery/deliveries.module';
+import { PurchaseSummaryModule } from './modules/purchase-summaries/purchase-summary.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { DeliveriesModule } from './modules/delivery/deliveries.module';
     ProductsModule,
     RegisterModule,
     PurchasesModule,
+    PurchaseSummaryModule,
     PaymentModule,
     StockModule,
   ],

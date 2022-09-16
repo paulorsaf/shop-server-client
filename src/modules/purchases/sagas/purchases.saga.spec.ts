@@ -9,6 +9,7 @@ import { PurchasePaymentRetriedEvent } from '../events/purchase-payment-retried.
 import { SendNewPurchaseEmailToCompanyCommand } from '../../email/commands/send-new-purchase-email-to-company/send-new-purchase-email-to-company.command';
 import { SendNewPurchaseEmailToClientCommand } from '../../email/commands/send-new-purchase-email-to-client/send-new-purchase-email-to-client.command';
 import { SavePurchaseGeolocationCommand } from '../../address/commands/save-purchase-geolocation/save-purchase-geolocation.command';
+import { AddPurchaseSummaryCommand } from '../../purchase-summaries/commands/add-purchase-summary/add-purchase-summary.command';
 
 describe('PurchaseSagas', () => {
 
@@ -119,6 +120,18 @@ describe('PurchaseSagas', () => {
       sagas.purchaseCreatedSavePurchaseGeolocation(of(event)).subscribe(response => {
         expect(response).toEqual(
           new SavePurchaseGeolocationCommand(
+            "anyCompanyId",
+            "anyPurchaseId"
+          )
+        );
+        done();
+      });
+    });
+  
+    it('then execute add purchase summary command', done => {
+      sagas.purchaseCreatedAddPurchaseSummary(of(event)).subscribe(response => {
+        expect(response).toEqual(
+          new AddPurchaseSummaryCommand(
             "anyCompanyId",
             "anyPurchaseId"
           )
