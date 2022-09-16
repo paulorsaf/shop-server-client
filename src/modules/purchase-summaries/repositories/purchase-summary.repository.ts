@@ -38,9 +38,24 @@ export class PurchaseSummaryRepository {
             })
     }
 
+    updatePaymentError(update: UpdatePaymentError) {
+        return admin.firestore()
+            .collection('purchase-summaries')
+            .doc(update.dailyPurchaseId)
+            .update({
+                [`purchases.${update.purchaseId}.payment.error`]: update.error?.toString() || ""
+            })
+    }
+
 }
 
 type FindByCompanyIdAndDate = {
     companyId: string,
     date: string
+}
+
+type UpdatePaymentError = {
+    dailyPurchaseId: string;
+    purchaseId: string;
+    error: any;
 }

@@ -14,6 +14,7 @@ import { PaymentByCreditCardCreatedEvent } from '../events/payment-by-credit-car
 import { SendPaymentSuccessEmailToClientCommand } from '../../email/commands/send-payment-success-email-to-client/send-payment-success-email-to-client.command';
 import { PaymentBySavedCreditCardSelectedEvent } from '../events/payment-by-saved-credit-card-selected.event';
 import { MakePaymentBySavedCreditCardCommand } from '../commands/make-payment-by-saved-credit-card/make-payment-by-saved-credit-card.command';
+import { SetPurchaseSummaryPaymentErrorCommand } from '../../purchase-summaries/commands/set-purchase-summary-payment-error/set-purchase-summary-payment-error.command';
 
 describe('PaymentSagas', () => {
 
@@ -107,24 +108,41 @@ describe('PaymentSagas', () => {
     });
   });
 
-  it('given payment failed, then execute save payment error command', done => {
+  describe('given payment failed', () => {
+
     const event = new PaymentFailedEvent(
       "anyCompanyId",
       "anyPurchaseId",
       {error: "anyError"}
     )
 
-    sagas.paymentFailed(of(event)).subscribe(response => {
-      expect(response).toEqual(
-        new SavePaymentErrorCommand(
-          "anyCompanyId",
-          "anyPurchaseId",
-          {error: "anyError"}
-        )
-      );
-      done();
+    it('then execute save payment error command', done => {
+      sagas.paymentFailed(of(event)).subscribe(response => {
+        expect(response).toEqual(
+          new SavePaymentErrorCommand(
+            "anyCompanyId",
+            "anyPurchaseId",
+            {error: "anyError"}
+          )
+        );
+        done();
+      });
     });
-  });
+    
+    it('then execute set purchase summary payment error command', done => {
+      sagas.paymentFailedUpdatePurchaseSummary(of(event)).subscribe(response => {
+        expect(response).toEqual(
+          new SetPurchaseSummaryPaymentErrorCommand(
+            "anyCompanyId",
+            "anyPurchaseId",
+            {error: "anyError"}
+          )
+        );
+        done();
+      });
+    });
+    
+  })
 
   it('given payment by credit card created, then execute send email client payment succeeded command', done => {
     const payment = {id: "anyPayment"} as any;

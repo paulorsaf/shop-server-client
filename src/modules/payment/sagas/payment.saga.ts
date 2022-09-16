@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { ICommand, ofType, Saga } from "@nestjs/cqrs";
 import { map, Observable } from "rxjs";
+import { SetPurchaseSummaryPaymentErrorCommand } from "../../purchase-summaries/commands/set-purchase-summary-payment-error/set-purchase-summary-payment-error.command";
 import { SendPaymentSuccessEmailToClientCommand } from "../../email/commands/send-payment-success-email-to-client/send-payment-success-email-to-client.command";
 import { MakePaymentByCreditCardCommand } from "../commands/make-payment-by-credit-card/make-payment-by-credit-card.command";
 import { MakePaymentBySavedCreditCardCommand } from "../commands/make-payment-by-saved-credit-card/make-payment-by-saved-credit-card.command";
@@ -61,6 +62,19 @@ export class PaymentSagas {
             ofType(PaymentFailedEvent),
             map(event =>
                 new SavePaymentErrorCommand(
+                    event.companyId,
+                    event.purchaseId,
+                    event.error
+                )
+            )
+        );
+
+    @Saga()
+    paymentFailedUpdatePurchaseSummary = (events$: Observable<any>): Observable<ICommand> => 
+        events$.pipe(
+            ofType(PaymentFailedEvent),
+            map(event =>
+                new SetPurchaseSummaryPaymentErrorCommand(
                     event.companyId,
                     event.purchaseId,
                     event.error
