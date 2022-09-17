@@ -39,7 +39,16 @@ export class PurchaseSummaryRepository {
             })
     }
 
-    updatePaymentError({dailyPurchaseId, purchase, error}: UpdatePaymentError) {
+    updateLocation({dailyPurchaseId, purchase, location}: UpdatePurchaseLocation) {
+        return admin.firestore()
+            .collection('purchase-summaries')
+            .doc(dailyPurchaseId)
+            .update({
+                [`purchases.${purchase.id}.address`]: location
+            })
+    }
+
+    updatePaymentError({dailyPurchaseId, purchase, error}: UpdatePurchaseError) {
         return admin.firestore()
             .collection('purchase-summaries')
             .doc(dailyPurchaseId)
@@ -49,7 +58,7 @@ export class PurchaseSummaryRepository {
             })
     }
 
-    updatePaymentSuccess({dailyPurchaseId, purchase}: UpdatePayment) {
+    updatePaymentSuccess({dailyPurchaseId, purchase}: UpdatePurchase) {
         return admin.firestore()
             .collection('purchase-summaries')
             .doc(dailyPurchaseId)
@@ -67,11 +76,15 @@ type FindByCompanyIdAndDate = {
     date: string
 }
 
-type UpdatePayment = {
+type UpdatePurchase = {
     dailyPurchaseId: string;
     purchase: Purchase
 }
 
-type UpdatePaymentError = {
+type UpdatePurchaseError = {
     error: any
-} & UpdatePayment;
+} & UpdatePurchase;
+
+type UpdatePurchaseLocation = {
+    location: {latitude: number, longitude: number}
+} & UpdatePurchase;

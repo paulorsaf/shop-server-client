@@ -14,6 +14,7 @@ export class Purchase {
 
     constructor(params: PurchaseParams){
         this.id = params.id;
+        this.address = params.address;
         this.companyId = params.companyId;
         this.createdAt = params.createdAt;
         this.payment = params.payment;

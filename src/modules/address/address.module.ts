@@ -6,6 +6,7 @@ import { FindAddressByZipcodeQueryHandler } from './queries/find-address-by-zipc
 import { AddressRepository } from './repositories/address.repository';
 import { SavePurchaseGeolocationCommandHandler } from './commands/save-purchase-geolocation/save-purchase-geolocation-command.handler';
 import { PurchaseRepository } from './repositories/purchase.repository';
+import { AddressSagas } from './sagas/address.saga';
 
 @Module({
   controllers: [AddressController],
@@ -18,7 +19,9 @@ import { PurchaseRepository } from './repositories/purchase.repository';
     PurchaseRepository,
 
     FindAddressByZipcodeQueryHandler,
-    SavePurchaseGeolocationCommandHandler
+    SavePurchaseGeolocationCommandHandler,
+
+    AddressSagas
   ]
 })
 export class AddressModule {}
