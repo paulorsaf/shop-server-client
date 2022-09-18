@@ -2,7 +2,13 @@ export type PurchaseDTO = {
     deliveryAddress: PurchaseAddressDTO;
     deliveryPrice: number;
     payment: PaymentDTO;
+    productNotes: ProductNotes[];
     products: PurchaseProductDTO[];
+}
+
+export type ProductNotes = {
+    notes: string;
+    productId: string;
 }
 
 export type PurchaseAddressDTO = {

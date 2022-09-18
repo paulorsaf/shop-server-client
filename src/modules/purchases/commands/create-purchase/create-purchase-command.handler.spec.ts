@@ -45,7 +45,8 @@ describe('CreatePurchaseCommandHandler', () => {
         payment: {
           type: "anyPayment",
           receipt: "anyReceipt"
-        }
+        },
+        productNotes: [{id: "anyId"} as any]
       },
       { email: "any@email.com", id: "anyUserId" }
     );

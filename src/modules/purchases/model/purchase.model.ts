@@ -10,12 +10,13 @@ export class Purchase {
     readonly createdAt: string;
     readonly payment: Payment;
     readonly products: PurchaseProduct[];
+    readonly productNotes: ProductNotes[];
     readonly status: string;
     readonly user: User;
     
     readonly totalAmount: number;
 
-    private reason: string;
+    readonly reason: string;
     private price: Price;
 
     constructor(param: PurchaseParam) {
@@ -26,6 +27,7 @@ export class Purchase {
         this.createdAt = param.createdAt;
         this.payment = param.payment
         this.price = param.price;
+        this.productNotes = param.productNotes;
         this.products = param.products;
         this.reason = param.reason;
         this.status = param.status;
@@ -64,6 +66,7 @@ type PurchaseParam = {
     deliveryPrice?: number;
     payment?: Payment;
     price?: Price;
+    productNotes?: ProductNotes[]
     products?: PurchaseProduct[];
     reason?: string;
     status?: string;
@@ -109,4 +112,9 @@ type Price = {
     paymentFee: number;
     total: number;
     totalWithPaymentFee: number;
+}
+
+type ProductNotes = {
+    notes: string;
+    productId: string;
 }

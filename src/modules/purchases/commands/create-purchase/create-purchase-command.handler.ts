@@ -38,6 +38,7 @@ export class CreatePurchaseCommandHandler implements ICommandHandler<CreatePurch
             payment: {
                 type: command.purchase.payment.type
             },
+            productNotes: command.purchase.productNotes,
             products,
             user: {
                 email: command.user.email,
