@@ -1,28 +1,31 @@
 import { Injectable } from "@nestjs/common";
 import { Purchase } from "../model/purchase.model";
 import * as SendingBlue from "@sendinblue/client";
+import * as handlebars from 'handlebars';
+import * as fs from 'fs';
+import * as path from 'path';
 
 @Injectable()
 export class EmailRepository {
 
-    sendNewPurchaseToClient(purchase: Purchase){
-        const smtpEmail = this.createNewPurchaseEmailForCompany(purchase);
+    async sendNewPurchaseToClient(purchase: Purchase){
+        const smtpEmail = await this.createNewPurchaseEmailForClient(purchase);
 
         this.sendTransactionEmail(smtpEmail);
 
         return Promise.resolve({});
     }
 
-    sendNewPurchaseToCompany(purchase: Purchase){
-        const smtpEmail = this.createNewPurchaseEmailForClient(purchase);
+    async sendNewPurchaseToCompany(purchase: Purchase){
+        const smtpEmail = await this.createNewPurchaseEmailForCompany(purchase);
 
         this.sendTransactionEmail(smtpEmail);
         
         return Promise.resolve({});
     }
 
-    sendPaymentSuccessToClient(purchase: Purchase){
-        const smtpEmail = this.createPaymentSuccessEmailForClient(purchase);
+    async sendPaymentSuccessToClient(purchase: Purchase){
+        const smtpEmail = await this.createPaymentSuccessEmailForClient(purchase);
 
         this.sendTransactionEmail(smtpEmail);
         
@@ -42,7 +45,34 @@ export class EmailRepository {
         }
     }
 
-    private createNewPurchaseEmailForCompany(purchase: Purchase) {
+    async getNewPurchaseEmailForCompanyHtmlContent(purchase: Purchase) {
+        const mainContent = await this.getTemplateContent("new-purchase-for-company.template.html");
+
+        return await this.createTemplate({
+            mainContent,
+            purchase
+        });
+    }
+
+    async getNewPurchaseEmailForClientHtmlContent(purchase: Purchase) {
+        const mainContent = await this.getTemplateContent("new-purchase-for-client.template.html");
+
+        return await this.createTemplate({
+            mainContent,
+            purchase
+        });
+    }
+
+    async getPaymentSuccessEmailFormClientHtmlContent(purchase: Purchase) {
+        const mainContent = await this.getTemplateContent("payment-success-for-client.template.html");
+
+        return await this.createTemplate({
+            mainContent,
+            purchase
+        });
+    }
+
+    private async createNewPurchaseEmailForCompany(purchase: Purchase) {
         const smtpEmail = new SendingBlue.SendSmtpEmail();
         smtpEmail.subject = "Nova compra criada";
         smtpEmail.sender = {
@@ -50,11 +80,11 @@ export class EmailRepository {
             name: "Shop"
         };
         smtpEmail.to = [{email: purchase.company.email}];
-        smtpEmail.htmlContent = this.getNewPurchaseEmailForCompanyHtmlContent(purchase);
+        smtpEmail.htmlContent = await this.getNewPurchaseEmailForCompanyHtmlContent(purchase);
         return smtpEmail;
     }
 
-    private createNewPurchaseEmailForClient(purchase: Purchase) {
+    private async createNewPurchaseEmailForClient(purchase: Purchase) {
         const smtpEmail = new SendingBlue.SendSmtpEmail();
         smtpEmail.subject = "Recebemos sua compra";
         smtpEmail.sender = {
@@ -62,11 +92,11 @@ export class EmailRepository {
             name: purchase.company.name
         };
         smtpEmail.to = [{email: purchase.user.email}];
-        smtpEmail.htmlContent = this.getNewPurchaseEmailForClientHtmlContent(purchase);
+        smtpEmail.htmlContent = await this.getNewPurchaseEmailForClientHtmlContent(purchase);
         return smtpEmail;
     }
 
-    private createPaymentSuccessEmailForClient(purchase: Purchase) {
+    private async createPaymentSuccessEmailForClient(purchase: Purchase) {
         const smtpEmail = new SendingBlue.SendSmtpEmail();
         smtpEmail.subject = "Pagamento confirmado";
         smtpEmail.sender = {
@@ -74,145 +104,51 @@ export class EmailRepository {
             name: purchase.company.name
         };
         smtpEmail.to = [{email: purchase.user.email}];
-        smtpEmail.htmlContent = this.getPaymentSuccessEmailFormClientHtmlContent(purchase);
+        smtpEmail.htmlContent = await this.getPaymentSuccessEmailFormClientHtmlContent(purchase);
         return smtpEmail;
     }
 
-    private getNewPurchaseEmailForCompanyHtmlContent(purchase: Purchase) {
-        return `
-            <p>Nova compra feita por <b>${purchase.user.email}</b>.</p>
-            ${this.getPurchaseContent(purchase)}
-        `;
+    private async getTemplateContent(template: string){
+        const file = `${path.resolve(__dirname)}/templates/${template}`;
+        return await fs.readFileSync(file, 'utf8');
     }
 
-    private getNewPurchaseEmailForClientHtmlContent(purchase: Purchase) {
-        return `
-            <p>
-                Recebemos a sua compra.<br/>
-                ${
-                    purchase.payment.type === "MONEY" ?
-                        "Por favor, aguarde enquanto atendemos o seu pedido."
-                        : "Por favor, aguarde enquanto confirmamos o seu pagamento."
-                }
-                ${this.getPurchaseContent(purchase)}
-            </p>
-        `;
+    private async createTemplate(data: TemplateData) {
+        const {addressContent, paymentContent, purchasesContent } = await this.getPartials();
+
+        const template = handlebars.compile(data.mainContent);
+        handlebars.registerPartial('addressContent', addressContent);
+        handlebars.registerPartial('paymentContent', paymentContent);
+        handlebars.registerPartial('purchasesContent', purchasesContent);
+        handlebars.registerHelper('ifEquals', (arg1, arg2, options) => {
+            return (arg1 == arg2) ? options.fn(this) : options.inverse(this);
+        });
+        handlebars.registerHelper('paymentType', (type) => {
+            if (type === "MONEY") {
+                return "Dinheiro";
+            }
+            if (type === "CREDIT_CARD") {
+                return "Cartão de crédito";
+            }
+            return type;
+        })
+        handlebars.registerHelper('price', ({price, priceWithDiscount}) => (priceWithDiscount || price).toFixed(2))
+        handlebars.registerHelper('toFixed', (value: number) => value.toFixed(2));
+        
+        return template({purchase: data.purchase});
     }
 
-    private getPaymentSuccessEmailFormClientHtmlContent(purchase: Purchase) {
-        return `
-            <p>
-                Confirmamos o seu pagamento.<br/>
-                ${this.getPurchaseContent(purchase)}
-            </p>
-        `;
+    private async getPartials() {
+        const addressContent = await this.getTemplateContent("partials/address-content.template.html");
+        const paymentContent = await this.getTemplateContent("partials/payment-content.template.html");
+        const purchasesContent = await this.getTemplateContent("partials/purchases-content.template.html");
+
+        return {addressContent, paymentContent, purchasesContent};
     }
 
-    private getPurchaseContent(purchase: Purchase) {
-        return `<fieldset>
-                    <legend style="font-weigth:600">Detalhes da compra:</legend>
-                    ${purchase.products.map(p => 
-                        `<div style="padding-bottom:10px;">
-                            <div>${p.amount}x ${p.name}</div>
-                            <div>
-                                R$ ${p.totalPrice.toFixed(2)}
-                                (${p.amount}x R$ ${(p.priceWithDiscount || p.price).toFixed(2)})
-                            </div>
-                            ${p.stock ?
-                                p.stock?.color ?
-                                    `<div style="width:60px;height:30px;background:${p.stock.color};border-radius:10px;color:white;text-align:center;line-height:30px;">
-                                        ${p.stock.size}
-                                    </div>`
-                                :
-                                p.stock?.size ? `<div>Tamanho: ${p.stock.size}</div>` : ''
-                            : ''}
-                        </div>`
-                    ).join('')}
-                    <br/>
-                    <b>
-                        <div>
-                            Total:
-                            ${purchase.totalAmount} ${purchase.totalAmount === 1 ? "produto" : "produtos"}
-                            por R$ ${purchase.price?.total?.toFixed(2)}
-                        </div>
-                    </b>
-                </fieldset>
-                <br/>
-                <fieldset>
-                    <legend style="font-weigth:600">Endereço da entrega:</legend>
-                    ${
-                        purchase.address ?
-                        `Rua: ${purchase.address.street}<br/>
-                        Número: ${purchase.address.number}<br/>
-                        Bairro: ${purchase.address.neighborhood}<br/>
-                        CEP: ${purchase.address.zipCode}<br/>
-                        Complemento: ${purchase.address.complement}<br/>
-                        Cidade: ${purchase.address.city}<br/>
-                        Estado: ${purchase.address.state}`
-                        :
-                        'Busca na loja'
-                    }
-                </fieldset>
-                <br/>
-                <fieldset>
-                    <legend style="font-weigth:600">Dados do pagamento:</legend>
-                    Tipo de pagamento: ${this.getPaymentDescription(purchase)}<br/>
+}
 
-                    ${
-                        purchase.price ? 
-                        `
-                        <table style="border:none;border-spacing:0;margin:10px 0;">
-                            <tr>
-                                <td style="border:none">Produtos:</td>
-                                <td style="border:none" align="right">R$ ${purchase.price?.products?.toFixed(2)}</td>
-                            </tr>
-                            ${
-                                purchase.address ?
-                                `
-                                <tr>
-                                    <td style="border:none">Taxa de entrega:</td>
-                                    <td style="border:none" align="right">R$ ${purchase.price?.delivery?.toFixed(2)}</td>
-                                </tr>
-                                ` : ""
-                            }
-                            ${
-                                purchase.payment.type === 'CREDIT_CARD' ?
-                                `
-                                <tr>
-                                    <td style="border:none">Taxa do Cartão de crédito:</td>
-                                    <td style="border:none" align="right">R$ ${purchase.price?.paymentFee?.toFixed(2)}</td>
-                                </tr>
-                                ` : ""
-                            }
-                            <tr>
-                                <td style="border:none">Total:</td>
-                                <td style="border:none" align="right">R$ ${purchase.price?.totalWithPaymentFee?.toFixed(2)}</td>
-                            </tr>
-                        </table>
-                        ` : ""
-                    }
-                    ${purchase.payment.type === "CREDIT_CARD" && purchase.payment.card ?
-                        `<div>Bandeira: ${purchase.payment.card.brand}</div>
-                         <div>Número: **** **** **** ${purchase.payment.card.last4}</div>
-                         <div>Expiração: ${purchase.payment.card.exp_month}/${purchase.payment.card.exp_year}</div>`
-                        : ''
-                    }
-                    ${purchase.payment.receiptUrl ?
-                        `<a href="${purchase.payment.receiptUrl}" target="_blank">Ver recibo</a><br/>`
-                        : ''
-                    }
-                </fieldset>
-        `;
-    }
-
-    private getPaymentDescription(purchase: Purchase) {
-        if (purchase.payment.type === "MONEY") {
-            return "Dinheiro";
-        }
-        if (purchase.payment.type === "CREDIT_CARD") {
-            return "Cartão de crédito";
-        }
-        return purchase.payment.type;
-    }
-
+type TemplateData = {
+    mainContent: string,
+    purchase: Purchase,
 }

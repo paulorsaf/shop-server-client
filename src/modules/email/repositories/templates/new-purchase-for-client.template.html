@@ -1,0 +1,16 @@
+<p>
+    Recebemos a sua compra.<br/>
+    {{#ifEquals purchase.payment.type "MONEY"}}
+        Por favor, aguarde enquanto atendemos o seu pedido.
+    {{/ifEquals}}
+    {{#ifEquals purchase.payment.type "PIX"}}
+        Por favor, aguarde enquanto confirmamos o seu pagamento.
+    {{/ifEquals}}
+    {{#ifEquals purchase.payment.type "CREDIT_CARD"}}
+        Por favor, aguarde enquanto confirmamos o seu pagamento.
+    {{/ifEquals}}
+</p>
+
+{{> purchasesContent }}
+{{> addressContent }}
+{{> paymentContent }}
