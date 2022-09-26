@@ -1,7 +1,8 @@
 export type CalculatePriceDTO = {
     readonly address: Address,
     readonly cityDeliveryPrice: number;
-    readonly companyCity: string;
+    readonly company: Company;
+    readonly cupom: string;
     readonly paymentType: string,
     readonly payment: Payment,
     readonly products: Product[]
@@ -10,6 +11,11 @@ export type CalculatePriceDTO = {
 type Address = {
     readonly destinationZipCode: string;
     readonly originZipCode: string;
+}
+
+type Company = {
+    readonly id: string;
+    readonly city: string;
 }
 
 type Payment = {

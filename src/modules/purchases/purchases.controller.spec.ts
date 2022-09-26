@@ -85,6 +85,7 @@ describe('PurchasesController', () => {
     const dto = {
       address: {destinationZipCode: "anyDestination"},
       cityDeliveryPrice: 10,
+      cupom: "anyCupom",
       paymentType: "anyPaymentType",
       products: [{id: "anyProduct"}]
     } as any;
@@ -98,7 +99,11 @@ describe('PurchasesController', () => {
           ...dto.address,
           originZipCode: "anyZipCode"
         },
-        companyCity: "anyCity",
+        company: {
+          city: "anyCity",
+          id: "anyCompanyId"
+        },
+        cupom: "anyCupom",
         payment: company.payment
       })
     )

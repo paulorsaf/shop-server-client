@@ -10,13 +10,14 @@ import { SendNewPurchaseEmailToCompanyCommand } from '../../email/commands/send-
 import { SendNewPurchaseEmailToClientCommand } from '../../email/commands/send-new-purchase-email-to-client/send-new-purchase-email-to-client.command';
 import { SavePurchaseGeolocationCommand } from '../../address/commands/save-purchase-geolocation/save-purchase-geolocation.command';
 import { AddPurchaseSummaryCommand } from '../../purchase-summaries/commands/add-purchase-summary/add-purchase-summary.command';
+import { DecreaseAmountOfCupomsCommand } from '../../cupoms/commands/decrease-amount-of-cupoms/decrease-amount-of-cupoms.command';
 
 describe('PurchaseSagas', () => {
 
   let sagas: PurchaseSagas;
   
   let event: PurchaseCreatedEvent;
-  const paymentDto = { type: "ANY TYPE", receipt: "anyReceipt" };
+  const paymentDto = { cupom: "anyCupom", receipt: "anyReceipt", type: "ANY TYPE" };
   let purchase = {
     companyId: "anyCompanyId",
     products: [{
@@ -134,6 +135,19 @@ describe('PurchaseSagas', () => {
           new AddPurchaseSummaryCommand(
             "anyCompanyId",
             "anyPurchaseId"
+          )
+        );
+        done();
+      });
+    });
+  
+    it('then execute decrease amount of cupoms left command', done => {
+      sagas.purchaseCreatedDecreaseAmountOfCupoms(of(event)).subscribe(response => {
+        expect(response).toEqual(
+          new DecreaseAmountOfCupomsCommand(
+            "anyCompanyId",
+            "anyCupom",
+            "anyUserId"
           )
         );
         done();

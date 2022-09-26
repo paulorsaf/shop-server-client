@@ -47,6 +47,7 @@ export class Purchase {
     setPrice(price: PurchasePriceResponse) {
         this.price = {
             delivery: price.deliveryPrice,
+            discount: price.discount,
             paymentFee: this.payment.type === "CREDIT_CARD" ? price.paymentFee : 0,
             products: price.productsPrice,
             total: price.totalPrice,
@@ -92,6 +93,7 @@ type Address = {
 
 type Payment = {
     card?: CreditCard;
+    cupom?: string;
     error?: any;
     id?: string;
     receiptUrl?: string;
@@ -109,6 +111,7 @@ type CreditCard = {
 type Price = {
     products: number;
     delivery: number;
+    discount: number;
     paymentFee: number;
     total: number;
     totalWithPaymentFee: number;

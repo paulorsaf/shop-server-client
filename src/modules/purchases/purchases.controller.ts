@@ -74,7 +74,11 @@ export class PurchasesController {
           originZipCode: company.address.zipCode
         },
         cityDeliveryPrice: company.cityDeliveryPrice,
-        companyCity: company.address.city,
+        company: {
+          city: company.address.city,
+          id: company.id
+        },
+        cupom: priceDto.cupom,
         payment: company.payment,
         paymentType: priceDto.paymentType,
         products: priceDto.products

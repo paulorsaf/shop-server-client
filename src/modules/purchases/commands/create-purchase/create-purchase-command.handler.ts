@@ -36,6 +36,7 @@ export class CreatePurchaseCommandHandler implements ICommandHandler<CreatePurch
             companyId: command.company.id,
             deliveryPrice: command.purchase.deliveryPrice,
             payment: {
+                cupom: command.purchase.payment.cupom?.toUpperCase(),
                 type: command.purchase.payment.type
             },
             productNotes: command.purchase.productNotes,
@@ -56,7 +57,11 @@ export class CreatePurchaseCommandHandler implements ICommandHandler<CreatePurch
                 originZipCode: command.company.zipCode
             } : null,
             cityDeliveryPrice: command.company.cityDeliveryPrice,
-            companyCity: command.company.companyCity,
+            company: {
+                city: command.company.companyCity,
+                id: command.company.id
+            },
+            cupom: command.purchase.payment.cupom,
             payment: command.company.payment,
             paymentType: command.purchase.payment.type,
             products: products.map(p => ({

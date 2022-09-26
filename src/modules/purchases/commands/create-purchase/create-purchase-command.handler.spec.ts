@@ -43,8 +43,9 @@ describe('CreatePurchaseCommandHandler', () => {
           stockOptionId: "anyStockOptionId"
         }],
         payment: {
-          type: "anyPayment",
-          receipt: "anyReceipt"
+          cupom: "anyCupom",
+          receipt: "anyReceipt",
+          type: "anyPayment"
         },
         productNotes: [{id: "anyId"} as any]
       },

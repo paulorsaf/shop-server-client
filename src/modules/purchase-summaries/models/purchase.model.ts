@@ -27,6 +27,7 @@ export class Purchase {
 }
 
 type Payment = {
+    cupom: string;
     error: string;
     receiptUrl: string;
     type: string;

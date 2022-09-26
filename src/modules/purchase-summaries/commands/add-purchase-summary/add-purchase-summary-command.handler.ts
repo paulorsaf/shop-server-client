@@ -53,6 +53,7 @@ export class AddPurchaseSummaryCommandHandler implements ICommandHandler<AddPurc
             createdAt: purchase.createdAt,
             id: purchase.id,
             payment: {
+                cupom: purchase.payment.cupom,
                 error: purchase.payment.error,
                 type: purchase.payment.type
             },

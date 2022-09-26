@@ -13,6 +13,7 @@ import { EmailModule } from './modules/email/email.module';
 import { AddressModule } from './modules/address/address.module';
 import { DeliveriesModule } from './modules/delivery/deliveries.module';
 import { PurchaseSummaryModule } from './modules/purchase-summaries/purchase-summary.module';
+import { CupomsModule } from './modules/cupoms/cupoms.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { PurchaseSummaryModule } from './modules/purchase-summaries/purchase-sum
     BannersModule,
     CategoriesModule,
     CompanyModule,
+    CupomsModule,
     DeliveriesModule,
     EmailModule,
     ProductsModule,

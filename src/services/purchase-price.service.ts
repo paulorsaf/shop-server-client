@@ -1,4 +1,6 @@
 import { Injectable } from "@nestjs/common";
+import { CalculatePriceDTO } from "../modules/purchases/dtos/calculate-price.dto";
+import { CupomRepository } from "../repositories/cupom.repository";
 import { PurchasePriceResponse } from "../models/purchase-price.model";
 import { DeliveryService } from "./delivery.service";
 
@@ -6,40 +8,51 @@ import { DeliveryService } from "./delivery.service";
 export class PurchasePriceService {
 
     constructor(
+        private cupomRepository: CupomRepository,
         private deliveryService: DeliveryService
     ){}
 
-    async calculatePrice(params: CalculatePriceParams): Promise<PurchasePriceResponse> {
+    async calculatePrice(params: CalculatePriceDTO): Promise<PurchasePriceResponse> {
         if (!params.products?.length){
             return {
                 productsPrice: 0,
                 deliveryPrice: 0,
+                discount: 0,
                 paymentFee: 0,
                 totalPrice: 0,
                 totalPriceWithPaymentFee: 0
             };
         }
         
-        let productsPrice = this.calculateProductsPrice(params);
-        let deliveryPrice = await this.calculateDeliveryPrice(params);
-        let paymentFee = this.calculatePaymentFee(params, {productsPrice, deliveryPrice});
+        const deliveryPrice = await this.calculateDeliveryPrice(params);
+        const cupomDiscount = await this.cupomRepository.findPercentage({
+            companyId: params.company.id, cupom: params.cupom
+        })
+        const productsPrice = this.calculateProductsPrice(params);
+        const paymentFee = this.calculatePaymentFee(params, {productsPrice, deliveryPrice});
+
+        let totalPrice = productsPrice + deliveryPrice;
+        const discount = (totalPrice) * (cupomDiscount/100);
+        totalPrice = totalPrice - discount;
+        const totalPriceWithPaymentFee = totalPrice + paymentFee;
 
         return {
             productsPrice,
+            discount,
             deliveryPrice,
             paymentFee,
-            totalPrice: productsPrice + deliveryPrice,
-            totalPriceWithPaymentFee: productsPrice + deliveryPrice + paymentFee
+            totalPrice,
+            totalPriceWithPaymentFee
         };
     }
 
-    private calculateProductsPrice(dto: CalculatePriceParams) {
+    private calculateProductsPrice(dto: CalculatePriceDTO) {
         let productsPrice = 0;
         dto.products.forEach(p => productsPrice += (p.amount * (p.priceWithDiscount || p.price)))
         return productsPrice;
     }
 
-    private async calculateDeliveryPrice(dto: CalculatePriceParams) {
+    private async calculateDeliveryPrice(dto: CalculatePriceDTO) {
         if (dto.address?.destinationZipCode) {
             return await this.deliveryService.calculateDelivery({
                 address: {
@@ -47,14 +60,14 @@ export class PurchasePriceService {
                     originZipCode: dto.address.originZipCode
                 },
                 cityDeliveryPrice: dto.cityDeliveryPrice,
-                companyCity: dto.companyCity,
+                companyCity: dto.company.city,
                 products: dto.products
             });
         }
         return 0;
     }
 
-    private calculatePaymentFee(dto: CalculatePriceParams, {productsPrice, deliveryPrice}) {
+    private calculatePaymentFee(dto: CalculatePriceDTO, {productsPrice, deliveryPrice}) {
         let paymentFee = 0;
         const fee = dto.payment?.creditCard?.fee;
         if (fee) {
@@ -64,34 +77,4 @@ export class PurchasePriceService {
         return paymentFee;
     }
     
-}
-
-type CalculatePriceParams = {
-    readonly address: Address,
-    readonly cityDeliveryPrice: number;
-    readonly companyCity: string;
-    readonly paymentType: string,
-    readonly payment: Payment,
-    readonly products: Product[]
-}
-
-type Address = {
-    readonly destinationZipCode: string;
-    readonly originZipCode: string;
-}
-
-type Payment = {
-    readonly creditCard: {
-        readonly fee: {
-            readonly percentage: number;
-            readonly value: number;
-        }
-    }
-}
-
-type Product = {
-    readonly amount: number;
-    readonly price: number;
-    readonly priceWithDiscount?: number;
-    readonly weight: number;
 }

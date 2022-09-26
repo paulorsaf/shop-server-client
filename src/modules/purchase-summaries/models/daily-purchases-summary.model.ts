@@ -25,6 +25,7 @@ export type PurchaseSummary = {
     createdAt: string;
     id: string;
     payment: {
+        cupom: string;
         error: string;
         type: string;
     },

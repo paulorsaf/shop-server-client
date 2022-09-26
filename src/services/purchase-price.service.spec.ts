@@ -1,22 +1,29 @@
 import { CqrsModule } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
+import { CupomRepository } from '../repositories/cupom.repository';
 import { DeliveryService } from './delivery.service';
 import { PurchasePriceService } from './purchase-price.service';
 
 describe('PurchasePriceService', () => {
 
+  let cupomRepository: CupomRepositoryMock;
   let service: PurchasePriceService;
 
   beforeEach(async () => {
+    cupomRepository = new CupomRepositoryMock();
+
     const module: TestingModule = await Test.createTestingModule({
       imports: [
         CqrsModule
       ],
       providers: [
-        DeliveryService,
-        PurchasePriceService
+        PurchasePriceService,
+
+        CupomRepository,
+        DeliveryService
       ]
     })
+    .overrideProvider(CupomRepository).useValue(cupomRepository)
     .overrideProvider(DeliveryService).useValue(new DeliveryServiceMock())
     .compile();
 
@@ -33,6 +40,7 @@ describe('PurchasePriceService', () => {
     expect(response).toEqual({
       productsPrice: 0,
       deliveryPrice: 0,
+      discount: 0,
       paymentFee: 0,
       totalPrice: 0,
       totalPriceWithPaymentFee: 0
@@ -45,6 +53,9 @@ describe('PurchasePriceService', () => {
 
     beforeEach(() => {
       params = {
+        company: {
+
+        },
         products: [{amount: 2, price: 100, priceWithDiscount: 50}]
       };
     })
@@ -57,6 +68,7 @@ describe('PurchasePriceService', () => {
       expect(response).toEqual({
         productsPrice: 200,
         deliveryPrice: 0,
+        discount: 0,
         paymentFee: 0,
         totalPrice: 200,
         totalPriceWithPaymentFee: 200
@@ -69,9 +81,26 @@ describe('PurchasePriceService', () => {
       expect(response).toEqual({
         productsPrice: 100,
         deliveryPrice: 0,
+        discount: 0,
         paymentFee: 0,
         totalPrice: 100,
         totalPriceWithPaymentFee: 100
+      });
+    })
+
+    it('when cupom found, then calculate price with cupom', async () => {
+      params.products[0].priceWithDiscount = null;
+      cupomRepository._response = 10;
+
+      const response = await service.calculatePrice(params);
+  
+      expect(response).toEqual({
+        productsPrice: 200,
+        deliveryPrice: 0,
+        discount: 20,
+        paymentFee: 0,
+        totalPrice: 180,
+        totalPriceWithPaymentFee: 180
       });
     })
 
@@ -85,6 +114,7 @@ describe('PurchasePriceService', () => {
       expect(response).toEqual({
         productsPrice: 100,
         deliveryPrice: 25,
+        discount: 0,
         paymentFee: 0,
         totalPrice: 125,
         totalPriceWithPaymentFee: 125
@@ -106,6 +136,7 @@ describe('PurchasePriceService', () => {
       expect(response).toEqual({
         productsPrice: 100,
         deliveryPrice: 0,
+        discount: 0,
         paymentFee: 17,
         totalPrice: 100,
         totalPriceWithPaymentFee: 117
@@ -131,6 +162,7 @@ describe('PurchasePriceService', () => {
       expect(response).toEqual({
         productsPrice: 100,
         deliveryPrice: 25,
+        discount: 0,
         paymentFee: 20.75,
         totalPrice: 125,
         totalPriceWithPaymentFee: 145.75
@@ -144,5 +176,12 @@ describe('PurchasePriceService', () => {
 class DeliveryServiceMock {
   calculateDelivery() {
     return 25;
+  }
+}
+
+class CupomRepositoryMock {
+  _response;
+  findPercentage() {
+    return this._response || 0;
   }
 }

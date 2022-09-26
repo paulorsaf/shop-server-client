@@ -15,6 +15,7 @@ import { DeliveryService } from '../../services/delivery.service';
 import { AddressRepository } from '../../repositories/address.repository';
 import { PurchasePriceService } from '../../services/purchase-price.service';
 import { FindLastPurchaseByCompanyAndUserIdQueryHandler } from './queries/find-last-purchase-by-company-and-user-id/find-last-purchase-by-company-and-user-id-query.handler';
+import { CupomRepository } from '../../repositories/cupom.repository';
 
 @Module({
   controllers: [PurchasesController],
@@ -24,6 +25,7 @@ import { FindLastPurchaseByCompanyAndUserIdQueryHandler } from './queries/find-l
   ],
   providers: [
     AddressRepository,
+    CupomRepository,
     DeliveryRepository,
     DeliveryService,
     ProductRepository,

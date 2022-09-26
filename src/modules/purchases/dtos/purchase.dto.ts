@@ -33,6 +33,7 @@ export type PaymentDTO = {
     billingAddress?: PurchaseAddressDTO;
     creditCard?: CreditCardDTO;
     creditCardId?: string;
+    cupom: string;
     receipt?: string;
     type: string;
 }
