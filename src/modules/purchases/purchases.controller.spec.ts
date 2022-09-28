@@ -117,7 +117,7 @@ describe('PurchasesController', () => {
         payment: {}
       } as any;
   
-      await controller.create(company, user, purchaseDto, "anyFile");
+      await controller.createWithFile(company, user, purchaseDto, "anyFile");
   
       expect(commandBus.executed).toEqual(
         new CreatePurchaseCommand(
@@ -140,7 +140,7 @@ describe('PurchasesController', () => {
         payment: {}
       } as any;
   
-      await controller.create(company, user, purchaseDto, "anyFile");
+      await controller.createWithFile(company, user, purchaseDto, "anyFile");
   
       expect(purchaseDto.payment.receipt).toEqual("anyFile");
     })
@@ -156,7 +156,7 @@ describe('PurchasesController', () => {
     }
 
     beforeEach(async () => {
-      await controller.retryPayment(
+      await controller.retryPaymentWithUpload(
         company, user, "anyPurchaseId", retryPurchaseDTO, "anyFile"
       );
     })

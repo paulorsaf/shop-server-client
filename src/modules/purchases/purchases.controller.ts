@@ -88,14 +88,36 @@ export class PurchasesController {
     )
   }
 
+  @UseGuards(CompanyStrategy, JwtStrategy)
+  @Post()
+  create(
+    @AuthCompany() company: Company,
+    @AuthUser() user: User,
+    @Body() purchaseDto: PurchaseDTO
+  ) {
+    return this.commandBus.execute(
+      new CreatePurchaseCommand(
+        {
+          cityDeliveryPrice: company.cityDeliveryPrice,
+          companyCity: company.address.city,
+          id: company.id,
+          payment: company.payment,
+          zipCode: company.address.zipCode
+        },
+        purchaseDto,
+        { email: user.email, id: user.id }
+      )
+    )
+  }
+
   @UseGuards(
     CompanyStrategy,
     JwtStrategy,
     MultipartUploadToFilePathStrategy,
     MultipartUploadToObjectStrategy
   )
-  @Post()
-  create(
+  @Post('pix')
+  createWithFile(
     @AuthCompany() company: Company,
     @AuthUser() user: User,
     @MultipartUploadToObject() purchaseDto: PurchaseDTO,
@@ -118,14 +140,32 @@ export class PurchasesController {
     )
   }
 
+  @UseGuards(CompanyStrategy, JwtStrategy)
+  @Patch(':id/payments')
+  retryPayment(
+    @AuthCompany() company: Company,
+    @AuthUser() user: User,
+    @Param('id') id: string,
+    @Body() retryPurchaseDTO: RetryPurchaseDTO
+  ) {
+    return this.commandBus.execute(
+      new RetryPurchasePaymentCommand(
+        company.id,
+        id,
+        retryPurchaseDTO,
+        { email: user.email, id: user.id }
+      )
+    )
+  }
+
   @UseGuards(
     CompanyStrategy,
     JwtStrategy,
     MultipartUploadToFilePathStrategy,
     MultipartUploadToObjectStrategy
   )
-  @Patch(':id/payments')
-  retryPayment(
+  @Patch(':id/payments/pix')
+  retryPaymentWithUpload(
     @AuthCompany() company: Company,
     @AuthUser() user: User,
     @Param('id') id: string,
