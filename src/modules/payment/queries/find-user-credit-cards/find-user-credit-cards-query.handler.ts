@@ -13,7 +13,7 @@ export class FindUserCreditCardsQueryHandler implements IQueryHandler<FindUserCr
         const payment = this.paymentFactory.createPayment(query.companyId);
 
         return await payment.findCreditCards({
-            email: query.email
+            email: query.email, userId: query.userId
         })
     }
 

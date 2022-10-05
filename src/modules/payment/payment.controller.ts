@@ -21,7 +21,7 @@ export class PaymentsController {
   @Get('creditcards')
   findCreditCards(@AuthCompany() company: Company, @AuthUser() user: User) {
     return this.queryBus.execute(
-      new FindUserCreditCardsQuery(company.id, user.email)
+      new FindUserCreditCardsQuery(company.id, user.email, user.id)
     )
   }
 

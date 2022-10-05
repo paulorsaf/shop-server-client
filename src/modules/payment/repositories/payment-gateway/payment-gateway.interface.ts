@@ -12,6 +12,7 @@ export interface PaymentGateway {
 
 export type FindCreditCards = {
     email: string;
+    userId?: string;
 }
 
 export type FindCreditCardsResponse = {
@@ -23,12 +24,14 @@ export type FindCreditCardsResponse = {
 }
 
 export type MakePayment = {
-    billingAddress: AddressDTO,
-    companyId: string,
-    creditCard: CreditCardDTO,
+    billingAddress: AddressDTO;
+    companyId: string;
+    creditCard: CreditCardDTO;
+    purchaseId: string;
     totalPrice: number;
     user: {
         email: string;
+        id: string;
     }
 }
 

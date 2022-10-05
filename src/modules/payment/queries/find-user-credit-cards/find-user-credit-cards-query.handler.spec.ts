@@ -8,7 +8,7 @@ describe('FindUserCreditCardsQueryHandler', () => {
 
   let handler: FindUserCreditCardsQueryHandler;
 
-  const command = new FindUserCreditCardsQuery("anyCompanyId", 'any@email.com');
+  const command = new FindUserCreditCardsQuery("anyCompanyId", 'any@email.com', 'anyUserId');
 
   let paymentFactory: PaymentFactoryMock;
 

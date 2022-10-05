@@ -1,11 +1,12 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { StripeRepository } from "../repositories/payment-gateway/stripe.repository";
+import { CieloRepository } from "../repositories/payment-gateway/cielo/cielo.repository";
+import { StripeRepository } from "../repositories/payment-gateway/stripe/stripe.repository";
 import { PaymentFactory } from "./payment.factory";
+import * as dotenv from 'dotenv';
 
 describe('Payment factory', () => {
 
     let factory: PaymentFactory;
-    let stripeRepository = {id: "STRIPE REPOSITORY"};
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
@@ -18,10 +19,26 @@ describe('Payment factory', () => {
         factory = module.get<PaymentFactory>(PaymentFactory);
     });
 
-    it('given company payment is stripe, then return stripe factory', () => {
+    it('given company payment is stripe, then return stripe repository', () => {
+        process.env = { _ANYCOMPANYID_PAYMENT_TYPE: 'STRIPE' };
+
         const response = factory.createPayment('anyCompanyId');
 
         expect(response).toBeInstanceOf(StripeRepository);
+    })
+
+    it('given company payment not defined, then return stripe repository', () => {
+        const response = factory.createPayment('anyCompanyId');
+
+        expect(response).toBeInstanceOf(StripeRepository);
+    })
+
+    it('given company payment is cielo, then return cielo repository', () => {
+        process.env = { _ANYCOMPANYID_PAYMENT_TYPE: 'CIELO' };
+
+        const response = factory.createPayment('anyCompanyId');
+
+        expect(response).toBeInstanceOf(CieloRepository);
     })
 
 })

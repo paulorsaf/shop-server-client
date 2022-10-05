@@ -6,7 +6,7 @@ import { SavePaymentErrorCommandHandler } from './commands/save-payment-error/sa
 import { SelectPurchasePaymentCommandHandler } from './commands/select-payment/select-purchase-payment-command.handler';
 import { PaymentFactory } from './factories/payment.factory';
 import { PaymentsController } from './payment.controller';
-import { StripeRepository } from './repositories/payment-gateway/stripe.repository';
+import { StripeRepository } from './repositories/payment-gateway/stripe/stripe.repository';
 import { PurchaseRepository } from './repositories/purchase.repository';
 import { StorageRepository } from './repositories/storage.repository';
 import { PaymentSagas } from './sagas/payment.saga';

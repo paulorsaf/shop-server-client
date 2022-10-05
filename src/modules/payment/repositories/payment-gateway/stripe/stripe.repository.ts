@@ -1,6 +1,6 @@
 import Stripe from 'stripe';
 import { InternalServerErrorException } from '@nestjs/common';
-import { FindCreditCards, FindCreditCardsResponse, MakePayment, MakePaymentBySavedCreditCard, PayByCreditCardResponse, PaymentGateway } from './payment-gateway.interface';
+import { FindCreditCards, FindCreditCardsResponse, MakePayment, MakePaymentBySavedCreditCard, PayByCreditCardResponse, PaymentGateway } from '../payment-gateway.interface';
 
 export class StripeRepository implements PaymentGateway {
 

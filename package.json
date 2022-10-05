@@ -30,6 +30,7 @@
     "@nestjs/platform-express": "^8.0.0",
     "@sendinblue/client": "^3.2.2",
     "busboy": "^1.6.0",
+    "cielo": "^2.4.4",
     "correios-brasil": "^3.0.0",
     "date-fns": "^2.29.1",
     "dotenv": "^16.0.2",

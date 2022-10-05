@@ -40,7 +40,7 @@ describe('PaymentsController', () => {
     await controller.findCreditCards(company, user);
 
     expect(queryBus.executedWith).toEqual(
-      new FindUserCreditCardsQuery("anyCompanyId", "any@email.com")
+      new FindUserCreditCardsQuery("anyCompanyId", "any@email.com", "anyUserId")
     );
   })
 

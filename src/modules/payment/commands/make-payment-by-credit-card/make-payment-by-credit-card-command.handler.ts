@@ -30,9 +30,11 @@ export class MakePaymentByCreditCardCommandHandler implements ICommandHandler<Ma
                 billingAddress: command.billingAddress,
                 companyId: command.companyId,
                 creditCard: command.creditCard,
+                purchaseId: command.purchaseId,
                 totalPrice: purchase.price.totalWithPaymentFee,
                 user: {
-                    email: purchase.user.email
+                    email: purchase.user.email,
+                    id: purchase.user.id
                 }
             });
             await this.purchaseRepository.updatePaymentByCreditCard({

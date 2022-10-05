@@ -1,5 +1,5 @@
 import { InternalServerErrorException } from "@nestjs/common";
-import { MakePayment, MakePaymentBySavedCreditCard } from "./payment-gateway.interface";
+import { MakePayment, MakePaymentBySavedCreditCard } from "./../payment-gateway.interface";
 import { StripeRepository } from "./stripe.repository";
 
 describe('Stripe repository', () => {
@@ -110,9 +110,11 @@ describe('Stripe repository', () => {
                     cardMonth: "12",
                     cardYear: "2023"
                 },
+                purchaseId: "anyPurchaseId",
                 totalPrice: 15,
                 user: {
-                    email: "testing@email.com"
+                    email: "testing@email.com",
+                    id: "anyUserId"
                 }
             };
 
