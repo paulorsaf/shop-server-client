@@ -28,7 +28,11 @@ export class MakePaymentBySavedCreditCardCommandHandler implements ICommandHandl
             const repository = this.paymentFactory.createPayment(command.companyId);
             const paymentDetails = await repository.payBySavedCreditCard({
                 id: command.creditCardId,
-                user: {email: purchase.user.email},
+                purchaseId: command.purchaseId,
+                user: {
+                    email: purchase.user.email,
+                    id: purchase.user.id
+                },
                 totalPrice: purchase.price.totalWithPaymentFee
             });
             await this.purchaseRepository.updatePaymentByCreditCard({

@@ -1,7 +1,25 @@
 import * as admin from 'firebase-admin';
+import { PaymentDB } from '../../../../../db/payment.db';
 import { FindCreditCardsResponse } from '../payment-gateway.interface';
 
 export class PaymentMethodsRepository {
+
+    findByIdAndUser(params: FindByIdAndUser): Promise<PaymentDB> {
+        return admin.firestore()
+            .collection('payments')
+            .doc(params.id)
+            .get()
+            .then(snapshot => {
+                if (!snapshot.exists) {
+                    return null;
+                }
+                const data = snapshot.data() as PaymentDB;
+                if (data.user?.id === params.userId) {
+                    return data;
+                }
+                return null;
+            })
+    }
 
     findByUser(userId: string): Promise<FindCreditCardsResponse[]> {
         return admin.firestore()
@@ -26,7 +44,7 @@ export class PaymentMethodsRepository {
             })
     }
 
-    savePaymentDetails(params: PaymentDetails): Promise<string> {
+    savePaymentDetails(params: PaymentDB): Promise<string> {
         return admin.firestore()
             .collection('payments')
             .add(JSON.parse(JSON.stringify(params)))
@@ -35,20 +53,7 @@ export class PaymentMethodsRepository {
 
 }
 
-type PaymentDetails = {
-    billingAddress: any;
-    creditCard: {
-        cardToken: string;
-        securityCode: string;
-        brand: any;
-        last4: string;
-        exp_month: number;
-        exp_year: number;
-    };
-    gateway: 'CIELO';
-    isRemoved: boolean;
-    user: {
-        email: string;
-        id: string;
-    }
+type FindByIdAndUser = {
+    id: string;
+    userId: string;
 }

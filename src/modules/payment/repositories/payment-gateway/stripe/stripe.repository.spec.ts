@@ -219,9 +219,11 @@ describe('Stripe repository', () => {
         beforeEach(() => {
             payment = {
                 id: "anyCreditCardId",
+                purchaseId: "anyPurchaseId",
                 totalPrice: 15,
                 user: {
-                    email: "testing@email.com"
+                    email: "testing@email.com",
+                    id: "anyUserId"
                 }
             };
 

@@ -37,9 +37,11 @@ export type MakePayment = {
 
 export type MakePaymentBySavedCreditCard = {
     id: string;
+    purchaseId: string;
     totalPrice: number;
     user: {
         email: string;
+        id: string;
     }
 }
 

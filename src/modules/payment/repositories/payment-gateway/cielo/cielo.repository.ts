@@ -1,7 +1,9 @@
 import { FindCreditCards, FindCreditCardsResponse, MakePayment, MakePaymentBySavedCreditCard, PayByCreditCardResponse, PaymentGateway } from "../payment-gateway.interface";
-import { Cielo, EnumBrands, EnumCardType } from "cielo";
-import { BadRequestException, NotImplementedException } from "@nestjs/common";
+import { Cielo, CreditCardModel, EnumBrands, EnumCardType, TransactionCreditCardRequestModel } from "cielo";
+import { BadRequestException, InternalServerErrorException, NotImplementedException } from "@nestjs/common";
 import { PaymentMethodsRepository } from "./payment-methods.repository";
+import { Address } from "../../../../../models/address.model";
+import { PaymentDB } from "src/db/payment.db";
 
 export class CieloRepository implements PaymentGateway {
 
@@ -13,11 +15,11 @@ export class CieloRepository implements PaymentGateway {
     }
 
     deleteCreditCard(id: string) {
-        
+        throw new NotImplementedException();
     }
 
     findCreditCardById(id: string): Promise<FindCreditCardsResponse> {
-        return null;
+        throw new NotImplementedException();
     }
 
     findCreditCards(find: FindCreditCards): Promise<FindCreditCardsResponse[]> {
@@ -26,9 +28,12 @@ export class CieloRepository implements PaymentGateway {
 
     async payByCreditCard(payment: MakePayment): Promise<PayByCreditCardResponse> {
         const tokenizedCard = await this.createTokenizedCard(payment);
-
         const cardToken = tokenizedCard.cardToken;
-        const transaction = await this.createCreditCardTransaction(payment, cardToken);
+
+        let params = this.fromMakePaymentToTransactionCreditCardRequestModel(payment, cardToken);
+        const transaction = await this.cielo.creditCard.transaction(params).catch(error => {
+            throw new BadRequestException(error.response?.Message);
+        });
         
         const id = await this.savePaymentDetails(payment, cardToken);
 
@@ -38,7 +43,7 @@ export class CieloRepository implements PaymentGateway {
                 exp_month: parseInt(payment.creditCard.cardMonth),
                 exp_year: parseInt(payment.creditCard.cardYear),
                 id,
-                last4: this.createLast4Card(payment)
+                last4: this.getCardLast4(payment.creditCard.cardNumber)
             },
             id: transaction.payment.paymentId,
             receiptUrl: "",
@@ -46,13 +51,69 @@ export class CieloRepository implements PaymentGateway {
         };
     }
 
-    payBySavedCreditCard(payment: MakePaymentBySavedCreditCard): Promise<PayByCreditCardResponse> {
-        throw new NotImplementedException("Not implemented");
+    async payBySavedCreditCard(payment: MakePaymentBySavedCreditCard): Promise<PayByCreditCardResponse> {
+        const paymentDetails = await this.paymentMethodsRepository.findByIdAndUser({
+            id: payment.id, userId: payment.user.id
+        })
+        if (!paymentDetails) {
+            throw new InternalServerErrorException("Cartão não encontrado");
+        }
+
+        const data = this.fromMakePaymentBySavedCreditCardToTransactionCreditCardRequestModel(
+            paymentDetails, payment.purchaseId, payment.totalPrice
+        )
+        const transaction = await this.cielo.creditCard.transaction(data).catch(error => {
+            throw new BadRequestException(error.response?.Message);
+        });
+
+        return Promise.resolve({
+            cardDetails: {
+                brand: paymentDetails.creditCard.brand,
+                exp_month: paymentDetails.creditCard.exp_month,
+                exp_year: paymentDetails.creditCard.exp_year,
+                id: payment.id,
+                last4: paymentDetails.creditCard.last4
+            },
+            id: transaction.payment.paymentId,
+            receiptUrl: "",
+            status: "success"
+        });
+    }
+
+    private fromMakePaymentToTransactionCreditCardRequestModel(payment: MakePayment, cardToken: string) {
+        return this.createTransactionCreditCardRequestModel({
+            billingAddress: payment.billingAddress,
+            cardToken,
+            creditCard: {
+                securityCode: payment.creditCard.cardCvc,
+                brand: this.getCreditCardBrand(payment)
+            },
+            email: payment.user.email,
+            purchaseId: payment.purchaseId,
+            totalPrice: payment.totalPrice
+        });
+    }
+
+    private fromMakePaymentBySavedCreditCardToTransactionCreditCardRequestModel(
+        paymentDetails: PaymentDB, purchaseId: string, totalPrice: number
+    ): TransactionCreditCardRequestModel {
+        return this.createTransactionCreditCardRequestModel({
+            billingAddress: paymentDetails.billingAddress,
+            cardToken: paymentDetails.creditCard.cardToken,
+            creditCard: {
+                brand: this.getCreditCardBrand(paymentDetails.creditCard.brand),
+                securityCode: paymentDetails.creditCard.securityCode,
+                cardToken: paymentDetails.creditCard.cardToken
+            },
+            email: paymentDetails.user.email,
+            purchaseId: purchaseId,
+            totalPrice: totalPrice
+        });
     }
 
     private async savePaymentDetails(payment: MakePayment, cardToken: string) {
         return await this.paymentMethodsRepository.savePaymentDetails({
-            billingAddress: this.createCustomerAddress(payment),
+            billingAddress: this.createBillingAddress(payment.billingAddress),
             creditCard: {
                 ...this.createCreditCard(payment, cardToken),
                 brand: payment.creditCard.cardFlag
@@ -66,8 +127,8 @@ export class CieloRepository implements PaymentGateway {
         });
     }
     
-    private createLast4Card(payment: MakePayment){
-        return payment.creditCard.cardNumber.substring(payment.creditCard.cardNumber.length-4);
+    private getCardLast4(cardNumber: string){
+        return cardNumber.substring(cardNumber.length-4);
     }
 
     private createTokenizedCard(payment: MakePayment) {
@@ -83,45 +144,60 @@ export class CieloRepository implements PaymentGateway {
         });
     }
 
-    private createCreditCardTransaction(payment: MakePayment, cardToken: string) {
-        let params = {
-            customer: this.createPaymentCustomer(payment),
-            merchantOrderId: payment.purchaseId,
+    private createTransactionCreditCardRequestModel(
+        transaction: Transaction
+    ): TransactionCreditCardRequestModel {
+        return {
+            customer: this.createPaymentCustomer(transaction.billingAddress, transaction.email),
+            merchantOrderId: transaction.purchaseId,
             payment: {
-                amount: payment.totalPrice,
-                creditCard: this.createCreditCard(payment, cardToken),
+                amount: transaction.totalPrice,
+                creditCard: {
+                    ...transaction.creditCard,
+                    cardToken: transaction.cardToken
+                },
                 installments: 1,
                 softDescriptor: "RiccoAlimento",
                 type: EnumCardType.CREDIT,
                 capture: true
             }
-        };
-        return this.cielo.creditCard.transaction(params).catch(error => {
-            throw new BadRequestException(error.response?.Message);
-        });
+        }
     }
 
     private getCreditCardBrand(payment: MakePayment) {
         return EnumBrands.MASTER;
     }
 
-    private createPaymentCustomer(payment: MakePayment) {
+    private createPaymentCustomer(address: Address, email: string) {
         return {
-            address: this.createCustomerAddress(payment),
-            email: payment.user.email
+            address: this.createCustomerAddress(address),
+            email: email
         };
     }
 
-    private createCustomerAddress(payment: MakePayment) {
+    private createCustomerAddress(billingAddress: Address) {
         return {
-            city: payment.billingAddress.city,
-            complement: payment.billingAddress.complement,
+            city: billingAddress.city,
+            complement: billingAddress.complement,
             country: "BR",
-            district: payment.billingAddress.neighborhood,
-            number: payment.billingAddress.number,
-            state: payment.billingAddress.state,
-            street: payment.billingAddress.street,
-            zipCode: payment.billingAddress.zipCode.replace(/[^\d]/g, '')
+            district: billingAddress.neighborhood,
+            number: billingAddress.number,
+            state: billingAddress.state,
+            street: billingAddress.street,
+            zipCode: billingAddress.zipCode?.replace(/[^\d]/g, '')
+        };
+    }
+
+    private createBillingAddress(billingAddress: Address) {
+        return {
+            city: billingAddress.city,
+            complement: billingAddress.complement,
+            country: "BR",
+            neighborhood: billingAddress.neighborhood,
+            number: billingAddress.number,
+            state: billingAddress.state,
+            street: billingAddress.street,
+            zipCode: billingAddress.zipCode?.replace(/[^\d]/g, '')
         };
     }
 
@@ -130,10 +206,19 @@ export class CieloRepository implements PaymentGateway {
             cardToken,
             securityCode: payment.creditCard.cardCvc,
             brand: this.getCreditCardBrand(payment),
-            last4: this.createLast4Card(payment),
+            last4: this.getCardLast4(payment.creditCard.cardNumber),
             exp_month: parseInt(payment.creditCard.cardMonth),
             exp_year: parseInt(payment.creditCard.cardYear),
         };
     }
 
+}
+
+type Transaction = {
+    cardToken: string;
+    billingAddress: Address;
+    creditCard: CreditCardModel;
+    email: string;
+    purchaseId: string;
+    totalPrice: number;
 }

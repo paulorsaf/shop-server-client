@@ -1,5 +1,5 @@
-import { BadRequestException } from "@nestjs/common";
-import { MakePayment } from "../payment-gateway.interface";
+import { BadRequestException, InternalServerErrorException } from "@nestjs/common";
+import { MakePayment, MakePaymentBySavedCreditCard } from "../payment-gateway.interface";
 import { CieloRepository } from "./cielo.repository"
 
 describe('Cielo repository', () => {
@@ -12,6 +12,14 @@ describe('Cielo repository', () => {
         cielo = new CieloMock();
         paymentMethodsRepository = new PaymentMethodsRepositoryMock();
         repository = new CieloRepository(cielo as any, paymentMethodsRepository as any);
+
+        cielo._createCreditCardTransactionResponse = Promise.resolve({
+            payment: {
+                creditCard: {cardNumber: "1234"},
+                paymentId: "anyPaymentId",
+                tid: "anyTransactionId"
+            }
+        });
     })
 
     describe('given pay by credit card', () => {
@@ -39,13 +47,6 @@ describe('Cielo repository', () => {
             };
 
             cielo._createTokenizedCardResponse = Promise.resolve({});
-            cielo._createCreditCardTransactionResponse = Promise.resolve({
-                payment: {
-                    creditCard: {cardNumber: "1234"},
-                    paymentId: "anyPaymentId",
-                    tid: "anyTransactionId"
-                }
-            });
         })
 
         describe('when payment success', () => {
@@ -119,6 +120,89 @@ describe('Cielo repository', () => {
 
     })
 
+    describe('given find credit cards', () => {
+
+        const cards = [{id: "anyCardId1"}, {id: "anyCardId2"}];
+
+        it('then return credit cards found', async () => {
+            paymentMethodsRepository._findByUserResponse = cards;
+
+            const response = await repository.findCreditCards({
+                email: "any@email.com", userId: "anyUserId"
+            });
+
+            expect(response).toEqual(cards);
+        })
+
+    })
+
+    describe('given pay by saved credit card', () => {
+
+        let payment: MakePaymentBySavedCreditCard;
+
+        beforeEach(() => {
+            payment = {
+                id: "anyCreditCardId",
+                purchaseId: "anyPurchaseId",
+                totalPrice: 15,
+                user: {
+                    email: "testing@email.com",
+                    id: "anyUserId"
+                }
+            };
+
+            paymentMethodsRepository._findByIdAndUserResponse = {
+                billingAddress: {},
+                creditCard: {
+                    brand: "anyBrand",
+                    exp_month: 10,
+                    exp_year: 2023,
+                    id: "anyCreditCardId",
+                    last4: "1234"
+                },
+                user: {email: "anyUserEmail"}
+            };
+        })
+
+        it('when success, then return payment data', async () => {
+            const response = await repository.payBySavedCreditCard(payment);
+
+            expect(response).toEqual({
+                cardDetails: {
+                    brand: "anyBrand",
+                    exp_month: 10,
+                    exp_year: 2023,
+                    id: "anyCreditCardId",
+                    last4: "1234"
+                },
+                id: "anyPaymentId",
+                receiptUrl: "",
+                status: "success"
+            });
+        })
+
+        it('when credit card not found, then throw internal server error exception', async () => {
+            paymentMethodsRepository._findByIdAndUserResponse = null;
+
+            await expect(repository.payBySavedCreditCard(payment))
+                .rejects.toThrowError(InternalServerErrorException);
+        })
+
+        describe('when error on create card transaction', () => {
+
+            beforeEach(() => {
+                cielo._createCreditCardTransactionResponse = Promise.reject({response: {message: 'error'}});
+            })
+
+            it('then throw bad request exception', async () => {
+                await expect(repository.payBySavedCreditCard(payment))
+                    .rejects.toThrowError(BadRequestException);
+            })
+
+        })
+
+    })
+
 })
 
 class CieloMock {
@@ -143,7 +227,16 @@ class CieloMock {
 }
 
 class PaymentMethodsRepositoryMock {
+    _findByIdAndUserResponse;
+    _findByUserResponse;
     _isSaved = false;
+
+    findByIdAndUser() {
+        return this._findByIdAndUserResponse;
+    }
+    findByUser() {
+        return this._findByUserResponse;
+    }
     savePaymentDetails() {
         this._isSaved = true;
         return "anyPaymentDetailsId";
