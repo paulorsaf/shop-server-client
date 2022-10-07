@@ -15,7 +15,9 @@ export class DeleteCreditCardByIdCommandHandler implements ICommandHandler<Delet
     async execute(command: DeleteCreditCardByIdCommand) {
         const paymentService = this.paymentFactory.createPayment(command.companyId);
 
-        const creditCard = await paymentService.findCreditCardById(command.creditCardId);
+        const creditCard = await paymentService.findCreditCardById({
+            id: command.creditCardId, userId: command.user.id
+        });
         if (!creditCard) {
             throw new NotFoundException();
         }

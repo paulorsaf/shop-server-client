@@ -4,6 +4,13 @@ import { FindCreditCardsResponse } from '../payment-gateway.interface';
 
 export class PaymentMethodsRepository {
 
+    deleteById(id: string) {
+        return admin.firestore()
+            .collection('payments')
+            .doc(id)
+            .update({isRemoved: true});
+    }
+
     findByIdAndUser(params: FindByIdAndUser): Promise<PaymentDB> {
         return admin.firestore()
             .collection('payments')

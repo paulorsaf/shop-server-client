@@ -136,6 +136,39 @@ describe('Cielo repository', () => {
 
     })
 
+    describe('given find credit card by id', () => {
+
+        const card = {
+            brand: "anyBrand",
+            exp_month: 10,
+            exp_year: 2090,
+            last4: "anyLast4"
+        };
+
+        it('then return credit card', async () => {
+            paymentMethodsRepository._findByIdAndUserResponse = Promise.resolve({
+                creditCard: card
+            });
+
+            const response = await repository.findCreditCardById({
+                id: "anyCardId", userId: "anyUserId"
+            });
+
+            expect(response).toEqual({...card, id: "anyCardId"});
+        })
+
+    })
+
+    describe('given remove credit card by id', () => {
+
+        it('then remove credit card', async () => {
+            await repository.deleteCreditCard("anyCardId");
+
+            expect(paymentMethodsRepository._isDeleted).toBeTruthy();
+        })
+
+    })
+
     describe('given pay by saved credit card', () => {
 
         let payment: MakePaymentBySavedCreditCard;
@@ -229,8 +262,12 @@ class CieloMock {
 class PaymentMethodsRepositoryMock {
     _findByIdAndUserResponse;
     _findByUserResponse;
+    _isDeleted = false;
     _isSaved = false;
 
+    deleteById() {
+        this._isDeleted = true;
+    }
     findByIdAndUser() {
         return this._findByIdAndUserResponse;
     }

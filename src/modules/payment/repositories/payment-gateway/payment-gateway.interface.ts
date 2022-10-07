@@ -3,7 +3,7 @@ import { AddressDTO, CreditCardDTO } from "../../dtos/payment.dto";
 export interface PaymentGateway {
 
     deleteCreditCard(id: string);
-    findCreditCardById(id: string): Promise<FindCreditCardsResponse>;
+    findCreditCardById(find: FindById): Promise<FindCreditCardsResponse>;
     findCreditCards(find: FindCreditCards): Promise<FindCreditCardsResponse[]>;
     payByCreditCard(payment: MakePayment): Promise<PayByCreditCardResponse>;
     payBySavedCreditCard(payment: MakePaymentBySavedCreditCard): Promise<PayByCreditCardResponse>;
@@ -56,4 +56,9 @@ export type PayByCreditCardResponse = {
     id: string;
     receiptUrl: string;
     status: string;
+}
+
+export type FindById = {
+    id: string;
+    userId?: string;
 }

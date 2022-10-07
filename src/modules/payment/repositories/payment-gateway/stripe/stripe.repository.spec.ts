@@ -67,7 +67,7 @@ describe('Stripe repository', () => {
         it('when credit card found, then return credit card', async () => {
             stripe._paymentMethodRetrieveResponse = {id: "anyPaymentMethodId", card};
 
-            const response = await repository.findCreditCardById(id);
+            const response = await repository.findCreditCardById({id});
     
             expect(response).toEqual(card);
         })
@@ -75,7 +75,7 @@ describe('Stripe repository', () => {
         it('when credit card not found, then return empty', async () => {
             stripe._customerSearchResponse = {data: []};
 
-            const response = await repository.findCreditCardById(id);
+            const response = await repository.findCreditCardById({id});
 
             expect(response).toBeNull();
         })

@@ -1,6 +1,6 @@
 import Stripe from 'stripe';
 import { InternalServerErrorException } from '@nestjs/common';
-import { FindCreditCards, FindCreditCardsResponse, MakePayment, MakePaymentBySavedCreditCard, PayByCreditCardResponse, PaymentGateway } from '../payment-gateway.interface';
+import { FindById, FindCreditCards, FindCreditCardsResponse, MakePayment, MakePaymentBySavedCreditCard, PayByCreditCardResponse, PaymentGateway } from '../payment-gateway.interface';
 
 export class StripeRepository implements PaymentGateway {
 
@@ -14,8 +14,8 @@ export class StripeRepository implements PaymentGateway {
         await this.stripe.paymentMethods.detach(id);
     }
 
-    async findCreditCardById(id: string): Promise<FindCreditCardsResponse> {
-        const response = await this.stripe.paymentMethods.retrieve(id);
+    async findCreditCardById(params: FindById): Promise<FindCreditCardsResponse> {
+        const response = await this.stripe.paymentMethods.retrieve(params.id);
         if (!response?.card) {
             return null;
         }

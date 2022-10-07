@@ -1,4 +1,4 @@
-import { FindCreditCards, FindCreditCardsResponse, MakePayment, MakePaymentBySavedCreditCard, PayByCreditCardResponse, PaymentGateway } from "../payment-gateway.interface";
+import { FindById, FindCreditCards, FindCreditCardsResponse, MakePayment, MakePaymentBySavedCreditCard, PayByCreditCardResponse, PaymentGateway } from "../payment-gateway.interface";
 import { Cielo, CreditCardModel, EnumBrands, EnumCardType, TransactionCreditCardRequestModel } from "cielo";
 import { BadRequestException, InternalServerErrorException, NotImplementedException } from "@nestjs/common";
 import { PaymentMethodsRepository } from "./payment-methods.repository";
@@ -15,11 +15,19 @@ export class CieloRepository implements PaymentGateway {
     }
 
     deleteCreditCard(id: string) {
-        throw new NotImplementedException();
+        return this.paymentMethodsRepository.deleteById(id);
     }
 
-    findCreditCardById(id: string): Promise<FindCreditCardsResponse> {
-        throw new NotImplementedException();
+    findCreditCardById(find: FindById): Promise<FindCreditCardsResponse> {
+        return this.paymentMethodsRepository.findByIdAndUser({
+            id: find.id, userId: find.userId
+        }).then(response => ({
+            brand: response.creditCard.brand,
+            exp_month: response.creditCard.exp_month,
+            exp_year: response.creditCard.exp_year,
+            id: find.id,
+            last4: response.creditCard.last4
+        }));
     }
 
     findCreditCards(find: FindCreditCards): Promise<FindCreditCardsResponse[]> {
