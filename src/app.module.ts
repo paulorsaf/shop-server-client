@@ -14,6 +14,7 @@ import { AddressModule } from './modules/address/address.module';
 import { DeliveriesModule } from './modules/delivery/deliveries.module';
 import { PurchaseSummaryModule } from './modules/purchase-summaries/purchase-summary.module';
 import { CupomsModule } from './modules/cupoms/cupoms.module';
+import { OrganizationModule } from './modules/organization/organization.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { CupomsModule } from './modules/cupoms/cupoms.module';
     CupomsModule,
     DeliveriesModule,
     EmailModule,
+    OrganizationModule,
     ProductsModule,
     RegisterModule,
     PurchasesModule,
