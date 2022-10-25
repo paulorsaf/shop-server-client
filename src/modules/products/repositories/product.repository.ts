@@ -24,7 +24,8 @@ export class ProductRepository {
                     product.images,
                     null,
                     product.description,
-                    product.weight
+                    product.weight,
+                    product.unit
                 );
             });
     }

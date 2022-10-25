@@ -21,7 +21,7 @@ export class FindProductByIdQueryHandler implements IQueryHandler<FindProductByI
             return new Product(
                 product.companyId, product.id, product.name, product.price,
                 product.priceWithDiscount, product.images, stockOptions,
-                product.description, product.weight
+                product.description, product.weight, product.unit
             );
         }
 
