@@ -12,6 +12,7 @@ describe('Purchase product model', () => {
                     id: "anyProductId",
                     stock: {quantity: 10} as any,
                     amount: 15,
+                    unit: "anyUnit",
                     weight: 1
                 })
     
@@ -24,6 +25,7 @@ describe('Purchase product model', () => {
                     id: "anyProductId",
                     stock: {quantity: 10} as any,
                     amount: 10,
+                    unit: "anyUnit",
                     weight: 1
                 })
     
@@ -36,6 +38,7 @@ describe('Purchase product model', () => {
                     id: "anyProductId",
                     stock: {quantity: 10} as any,
                     amount: 5,
+                    unit: "anyUnit",
                     weight: 1
                 })
     

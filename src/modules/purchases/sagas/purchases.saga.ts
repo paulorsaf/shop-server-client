@@ -28,7 +28,9 @@ export class PurchaseSagas {
                         stock: {
                             id: p.stock.id,
                             quantity: p.stock.quantity
-                        }
+                        },
+                        unit: p.unit,
+                        weight: p.weight
                     })),
                     event.userId
                 )

@@ -27,7 +27,9 @@ describe('PurchaseSagas', () => {
       stock: {
         id: "anyStockId",
         quantity: 10
-      }
+      },
+      unit: "anyUnit",
+      weight: 10
     } as any],
     user: {
       email: "any@email.com",
@@ -71,7 +73,9 @@ describe('PurchaseSagas', () => {
               stock: {
                 id: "anyStockId",
                 quantity: 10
-              }
+              },
+              unit: "anyUnit",
+              weight: 10
             }],
             "anyUserId"
           )

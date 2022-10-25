@@ -107,6 +107,7 @@ export class PurchaseRepository {
                     name: p.name,
                     price: p.price,
                     priceWithDiscount: p.priceWithDiscount,
+                    unit: p.unit,
                     weight: p.weight
                 })
             ),

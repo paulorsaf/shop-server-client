@@ -10,18 +10,25 @@ export class ProductRepository {
             .collection('products')
             .where('companyId', '==', companyId)
             .where('categoryId', '==', categoryId)
-            .where('totalStock', '>', 0)
-            .orderBy('totalStock', 'asc')
             .orderBy('name', 'asc')
             .get()
             .then(snapshot =>
-                snapshot.docs.map(d => {
-                    const product = d.data();
-                    return new Product(
-                        d.id, product.name, product.price, product.priceWithDiscount,
-                        product.images
-                    );
-                })
+                snapshot.docs.filter(d => {
+                        const product = d.data();
+                        return product.totalStock > 0;
+                    })
+                    .map(d => {
+                        const product = d.data();
+                        return new Product(
+                            d.id,
+                            product.name,
+                            product.price,
+                            product.priceWithDiscount,
+                            product.images,
+                            product.unit,
+                            product.weight
+                        );
+                    })
             );
     }
 

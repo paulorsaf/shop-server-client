@@ -15,8 +15,14 @@ export class DecreaseStockOptionsOnPurchaseCommandHandler implements ICommandHan
         const products = command.products;
 
         await Promise.all(products.map(p => {
+            let decreaseBy = p.amount;
+            if (p.unit === "KG") {
+                decreaseBy = p.amount * p.weight;
+            }
+
             this.stockRepository.descreaseQuantityBy({
-                decreaseBy: p.amount, id: p.stock.id
+                decreaseBy,
+                id: p.stock.id
             })
         }))
 

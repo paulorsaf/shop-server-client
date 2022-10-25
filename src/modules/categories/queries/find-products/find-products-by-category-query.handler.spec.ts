@@ -35,8 +35,8 @@ describe('FindProductsByCategoryQueryHandler', () => {
 
   it('given execute handler, then find products by category', async () => {
     const products = [
-      new Product('anyId1', 'anyName1', 10, 8, new ProductImage('anyFileName', 'anyUrl')),
-      new Product('anyId2', 'anyName2', 5, 4, new ProductImage('anyFileName', 'anyUrl'))
+      new Product('anyId1', 'anyName1', 10, 8, new ProductImage('anyFileName', 'anyUrl'), "anyUnit", 10),
+      new Product('anyId2', 'anyName2', 5, 4, new ProductImage('anyFileName', 'anyUrl'), "anyUnit", 10)
     ];
     productRepository.response = products;
 

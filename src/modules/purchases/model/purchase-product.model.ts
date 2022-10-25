@@ -11,6 +11,7 @@ export class PurchaseProduct {
     readonly priceWithDiscount: number;
     readonly stock: PurchaseProductStock;
     readonly totalPrice: number;
+    readonly unit: string;
     readonly weight: number;
 
     constructor(param: PurchaseParam) {
@@ -23,6 +24,7 @@ export class PurchaseProduct {
         this.priceWithDiscount = param.priceWithDiscount;
         this.stock = param.stock;
         this.totalPrice = this.calculateTotalPrice();
+        this.unit = param.unit;
         this.weight = param.weight;
     }
 
@@ -49,6 +51,7 @@ type PurchaseParam = {
     price?: number;
     priceWithDiscount?: number;
     stock: PurchaseProductStock;
+    unit: string;
     weight: number;
 }
 

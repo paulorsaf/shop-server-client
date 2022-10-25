@@ -24,6 +24,7 @@ export class ProductRepository {
                     price: db.price,
                     priceWithDiscount: db.priceWithDiscount,
                     stock: await this.findStock(productId, stockId),
+                    unit: db.unit,
                     weight: db.weight
                 });
             })
@@ -64,6 +65,7 @@ type ProductDb = {
     name: string;
     price: number;
     priceWithDiscount: number;
+    unit: string;
     weight: number;
 }
 

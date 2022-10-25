@@ -23,13 +23,17 @@ describe('DecreaseStockOptionsOnPurchaseCommandHandler', () => {
         productId: "productId1",
         stock: {
           id: "anyStockId1"
-        }
+        },
+        unit: "UN",
+        weight: 10
       }, {
         amount: 20,
         productId: "productId2",
         stock: {
           id: "anyStockId2"
-        }
+        },
+        unit: "KG",
+        weight: 0.1
       }] as any, "anyUserId"
     );
 
@@ -59,6 +63,18 @@ describe('DecreaseStockOptionsOnPurchaseCommandHandler', () => {
     expect(stockRepository._calledTimes).toEqual(2);
   })
 
+  it('given purchase, when product unit is UN, then decrease stock by amount', async () => {
+    await handler.execute(command);
+
+    expect(stockRepository._calledWith[0].decreaseBy).toEqual(10);
+  })
+
+  it('given purchase, when product unit is KG, then decrease stock by total kilos', async () => {
+    await handler.execute(command);
+
+    expect(stockRepository._calledWith[1].decreaseBy).toEqual(2);
+  })
+
   it('given stock decreased, then publish purchase stock decreased event', async () => {
     await handler.execute(command);
 
@@ -76,7 +92,9 @@ describe('DecreaseStockOptionsOnPurchaseCommandHandler', () => {
 
 class StockRepositoryMock {
   _calledTimes = 0;
-  descreaseQuantityBy() {
+  _calledWith = [];
+  descreaseQuantityBy(params) {
     this._calledTimes++;
+    this._calledWith.push(params);
   }
 }
