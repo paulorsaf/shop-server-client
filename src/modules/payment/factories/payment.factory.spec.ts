@@ -2,7 +2,6 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { CieloRepository } from "../repositories/payment-gateway/cielo/cielo.repository";
 import { StripeRepository } from "../repositories/payment-gateway/stripe/stripe.repository";
 import { PaymentFactory } from "./payment.factory";
-import * as dotenv from 'dotenv';
 
 describe('Payment factory', () => {
 
@@ -19,15 +18,17 @@ describe('Payment factory', () => {
         factory = module.get<PaymentFactory>(PaymentFactory);
     });
 
-    it('given company payment is stripe, then return stripe repository', () => {
-        process.env = { _ANYCOMPANYID_PAYMENT_TYPE: 'STRIPE' };
+    it('given company payment not defined, then return stripe repository', () => {
+        process.env = {};
 
         const response = factory.createPayment('anyCompanyId');
 
         expect(response).toBeInstanceOf(StripeRepository);
     })
 
-    it('given company payment not defined, then return stripe repository', () => {
+    it('given company payment is stripe, then return stripe repository', () => {
+        process.env = { _ANYCOMPANYID_PAYMENT_TYPE: 'STRIPE' };
+
         const response = factory.createPayment('anyCompanyId');
 
         expect(response).toBeInstanceOf(StripeRepository);

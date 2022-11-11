@@ -52,11 +52,11 @@ export class AddPurchaseSummaryCommandHandler implements ICommandHandler<AddPurc
         return {
             createdAt: purchase.createdAt,
             id: purchase.id,
-            payment: {
+            payment: purchase.payment ? {
                 cupom: purchase.payment.cupom,
                 error: purchase.payment.error,
                 type: purchase.payment.type
-            },
+            } : undefined,
             price: purchase.price.totalWithPaymentFee,
             products: purchase.products.map(p => ({
                 amount: p.amount,

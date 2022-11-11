@@ -105,7 +105,7 @@ export class PurchaseSagas {
             map(event =>
                 new DecreaseAmountOfCupomsCommand(
                     event.companyId,
-                    event.payment.cupom,
+                    event.payment?.cupom,
                     event.userId
                 )
             )

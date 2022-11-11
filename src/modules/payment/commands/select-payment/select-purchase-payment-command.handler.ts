@@ -18,13 +18,15 @@ export class SelectPurchasePaymentCommandHandler implements ICommandHandler<Sele
             companyId: command.companyId, purchaseId: command.purchaseId
         });
 
-        if (purchase.payment.type === "PIX") {
-            this.publishPaymentByPixSelectedEvent(command);
-        } else if (purchase.payment.type === "CREDIT_CARD") {
-            if (command.payment.creditCardId) {
-                this.publishPaymentBySavedCreditCardSelectedEvent(command);
-            } else {
-                this.publishPaymentByCreditCardSelectedEvent(command);
+        if (purchase.payment){
+            if (purchase.payment.type === "PIX") {
+                this.publishPaymentByPixSelectedEvent(command);
+            } else if (purchase.payment.type === "CREDIT_CARD") {
+                if (command.payment.creditCardId) {
+                    this.publishPaymentBySavedCreditCardSelectedEvent(command);
+                } else {
+                    this.publishPaymentByCreditCardSelectedEvent(command);
+                }
             }
         }
     }

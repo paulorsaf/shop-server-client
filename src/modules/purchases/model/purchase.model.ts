@@ -48,10 +48,10 @@ export class Purchase {
         this.price = {
             delivery: price.deliveryPrice,
             discount: price.discount,
-            paymentFee: this.payment.type === "CREDIT_CARD" ? price.paymentFee : 0,
+            paymentFee: this.payment?.type === "CREDIT_CARD" ? price.paymentFee : 0,
             products: price.productsPrice,
             total: price.totalPrice,
-            totalWithPaymentFee: this.payment.type === "CREDIT_CARD" ?
+            totalWithPaymentFee: this.payment?.type === "CREDIT_CARD" ?
                 price.totalPriceWithPaymentFee : price.totalPrice
         };
     }

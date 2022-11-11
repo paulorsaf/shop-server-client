@@ -15,7 +15,7 @@ export class FindOrganizationByIdQueryHandler implements IQueryHandler<FindOrgan
             query.organizationId
         );
         if (!company) {
-            throw new NotFoundException("Empresa nao encontrada");
+            throw new NotFoundException("Empresa não encontrada");
         }
         return company;
     }

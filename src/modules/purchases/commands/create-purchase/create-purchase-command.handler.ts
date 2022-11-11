@@ -35,10 +35,10 @@ export class CreatePurchaseCommandHandler implements ICommandHandler<CreatePurch
             address: command.purchase.deliveryAddress,
             companyId: command.company.id,
             deliveryPrice: command.purchase.deliveryPrice,
-            payment: {
+            payment: command.purchase.payment ? {
                 cupom: command.purchase.payment.cupom?.toUpperCase(),
                 type: command.purchase.payment.type
-            },
+            } : undefined,
             productNotes: command.purchase.productNotes,
             products,
             user: {
@@ -61,9 +61,9 @@ export class CreatePurchaseCommandHandler implements ICommandHandler<CreatePurch
                 city: command.company.companyCity,
                 id: command.company.id
             },
-            cupom: command.purchase.payment.cupom,
+            cupom: command.purchase.payment?.cupom,
             payment: command.company.payment,
-            paymentType: command.purchase.payment.type,
+            paymentType: command.purchase.payment?.type,
             products: products.map(p => ({
                 amount: p.amount,
                 price: p.price,

@@ -46,6 +46,17 @@ describe('SelectPurchasePaymentCommandHandler', () => {
 
   describe('given create payment', () => {
 
+    it('when payment not defined, then dont publish any event', async () => {
+      const purchase = new Purchase({
+        payment: undefined
+      });
+      purchaseRepository._response = Promise.resolve(purchase);
+  
+      await handler.execute(command);
+  
+      expect(eventBus.published).toBeUndefined();
+    })
+
     it('when payment by money, then dont publish any event', async () => {
       const purchase = new Purchase({
         payment: {

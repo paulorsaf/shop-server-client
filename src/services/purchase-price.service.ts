@@ -25,9 +25,12 @@ export class PurchasePriceService {
         }
         
         const deliveryPrice = await this.calculateDeliveryPrice(params);
-        const cupomDiscount = await this.cupomRepository.findPercentage({
-            companyId: params.company.id, cupom: params.cupom
-        })
+        let cupomDiscount = 0;
+        if (params.cupom) {
+            cupomDiscount = await this.cupomRepository.findPercentage({
+                companyId: params.company.id, cupom: params.cupom
+            })
+        }
         const productsPrice = this.calculateProductsPrice(params);
         const paymentFee = this.calculatePaymentFee(params, {productsPrice, deliveryPrice});
 
