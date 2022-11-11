@@ -89,6 +89,7 @@ describe('PurchasePriceService', () => {
     })
 
     it('when cupom found, then calculate price with cupom', async () => {
+      params.cupom = "ANY_CUPOM";
       params.products[0].priceWithDiscount = null;
       cupomRepository._response = 10;
 
