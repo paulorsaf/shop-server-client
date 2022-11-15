@@ -65,6 +65,7 @@ export class PurchaseSummaryRepository {
             .update({
                 [`purchases.${purchase.id}.payment.error`]: "",
                 [`purchases.${purchase.id}.payment.receiptUrl`]: purchase.payment.receiptUrl,
+                [`purchases.${purchase.id}.payment.type`]: purchase.payment.type,
                 [`purchases.${purchase.id}.status`]: purchase.status
             })
     }
