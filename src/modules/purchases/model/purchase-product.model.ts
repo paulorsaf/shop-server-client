@@ -9,6 +9,7 @@ export class PurchaseProduct {
     readonly name: string;
     readonly price: number;
     readonly priceWithDiscount: number;
+    readonly productInternalId: string;
     readonly stock: PurchaseProductStock;
     readonly totalPrice: number;
     readonly unit: string;
@@ -22,6 +23,7 @@ export class PurchaseProduct {
         this.name = param.name;
         this.price = param.price;
         this.priceWithDiscount = param.priceWithDiscount;
+        this.productInternalId = param.productInternalId;
         this.stock = param.stock;
         this.totalPrice = this.calculateTotalPrice();
         this.unit = param.unit;
@@ -50,6 +52,7 @@ type PurchaseParam = {
     name?: string;
     price?: number;
     priceWithDiscount?: number;
+    productInternalId: string;
     stock: PurchaseProductStock;
     unit: string;
     weight: number;

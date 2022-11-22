@@ -23,6 +23,7 @@ export class ProductRepository {
                     id: snapshot.id,
                     price: db.price,
                     priceWithDiscount: db.priceWithDiscount,
+                    productInternalId: db.productInternalId,
                     stock: await this.findStock(productId, stockId),
                     unit: db.unit,
                     weight: db.weight
@@ -65,6 +66,7 @@ type ProductDb = {
     name: string;
     price: number;
     priceWithDiscount: number;
+    productInternalId: string;
     unit: string;
     weight: number;
 }

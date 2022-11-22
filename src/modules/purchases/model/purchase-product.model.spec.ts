@@ -11,6 +11,7 @@ describe('Purchase product model', () => {
                     companyId: "anyCompanyId",
                     id: "anyProductId",
                     stock: {quantity: 10} as any,
+                    productInternalId: "anyProductInternalId",
                     amount: 15,
                     unit: "anyUnit",
                     weight: 1
@@ -24,6 +25,7 @@ describe('Purchase product model', () => {
                     companyId: "anyCompanyId",
                     id: "anyProductId",
                     stock: {quantity: 10} as any,
+                    productInternalId: "anyProductInternalId",
                     amount: 10,
                     unit: "anyUnit",
                     weight: 1
@@ -37,6 +39,7 @@ describe('Purchase product model', () => {
                     companyId: "anyCompanyId",
                     id: "anyProductId",
                     stock: {quantity: 10} as any,
+                    productInternalId: "anyProductInternalId",
                     amount: 5,
                     unit: "anyUnit",
                     weight: 1
