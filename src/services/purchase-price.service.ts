@@ -20,7 +20,7 @@ export class PurchasePriceService {
                 discount: 0,
                 paymentFee: 0,
                 totalPrice: 0,
-                totalPriceWithPaymentFee: 0
+                totalWithPaymentFee: 0
             };
         }
         
@@ -37,7 +37,7 @@ export class PurchasePriceService {
         let totalPrice = productsPrice + deliveryPrice;
         const discount = (totalPrice) * (cupomDiscount/100);
         totalPrice = totalPrice - discount;
-        const totalPriceWithPaymentFee = totalPrice + paymentFee;
+        const totalWithPaymentFee = totalPrice + paymentFee;
 
         return {
             productsPrice,
@@ -45,7 +45,7 @@ export class PurchasePriceService {
             deliveryPrice,
             paymentFee,
             totalPrice,
-            totalPriceWithPaymentFee
+            totalWithPaymentFee
         };
     }
 

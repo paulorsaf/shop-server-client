@@ -4,5 +4,5 @@ export type PurchasePriceResponse = {
     discount: number;
     paymentFee: number;
     totalPrice: number;
-    totalPriceWithPaymentFee: number;
+    totalWithPaymentFee: number;
 }

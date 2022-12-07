@@ -43,7 +43,7 @@ describe('PurchasePriceService', () => {
       discount: 0,
       paymentFee: 0,
       totalPrice: 0,
-      totalPriceWithPaymentFee: 0
+      totalWithPaymentFee: 0
     });
   })
 
@@ -71,7 +71,7 @@ describe('PurchasePriceService', () => {
         discount: 0,
         paymentFee: 0,
         totalPrice: 200,
-        totalPriceWithPaymentFee: 200
+        totalWithPaymentFee: 200
       });
     })
 
@@ -84,7 +84,7 @@ describe('PurchasePriceService', () => {
         discount: 0,
         paymentFee: 0,
         totalPrice: 100,
-        totalPriceWithPaymentFee: 100
+        totalWithPaymentFee: 100
       });
     })
 
@@ -101,7 +101,7 @@ describe('PurchasePriceService', () => {
         discount: 20,
         paymentFee: 0,
         totalPrice: 180,
-        totalPriceWithPaymentFee: 180
+        totalWithPaymentFee: 180
       });
     })
 
@@ -118,7 +118,7 @@ describe('PurchasePriceService', () => {
         discount: 0,
         paymentFee: 0,
         totalPrice: 125,
-        totalPriceWithPaymentFee: 125
+        totalWithPaymentFee: 125
       });
     })
 
@@ -140,7 +140,7 @@ describe('PurchasePriceService', () => {
         discount: 0,
         paymentFee: 17,
         totalPrice: 100,
-        totalPriceWithPaymentFee: 117
+        totalWithPaymentFee: 117
       });
     })
 
@@ -166,7 +166,7 @@ describe('PurchasePriceService', () => {
         discount: 0,
         paymentFee: 20.75,
         totalPrice: 125,
-        totalPriceWithPaymentFee: 145.75
+        totalWithPaymentFee: 145.75
       });
     })
 

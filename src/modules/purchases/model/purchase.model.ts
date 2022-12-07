@@ -52,7 +52,7 @@ export class Purchase {
             products: price.productsPrice,
             total: price.totalPrice,
             totalWithPaymentFee: this.payment?.type === "CREDIT_CARD" ?
-                price.totalPriceWithPaymentFee : price.totalPrice
+                price.totalWithPaymentFee : price.totalPrice
         };
     }
 
