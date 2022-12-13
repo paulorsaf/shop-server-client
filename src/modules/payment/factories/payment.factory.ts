@@ -42,6 +42,8 @@ export class PaymentFactory {
     }
 
     private getFromEnv(companyId: string, key: string) {
+        console.log('### process.env', JSON.stringify(process.env));
+        console.log('### env.parsed', JSON.stringify(this.env.parsed));
         return process.env[`_${companyId.toUpperCase()}_${key}`] ||
             this.env.parsed[`_${companyId.toUpperCase()}_${key}`];
     }
