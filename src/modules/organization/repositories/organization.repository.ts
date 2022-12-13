@@ -23,7 +23,11 @@ export class OrganizationRepository {
                         id: doc.id,
                         logo: db.logo,
                         name: db.name,
-                        payment: db.payment
+                        payment: db.payment,
+                        facebook: db.facebook,
+                        instagram: db.instagram,
+                        website: db.website,
+                        whatsapp: db.whatsapp
                     })
                 });
             })
