@@ -2,6 +2,7 @@ export class Company {
     
     readonly aboutUs: string;
     readonly address: any;
+    readonly chatId: string;
     readonly id: string;
     readonly logo: Image;
     readonly name: string;
@@ -14,6 +15,7 @@ export class Company {
     constructor(params: CompanyParams){
         this.aboutUs = params.aboutUs;
         this.address = params.address;
+        this.chatId = params.chatId;
         this.id = params.id;
         this.logo = params.logo;
         this.name = params.name;
@@ -29,6 +31,7 @@ export class Company {
 type CompanyParams = {
     aboutUs: string;
     address: any;
+    chatId: string;
     id: string;
     logo: Image;
     name: string;

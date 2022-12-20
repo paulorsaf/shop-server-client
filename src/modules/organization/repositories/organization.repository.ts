@@ -20,6 +20,7 @@ export class OrganizationRepository {
                     return new Company({
                         aboutUs: db.aboutUs,
                         address: db.address,
+                        chatId: db.chatId,
                         id: doc.id,
                         logo: db.logo,
                         name: db.name,
