@@ -1,6 +1,6 @@
 import { CqrsModule } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { PurchasePriceService } from '../../../../services/purchase-price.service';
+import { CupomRepository } from '../../repositories/cupom.repository';
 import { CalculatePurchasePriceQueryHandler } from './calculate-purchase-price-query.handler';
 import { CalculatePurchasePriceQuery } from './calculate-purchase-price.query';
 
@@ -8,10 +8,10 @@ describe('CalculatePurchasePriceQueryHandler', () => {
 
   let handler: CalculatePurchasePriceQueryHandler;
 
-  let purchasePriceService: PurchasePriceServiceMock;
+  let cupomRepository: CupomRepositoryMock;
 
   beforeEach(async () => {
-    purchasePriceService = new PurchasePriceServiceMock();
+    cupomRepository = new CupomRepositoryMock();
 
     const module: TestingModule = await Test.createTestingModule({
       controllers: [
@@ -21,10 +21,10 @@ describe('CalculatePurchasePriceQueryHandler', () => {
         CqrsModule
       ],
       providers: [
-        PurchasePriceService
+        CupomRepository
       ]
     })
-    .overrideProvider(PurchasePriceService).useValue(purchasePriceService)
+    .overrideProvider(CupomRepository).useValue(cupomRepository)
     .compile();
 
     handler = module.get<CalculatePurchasePriceQueryHandler>(CalculatePurchasePriceQueryHandler);
@@ -32,22 +32,31 @@ describe('CalculatePurchasePriceQueryHandler', () => {
 
   it('given calculate purchase price, then return price', async () => {
     const price = {id: "anyPrice"};
-    purchasePriceService._response = price;
+    cupomRepository._response = price;
 
     const command = new CalculatePurchasePriceQuery({
+      company: {},
       products: []
     } as any);
 
     const response = await handler.execute(command);
 
-    expect(response).toEqual(price);
+    expect(response).toEqual({
+      deliveryPrice: 0,
+      discount: 0,
+      paymentFee: 0,
+      productsPrice: 0,
+      serviceFee: 0,
+      totalPrice: 0,
+      totalWithPaymentFee: 0
+    });
   })
 
 });
 
-class PurchasePriceServiceMock {
+class CupomRepositoryMock {
   _response;
-  calculatePrice() {
+  find() {
     return this._response;
   }
 }

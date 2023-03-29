@@ -1,4 +1,4 @@
-import { PurchasePriceResponse } from "../../../models/purchase-price.model";
+import { PurchasePriceResponse } from "shop-purchase-price";
 import { PurchaseProduct } from "./purchase-product.model";
 
 export class Purchase {
@@ -50,6 +50,7 @@ export class Purchase {
             discount: price.discount,
             paymentFee: this.payment?.type === "CREDIT_CARD" ? price.paymentFee : 0,
             products: price.productsPrice,
+            serviceFee: price.serviceFee,
             total: price.totalPrice,
             totalWithPaymentFee: this.payment?.type === "CREDIT_CARD" ?
                 price.totalWithPaymentFee : price.totalPrice
@@ -113,6 +114,7 @@ type Price = {
     delivery: number;
     discount: number;
     paymentFee: number;
+    serviceFee: number;
     total: number;
     totalWithPaymentFee: number;
 }

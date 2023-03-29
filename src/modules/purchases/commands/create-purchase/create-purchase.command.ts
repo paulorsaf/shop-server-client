@@ -16,6 +16,7 @@ type CompanyDTO = {
     companyCity: string;
     id: string;
     payment: Payment;
+    serviceTax: number;
     zipCode: string;
 }
 

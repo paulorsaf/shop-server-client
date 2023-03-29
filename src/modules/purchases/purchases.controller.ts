@@ -78,7 +78,8 @@ export class PurchasesController {
         cityDeliveryPrice: company.cityDeliveryPrice,
         company: {
           city: company.address.city,
-          id: company.id
+          id: company.id,
+          serviceTax: company.serviceTax
         },
         cupom: priceDto.cupom,
         payment: company.payment,
@@ -102,7 +103,8 @@ export class PurchasesController {
           companyCity: company.address.city,
           id: company.id,
           payment: company.payment,
-          zipCode: company.address.zipCode
+          zipCode: company.address.zipCode,
+          serviceTax: company.serviceTax
         },
         purchaseDto,
         { email: user.email, id: user.id }
@@ -132,7 +134,8 @@ export class PurchasesController {
           companyCity: company.address.city,
           id: company.id,
           payment: company.payment,
-          zipCode: company.address.zipCode
+          zipCode: company.address.zipCode,
+          serviceTax: company.serviceTax
         },
         purchaseDto,
         { email: user.email, id: user.id }

@@ -19,7 +19,7 @@ export class DeliveryRepository {
             nVlDiametro: '0',
         };
           
-        return calcularPrecoPrazo(args).then((response: PrecoPrazoResponse) => {
+        return calcularPrecoPrazo(args).then((response: PrecoPrazoResponse[]) => {
             return parseFloat(response[0].Valor.replace(',', '.'));
         });
     }

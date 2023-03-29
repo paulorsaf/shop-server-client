@@ -31,7 +31,7 @@
     "@sendinblue/client": "^3.2.2",
     "busboy": "^1.6.0",
     "cielo": "^2.4.4",
-    "correios-brasil": "^3.0.0",
+    "correios-brasil": "^3.0.4",
     "date-fns": "^2.29.1",
     "dotenv": "^16.0.2",
     "firebase": "^9.9.0",
@@ -41,6 +41,7 @@
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0",
+    "shop-purchase-price": "^1.0.2",
     "stripe": "^10.8.0",
     "webpack": "^5.74.0"
   },
@@ -82,6 +83,9 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "moduleNameMapper": {
+      "axios": "axios/dist/axios.js"
+    }
   }
 }

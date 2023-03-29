@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { format } from 'date-fns';
 import * as admin from 'firebase-admin';
-import { PurchaseProductStock } from '../modules/purchases/model/purchase-product-stock.model';
-import { PurchaseProduct } from '../modules/purchases/model/purchase-product.model';
 
 @Injectable()
 export class CupomRepository {

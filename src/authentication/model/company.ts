@@ -4,6 +4,7 @@ export type Company = {
     id: string;
     name: string;
     payment: CompanyPayment;
+    serviceTax: number;
 }
 
 type Address = {

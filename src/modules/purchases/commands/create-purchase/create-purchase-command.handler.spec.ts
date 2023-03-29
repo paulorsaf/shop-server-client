@@ -1,6 +1,5 @@
 import { CqrsModule, EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { PurchasePriceService } from '../../../../services/purchase-price.service';
 import { EventBusMock } from '../../../../mocks/event-bus.mock';
 import { ProductOutOfStockException } from '../../exceptions/purchase.exceptions';
 import { ProductRepository } from '../../repositories/product.repository';
@@ -8,21 +7,22 @@ import { PurchaseRepository } from '../../repositories/purchase.repository';
 import { CreatePurchaseCommandHandler } from './create-purchase-command.handler';
 import { CreatePurchaseCommand } from './create-purchase.command';
 import { PurchaseCreatedEvent } from './events/purchase-created.event';
+import { CupomRepository } from '../../repositories/cupom.repository';
 
 describe('CreatePurchaseCommandHandler', () => {
 
   let eventBus: EventBusMock;
   let handler: CreatePurchaseCommandHandler;
+  let cupomRepository: CupomRepositoryMock;
   let productRepository: ProductRepositoryMock;
   let purchaseRepository: PurchaseRepositoryMock;
-  let purchasePriceService: PurchasePriceServiceMock;
 
   let command: CreatePurchaseCommand;
 
   beforeEach(async () => {
+    cupomRepository = new CupomRepositoryMock();
     productRepository = new ProductRepositoryMock();
     purchaseRepository = new PurchaseRepositoryMock();
-    purchasePriceService = new PurchasePriceServiceMock();
 
     command = new CreatePurchaseCommand(
       {
@@ -30,7 +30,8 @@ describe('CreatePurchaseCommandHandler', () => {
         companyCity: "anyCity",
         id: "anyCompanyId",
         payment: {id: "anyPayment"} as any,
-        zipCode: "anyZipCode"
+        zipCode: "anyZipCode",
+        serviceTax: 10
       },
       {
         deliveryAddress: {
@@ -62,15 +63,15 @@ describe('CreatePurchaseCommandHandler', () => {
         CqrsModule
       ],
       providers: [
+        CupomRepository,
         ProductRepository,
-        PurchaseRepository,
-        PurchasePriceService
+        PurchaseRepository
       ]
     })
     .overrideProvider(EventBus).useValue(eventBus)
+    .overrideProvider(CupomRepository).useValue(cupomRepository)
     .overrideProvider(ProductRepository).useValue(productRepository)
     .overrideProvider(PurchaseRepository).useValue(purchaseRepository)
-    .overrideProvider(PurchasePriceService).useValue(purchasePriceService)
     .compile();
 
     handler = module.get<CreatePurchaseCommandHandler>(CreatePurchaseCommandHandler);
@@ -125,8 +126,8 @@ class PurchaseRepositoryMock {
   }
 }
 
-class PurchasePriceServiceMock {
-  calculatePrice() {
-    return {};
+class CupomRepositoryMock {
+  find() {
+    return 10;
   }
 }

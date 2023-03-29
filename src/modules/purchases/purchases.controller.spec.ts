@@ -25,7 +25,8 @@ describe('PurchasesController', () => {
     id: 'anyCompanyId',
     address: {city: "anyCity", zipCode: "anyZipCode"},
     cityDeliveryPrice: 10,
-    payment: {id: "anyPayment"}
+    payment: {id: "anyPayment"},
+    serviceTax: 10
   } as any;
   const user: User = {email: "any@email.com", id: "anyUserId"} as any;
 
@@ -101,7 +102,8 @@ describe('PurchasesController', () => {
         },
         company: {
           city: "anyCity",
-          id: "anyCompanyId"
+          id: "anyCompanyId",
+          serviceTax: 10
         },
         cupom: "anyCupom",
         payment: company.payment
@@ -126,7 +128,8 @@ describe('PurchasesController', () => {
             companyCity: "anyCity",
             id: "anyCompanyId",
             payment: {id: "anyPayment"} as any,
-            zipCode: "anyZipCode"
+            zipCode: "anyZipCode",
+            serviceTax: 10
           },
           purchaseDto,
           { email: "any@email.com", id: "anyUserId" }

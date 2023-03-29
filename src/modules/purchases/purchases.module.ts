@@ -13,9 +13,8 @@ import { CalculatePurchasePriceQueryHandler } from './queries/calculate-purchase
 import { DeliveryRepository } from '../../repositories/delivery.repository';
 import { DeliveryService } from '../../services/delivery.service';
 import { AddressRepository } from '../../repositories/address.repository';
-import { PurchasePriceService } from '../../services/purchase-price.service';
 import { FindLastPurchaseByCompanyAndUserIdQueryHandler } from './queries/find-last-purchase-by-company-and-user-id/find-last-purchase-by-company-and-user-id-query.handler';
-import { CupomRepository } from '../../repositories/cupom.repository';
+import { CupomRepository } from './repositories/cupom.repository';
 
 @Module({
   controllers: [PurchasesController],
@@ -30,8 +29,6 @@ import { CupomRepository } from '../../repositories/cupom.repository';
     DeliveryService,
     ProductRepository,
     PurchaseRepository,
-
-    PurchasePriceService,
 
     CreatePurchaseCommandHandler,
     RetryPurchasePaymentCommandHandler,
