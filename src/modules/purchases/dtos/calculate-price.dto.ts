@@ -16,6 +16,7 @@ type Address = {
 type Company = {
     readonly id: string;
     readonly city: string;
+    readonly payment: Payment;
     readonly serviceTax: number;
 }
 

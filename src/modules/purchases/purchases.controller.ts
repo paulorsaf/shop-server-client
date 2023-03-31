@@ -68,7 +68,10 @@ export class PurchasesController {
 
   @UseGuards(CompanyStrategy, JwtStrategy)
   @Patch('prices')
-  calculatePrice(@AuthCompany() company: Company, @Body() priceDto: CalculatePriceDTO) {
+  calculatePrice(
+    @AuthCompany() company: Company,
+    @Body() priceDto: CalculatePriceDTO
+  ) {
     return this.queryBus.execute(
       new CalculatePurchasePriceQuery({
         address: {
@@ -79,6 +82,7 @@ export class PurchasesController {
         company: {
           city: company.address.city,
           id: company.id,
+          payment: company.payment,
           serviceTax: company.serviceTax
         },
         cupom: priceDto.cupom,

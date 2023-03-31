@@ -21,10 +21,10 @@ export class CalculatePurchasePriceQueryHandler implements IQueryHandler<Calcula
             innerCityDeliveryPrice: query.dto.cityDeliveryPrice,
             originCityName: query.dto.company.city,
             discount,
-            paymentFee: query.dto.paymentType === 'CREDIT_CARD' ? {
-                percentage: query.dto.payment?.creditCard?.fee?.percentage || 0,
-                value: query.dto.payment?.creditCard?.fee?.value || 0
-            } : null,
+            paymentFee: {
+                percentage: query.dto.company.payment?.creditCard?.fee?.percentage || 0,
+                value: query.dto.company.payment?.creditCard?.fee?.value || 0
+            },
             products: query.dto.products.map(p => ({
                 amount: p.amount,
                 price: p.price,
