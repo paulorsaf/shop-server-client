@@ -103,6 +103,7 @@ describe('PurchasesController', () => {
         company: {
           city: "anyCity",
           id: "anyCompanyId",
+          payment: {id: "anyPayment"},
           serviceTax: 10
         },
         cupom: "anyCupom",
