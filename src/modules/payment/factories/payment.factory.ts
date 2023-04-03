@@ -34,7 +34,7 @@ export class PaymentFactory {
         const cielo = new Cielo({
             merchantId: this.getFromEnv(companyId, 'MERCHANT_ID'),
             merchantKey: this.getFromEnv(companyId, 'MERCHANT_KEY'),
-            sandbox: this.getFromEnv(companyId, 'SANDBOX') ? true : false,
+            sandbox: false,
             debug: true
         });
 
