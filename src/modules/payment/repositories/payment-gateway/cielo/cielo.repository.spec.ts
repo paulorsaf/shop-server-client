@@ -17,7 +17,8 @@ describe('Cielo repository', () => {
             payment: {
                 creditCard: {cardNumber: "1234"},
                 paymentId: "anyPaymentId",
-                tid: "anyTransactionId"
+                tid: "anyTransactionId",
+                status: 2
             }
         });
     })
