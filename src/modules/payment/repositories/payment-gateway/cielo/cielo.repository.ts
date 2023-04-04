@@ -70,9 +70,16 @@ export class CieloRepository implements PaymentGateway {
         const data = this.fromMakePaymentBySavedCreditCardToTransactionCreditCardRequestModel(
             paymentDetails, payment.purchaseId, payment.totalPrice
         )
-        const transaction = await this.cielo.creditCard.transaction(data).catch(error => {
-            throw new BadRequestException(error.response?.Message);
-        });
+        const transaction = await this.cielo.creditCard.transaction(data)
+            .then(response => {
+                if (response.payment.status !== PaymentStatus.PaymentConfirmed) {
+                    throw new InternalServerErrorException(response.payment.returnMessage)
+                }
+                return response;
+            })
+            .catch(error => {
+                throw new BadRequestException(error.response?.Message || error.response?.message || error.message);
+            });
 
         return Promise.resolve({
             cardDetails: {
@@ -229,4 +236,16 @@ type Transaction = {
     email: string;
     purchaseId: string;
     totalPrice: number;
+}
+
+enum PaymentStatus {
+    NotFinished = 0,
+    Authorized = 1,
+    PaymentConfirmed = 2,
+    Declined = 3,
+    Voided = 10,
+    Refunded = 11,
+    Pending = 12,
+    Aborted = 13,
+    Schedule = 20,
 }
