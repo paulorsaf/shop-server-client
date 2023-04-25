@@ -17,6 +17,8 @@ import { MakePaymentBySavedCreditCardCommand } from '../commands/make-payment-by
 import { SetPurchaseSummaryPaymentErrorCommand } from '../../purchase-summaries/commands/set-purchase-summary-payment-error/set-purchase-summary-payment-error.command';
 import { SetPurchaseSummaryPaymentSuccessCommand } from '../../purchase-summaries/commands/set-purchase-summary-payment-success/set-purchase-summary-payment-success.command';
 import { PaymentByPixSavedEvent } from '../events/payment-by-pix-saved.event';
+import { PaymentByMoneySelectedEvent } from '../events/payment-by-money-selected.event';
+import { SavePaymentByMoneyCommand } from '../commands/save-payment-by-money/save-payment-by-money.command';
 
 describe('PaymentSagas', () => {
 
@@ -85,6 +87,25 @@ describe('PaymentSagas', () => {
           "anyPurchaseId",
           billingAddress,
           creditCard
+        )
+      );
+      done();
+    });
+  });
+
+  it('given payment by money selected, then execute save payment by pix command', done => {
+    const event = new PaymentByMoneySelectedEvent(
+      "anyCompanyId",
+      "anyPurchaseId",
+      10
+    );
+
+    sagas.paymentByMoneySelected(of(event)).subscribe(response => {
+      expect(response).toEqual(
+        new SavePaymentByMoneyCommand(
+          "anyCompanyId",
+          "anyPurchaseId",
+          10
         )
       );
       done();

@@ -3,6 +3,7 @@ export type RetryPurchaseDTO = {
 }
 
 export type RetryPaymentDTO = {
+    changeFor?: number;
     receipt?: string;
     type: string;
 }

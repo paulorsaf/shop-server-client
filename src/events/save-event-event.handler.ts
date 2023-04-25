@@ -18,6 +18,7 @@ import { PaymentSuccessEmailSentToClientEvent } from "../modules/email/events/pa
 import { SendPaymentSuccessEmailToClientFailedEvent } from "../modules/email/events/send-payment-success-email-to-client-failed.event";
 import { CreditCardDeletedEvent } from "../modules/payment/events/credit-card-deleted.event";
 import { PaymentBySavedCreditCardSelectedEvent } from "../modules/payment/events/payment-by-saved-credit-card-selected.event";
+import { PaymentByMoneySavedEvent } from "../modules/payment/events/payment-by-money-saved.event";
 
 @EventsHandler(
     PurchaseCreatedEvent,
@@ -29,6 +30,7 @@ import { PaymentBySavedCreditCardSelectedEvent } from "../modules/payment/events
     PaymentFailedEvent,
     PurchaseGeolocationSavedEvent,
     PurchasePaymentRetriedEvent,
+    PaymentByMoneySavedEvent,
 
     CreditCardDeletedEvent,
 
@@ -49,6 +51,7 @@ export class SaveEventHandler implements IEventHandler<any> {
     ){}
 
     handle(event: any) {
+        console.log(event.eventType);
         this.eventRepository.addEvent(event);
     }
 

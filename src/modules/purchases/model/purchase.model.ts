@@ -94,6 +94,7 @@ type Address = {
 
 type Payment = {
     card?: CreditCard;
+    changeFor?: number;
     cupom?: string;
     error?: any;
     id?: string;

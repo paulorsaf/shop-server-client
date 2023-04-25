@@ -1,5 +1,6 @@
 import { CommandHandler, EventBus, ICommandHandler } from "@nestjs/cqrs";
 import { PaymentByCreditCardSelectedEvent } from "../../events/payment-by-credit-card-selected.event";
+import { PaymentByMoneySelectedEvent } from "../../events/payment-by-money-selected.event";
 import { PaymentByPixSelectedEvent } from "../../events/payment-by-pix-selected.event";
 import { PaymentBySavedCreditCardSelectedEvent } from "../../events/payment-by-saved-credit-card-selected.event";
 import { PurchaseRepository } from "../../repositories/purchase.repository";
@@ -27,6 +28,8 @@ export class SelectPurchasePaymentCommandHandler implements ICommandHandler<Sele
                 } else {
                     this.publishPaymentByCreditCardSelectedEvent(command);
                 }
+            } else if (purchase.payment.type === "MONEY") {
+                this.publishPaymentByMoneySelectedEvent(command);
             }
         }
     }
@@ -58,6 +61,16 @@ export class SelectPurchasePaymentCommandHandler implements ICommandHandler<Sele
                 command.companyId,
                 command.purchaseId,
                 command.payment.creditCardId
+            )
+        );
+    }
+
+    private publishPaymentByMoneySelectedEvent(command: SelectPurchasePaymentCommand) {
+        this.eventBus.publish(
+            new PaymentByMoneySelectedEvent(
+                command.companyId,
+                command.purchaseId,
+                command.payment.changeFor
             )
         );
     }

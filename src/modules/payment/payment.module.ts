@@ -14,6 +14,7 @@ import { AuthenticationModule } from '../../authentication/authentication.module
 import { FindUserCreditCardsQueryHandler } from './queries/find-user-credit-cards/find-user-credit-cards-query.handler';
 import { DeleteCreditCardByIdCommandHandler } from './commands/delete-credit-card-by-id/delete-credit-card-by-id-command.handler';
 import { MakePaymentBySavedCreditCardCommandHandler } from './commands/make-payment-by-saved-credit-card/make-payment-by-saved-credit-card-command.handler';
+import { SavePaymentByMoneyCommandHandler } from './commands/save-payment-by-money/save-payment-by-money.command.handler';
 
 @Module({
   controllers: [
@@ -30,6 +31,7 @@ import { MakePaymentBySavedCreditCardCommandHandler } from './commands/make-paym
     StorageRepository,
 
     FindUserCreditCardsQueryHandler,
+    SavePaymentByMoneyCommandHandler,
 
     DeleteCreditCardByIdCommandHandler,
     SelectPurchasePaymentCommandHandler,

@@ -47,6 +47,15 @@ export class PurchaseRepository {
             })
     }
 
+    updatePurchaseStatus(purchase: Purchase, status: string) {
+        return admin.firestore()
+            .collection('purchases')
+            .doc(purchase.id)
+            .update({
+                status
+            })
+    }
+
     updatePaymentByCreditCard(update: UpdatePaymentByCreditCard) {
         return admin.firestore()
             .collection('purchases')

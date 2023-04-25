@@ -1,6 +1,7 @@
 
 export type PaymentDTO = {
     billingAddress?: AddressDTO;
+    changeFor?: number;
     creditCard?: CreditCardDTO;
     creditCardId?: string;
     receipt?: string;

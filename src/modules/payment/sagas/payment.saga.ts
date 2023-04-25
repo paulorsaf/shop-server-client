@@ -14,6 +14,8 @@ import { PaymentBySavedCreditCardSelectedEvent } from "../events/payment-by-save
 import { PaymentFailedEvent } from "../events/payment-failed.event";
 import { SetPurchaseSummaryPaymentSuccessCommand } from "../../purchase-summaries/commands/set-purchase-summary-payment-success/set-purchase-summary-payment-success.command";
 import { PaymentByPixSavedEvent } from "../events/payment-by-pix-saved.event";
+import { PaymentByMoneySelectedEvent } from "../events/payment-by-money-selected.event";
+import { SavePaymentByMoneyCommand } from "../commands/save-payment-by-money/save-payment-by-money.command";
 
 @Injectable()
 export class PaymentSagas {
@@ -54,6 +56,19 @@ export class PaymentSagas {
                     event.companyId,
                     event.purchaseId,
                     event.creditCardId
+                )
+            )
+        );
+
+    @Saga()
+    paymentByMoneySelected = (events$: Observable<any>): Observable<ICommand> => 
+        events$.pipe(
+            ofType(PaymentByMoneySelectedEvent),
+            map(event =>
+                new SavePaymentByMoneyCommand(
+                    event.companyId,
+                    event.purchaseId,
+                    event.changeFor
                 )
             )
         );

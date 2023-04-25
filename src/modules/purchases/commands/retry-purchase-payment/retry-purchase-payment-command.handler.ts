@@ -37,6 +37,7 @@ export class RetryPurchasePaymentCommandHandler implements ICommandHandler<Retry
         return new Purchase({
             ...purchase,
             payment: {
+                changeFor: command.retryPurchaseDto.payment.changeFor,
                 error: undefined,
                 receiptUrl: undefined,
                 type: command.retryPurchaseDto.payment.type

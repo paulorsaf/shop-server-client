@@ -8,6 +8,7 @@ import { SelectPurchasePaymentCommand } from './select-purchase-payment.command'
 import { PaymentByCreditCardSelectedEvent } from '../../events/payment-by-credit-card-selected.event';
 import { Purchase } from '../../model/purchase.model';
 import { PaymentBySavedCreditCardSelectedEvent } from '../../events/payment-by-saved-credit-card-selected.event';
+import { PaymentByMoneySelectedEvent } from '../../events/payment-by-money-selected.event';
 
 describe('SelectPurchasePaymentCommandHandler', () => {
 
@@ -57,7 +58,7 @@ describe('SelectPurchasePaymentCommandHandler', () => {
       expect(eventBus.published).toBeUndefined();
     })
 
-    it('when payment by money, then dont publish any event', async () => {
+    it('when payment by money, then publish purchase by money selected event', async () => {
       const purchase = new Purchase({
         payment: {
           type: "MONEY"
@@ -67,7 +68,7 @@ describe('SelectPurchasePaymentCommandHandler', () => {
   
       await handler.execute(command);
   
-      expect(eventBus.published).toBeUndefined();
+      expect(eventBus.published).toBeInstanceOf(PaymentByMoneySelectedEvent);
     })
   
     it('when payment by pix, then publish payment by pix selected event', async () => {
