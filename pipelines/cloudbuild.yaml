@@ -7,12 +7,6 @@ steps:
     args: ['run', 'build']
   - name: node
     entrypoint: npm
-    args: ['run', 'create-env']
-    env:
-      - '_TOQX2RIFBZ5TAV2NS2FG_PAYMENT_KEY=${_TOQX2RIFBZ5TAV2NS2FG_PAYMENT_KEY}'
-      - '_L35ZNKS6VYZAB1BGJYRK_PAYMENT_KEY=${_L35ZNKS6VYZAB1BGJYRK_PAYMENT_KEY}'
-  - name: node
-    entrypoint: npm
     args: ['test']
   # - name: node
   #   entrypoint: npm
