@@ -13,10 +13,9 @@ export class ProductRepository {
             .orderBy('name', 'asc')
             .get()
             .then(snapshot =>
-                snapshot.docs.filter(d => {
-                        const product = d.data();
-                        return product.totalStock > 0;
-                    })
+                snapshot.docs
+                    .filter(d => d.data().totalStock > 0)
+                    .filter(d => d.data().isVisible !== false)
                     .map(d => {
                         const product = d.data();
                         return new Product(
