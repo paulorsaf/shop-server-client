@@ -28,6 +28,7 @@ describe('CreatePurchaseCommandHandler', () => {
       {
         cityDeliveryPrice: 10,
         companyCity: "anyCity",
+        hasDeliveryByMail: true,
         id: "anyCompanyId",
         payment: {id: "anyPayment"} as any,
         zipCode: "anyZipCode",

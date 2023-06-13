@@ -25,6 +25,7 @@ describe('PurchasesController', () => {
     id: 'anyCompanyId',
     address: {city: "anyCity", zipCode: "anyZipCode"},
     cityDeliveryPrice: 10,
+    hasDeliveryByMail: true,
     payment: {id: "anyPayment"},
     serviceTax: 10
   } as any;
@@ -102,6 +103,7 @@ describe('PurchasesController', () => {
         },
         company: {
           city: "anyCity",
+          hasDeliveryByMail: true,
           id: "anyCompanyId",
           payment: {id: "anyPayment"},
           serviceTax: 10
@@ -127,6 +129,7 @@ describe('PurchasesController', () => {
           {
             cityDeliveryPrice: 10,
             companyCity: "anyCity",
+            hasDeliveryByMail: true,
             id: "anyCompanyId",
             payment: {id: "anyPayment"} as any,
             zipCode: "anyZipCode",

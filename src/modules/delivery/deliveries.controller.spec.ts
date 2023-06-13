@@ -14,7 +14,11 @@ describe('DeliveriesController', () => {
   let commandBus: CommandBusMock;
   let queryBus: QueryBusMock;
 
-  const company: Company = {address: "anyAddress", cityDeliveryPrice: 10} as any;
+  const company: Company = {
+    address: "anyAddress",
+    cityDeliveryPrice: 10,
+    hasDeliveryByMail: true
+  } as any;
 
   beforeEach(async () => {
     commandBus = new CommandBusMock();
@@ -41,7 +45,10 @@ describe('DeliveriesController', () => {
 
     expect(queryBus.executedWith).toEqual(
       new FindDeliveryPriceByZipCodeQuery(
-        {address: "anyAddress" as any, cityDeliveryPrice: 10},
+        {
+          address: "anyAddress" as any,
+          cityDeliveryPrice: 10, hasDeliveryByMail: true
+        },
         "anyZipCode",
         products
       )
