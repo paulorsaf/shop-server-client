@@ -82,6 +82,7 @@ export class PurchasesController {
         company: {
           city: company.address.city,
           id: company.id,
+          hasDeliveryByMail: company.hasDeliveryByMail,
           payment: company.payment,
           serviceTax: company.serviceTax
         },
@@ -105,6 +106,7 @@ export class PurchasesController {
         {
           cityDeliveryPrice: company.cityDeliveryPrice,
           companyCity: company.address.city,
+          hasDeliveryByMail: company.hasDeliveryByMail,
           id: company.id,
           payment: company.payment,
           zipCode: company.address.zipCode,
@@ -136,6 +138,7 @@ export class PurchasesController {
         {
           cityDeliveryPrice: company.cityDeliveryPrice,
           companyCity: company.address.city,
+          hasDeliveryByMail: company.hasDeliveryByMail,
           id: company.id,
           payment: company.payment,
           zipCode: company.address.zipCode,

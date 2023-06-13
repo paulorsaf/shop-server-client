@@ -1,6 +1,7 @@
 export type Company = {
     address: Address;
     cityDeliveryPrice: number;
+    hasDeliveryByMail: boolean;
     id: string;
     name: string;
     payment: CompanyPayment;

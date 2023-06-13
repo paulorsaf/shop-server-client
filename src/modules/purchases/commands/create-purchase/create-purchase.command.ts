@@ -14,6 +14,7 @@ export class CreatePurchaseCommand {
 type CompanyDTO = {
     cityDeliveryPrice: number;
     companyCity: string;
+    hasDeliveryByMail: boolean;
     id: string;
     payment: Payment;
     serviceTax: number;

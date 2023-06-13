@@ -22,7 +22,11 @@ export class DeliveriesController {
   ) {
     return this.queryBus.execute(
       new FindDeliveryPriceByZipCodeQuery(
-        {address: company.address, cityDeliveryPrice: company.cityDeliveryPrice},
+        {
+          address: company.address,
+          cityDeliveryPrice: company.cityDeliveryPrice,
+          hasDeliveryByMail: company.hasDeliveryByMail
+        },
         zipCode,
         products
       )
@@ -37,7 +41,11 @@ export class DeliveriesController {
   ) {
     return this.queryBus.execute(
       new FindDeliveryPriceByZipCodeQuery(
-        {address: company.address, cityDeliveryPrice: company.cityDeliveryPrice},
+        {
+          address: company.address,
+          cityDeliveryPrice: company.cityDeliveryPrice,
+          hasDeliveryByMail: company.hasDeliveryByMail
+        },
         zipCode,
         []
       )

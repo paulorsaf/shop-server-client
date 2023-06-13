@@ -19,6 +19,7 @@ export class FindDeliveryPriceByZipCodeQueryHandler implements IQueryHandler<Fin
                 },
                 cityDeliveryPrice: query.company.cityDeliveryPrice,
                 companyCity: query.company.address.city,
+                hasDeliveryByMail: query.company.hasDeliveryByMail,
                 products: query.products
             });
         } catch (error) {

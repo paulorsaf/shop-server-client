@@ -12,6 +12,9 @@ export class DeliveryService {
     ){}
 
     async calculateDelivery(params: CalculateDelivery) {
+        if (!params.hasDeliveryByMail) {
+            return params.cityDeliveryPrice || 0;
+        }
         const address = await this.findByZipCode(params.address.destinationZipCode);
         if (address.city === params.companyCity) {
             return params.cityDeliveryPrice || 0;
@@ -37,6 +40,7 @@ type CalculateDelivery = {
     address: Address;
     cityDeliveryPrice: number;
     companyCity: string;
+    hasDeliveryByMail: boolean;
     products: {amount: number, weight: number}[];
 }
 

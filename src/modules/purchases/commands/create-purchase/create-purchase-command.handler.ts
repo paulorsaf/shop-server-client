@@ -67,6 +67,7 @@ export class CreatePurchaseCommandHandler implements ICommandHandler<CreatePurch
             innerCityDeliveryPrice: command.company.cityDeliveryPrice,
             originCityName: command.company.companyCity,
             discount,
+            hasDeliveryByMail: command.company.hasDeliveryByMail,
             paymentFee: command.purchase.payment?.type === 'CREDIT_CARD' ? {
                 percentage: command.company.payment?.creditCard?.fee?.percentage || 0,
                 value: command.company.payment?.creditCard?.fee?.value || 0

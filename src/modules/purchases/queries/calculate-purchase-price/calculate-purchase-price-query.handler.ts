@@ -21,6 +21,7 @@ export class CalculatePurchasePriceQueryHandler implements IQueryHandler<Calcula
             innerCityDeliveryPrice: query.dto.cityDeliveryPrice,
             originCityName: query.dto.company.city,
             discount,
+            hasDeliveryByMail: query.dto.company.hasDeliveryByMail,
             paymentFee: {
                 percentage: query.dto.company.payment?.creditCard?.fee?.percentage || 0,
                 value: query.dto.company.payment?.creditCard?.fee?.value || 0

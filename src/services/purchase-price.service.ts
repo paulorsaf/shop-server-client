@@ -60,10 +60,11 @@ export class PurchasePriceService {
             return await this.deliveryService.calculateDelivery({
                 address: {
                     destinationZipCode: dto.address.destinationZipCode,
-                    originZipCode: dto.address.originZipCode
+                    originZipCode: dto.address.originZipCode,
                 },
                 cityDeliveryPrice: dto.cityDeliveryPrice,
                 companyCity: dto.company.city,
+                hasDeliveryByMail: dto.company.hasDeliveryByMail,
                 products: dto.products
             });
         }
