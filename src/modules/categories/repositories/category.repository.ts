@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { Category } from "../entity/category";
 import * as admin from 'firebase-admin';
+import { CategoryDb } from "../../../db/category.db";
 
 @Injectable()
 export class CategoryRepository {
@@ -12,10 +13,15 @@ export class CategoryRepository {
             .orderBy('name', 'asc')
             .get()
             .then(snapshot =>
-                snapshot.docs.map(d => {
-                    const category = d.data();
-                    return new Category(d.id, category.name);
-                })
+                snapshot.docs
+                    .filter(d => {
+                        const category = d.data() as CategoryDb;
+                        return category.isVisible === undefined ? true : category.isVisible;
+                    })
+                    .map(d => {
+                        const category = d.data() as Category;
+                        return new Category(d.id, category.name);
+                    })
             );
     }
 

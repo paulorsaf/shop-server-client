@@ -16,5 +16,5 @@ steps:
     - functions
     - deploy
     - shop-client-server
-    - --memory=256MB
+    - --memory=512MB
     - --region=southamerica-east1
